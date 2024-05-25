@@ -1,10 +1,10 @@
 {
-  "name": "chentao-rusume",
+  "name": "website",
   "version": "1.0.0",
+  "author": "chentao",
   "scripts": {
     "http": "http-server ./ -p 80 -g --cors",
     "https:prod": "http-server ./ -p 443 -g --cors -S -C certs/cert.pem -K certs/key.pem",
     "https:dev": "http-server ./ -p 443 -g --cors -S -C certs/test_cert.pem -K certs/test_key.pem"
-  },
-  "author": "chentao"
+  }
 }
