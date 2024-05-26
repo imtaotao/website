@@ -1,2 +1,3 @@
-certs/
+docs.md
+server/ssl/
 node_modules/
