@@ -1,7 +1,6 @@
 const fs = require("node:fs");
 const zlib = require("node:zlib");
-const http = require("node:http");
-const https = require("node:https");
+const http2 = require("node:http2");
 const Koa = require("koa");
 const cors = require("@koa/cors");
 const mount = require("koa-mount");
@@ -13,11 +12,7 @@ const { resolve } = require("./utils");
 
 const app = new Koa();
 
-const httpsOptions = {
-  key: fs.readFileSync(resolve("./ssl/key.pem")),
-  cert: fs.readFileSync(resolve("./ssl/cert.pem")),
-};
-const compressOptions = {
+const compressConfig = {
   threshold: 1,
   br: false,
   gzip: {
@@ -28,12 +23,19 @@ const compressOptions = {
   },
 };
 
-// Start server
+const sslConfig = {
+  key: fs.readFileSync(resolve("./ssl/key.pem")),
+  cert: fs.readFileSync(resolve("./ssl/cert.pem")),
+};
+
 app.use(sslify());
 app.use(cors());
 app.use(mount("/api", apiApp));
-app.use(compress(compressOptions));
+app.use(compress(compressConfig));
 app.use(static(resolve("../")));
-https.createServer(httpsOptions, app.callback()).listen(443);
 
-console.log("https server is running.");
+// Start server
+http2.createServer(app.callback()).listen(80);
+http2.createSecureServer(sslConfig, app.callback()).listen(443);
+
+console.log("http2 server is running.");
