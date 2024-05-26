@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "author": "chentao",
   "scripts": {
-    "dev:web": "pnpm --filter @website/web run dev",
-    "dev:api": "pm2 stop 0 && pnpm --filter @website/api run dev",
-    "release:web": "pnpm --filter @website/web run build",
-    "release:api": "pnpm --filter @website/api run build && pm2 restart 0",
+    "dev:web": "npx pnpm --filter @website/web run dev",
+    "dev:api": "npx pnpm --filter @website/api run dev",
+    "build:web": "npx pnpm --filter @website/web run build",
+    "build:api": "npx pnpm --filter @website/api run build",
     "format": "prettier --write --parser typescript \"packages/**/*.(t|j)s?(x)\""
   },
   "devDependencies": {

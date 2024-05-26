@@ -6,7 +6,7 @@ import mount from "koa-mount";
 import sslify from "koa-sslify";
 import koaStatic from "koa-static";
 import compress from "koa-compress";
-import { apiApp } from "./api";
+import { apiApp } from "./apis";
 import { isDev, sslCert, resolve } from "./shared";
 
 const app = new Koa();
@@ -29,7 +29,7 @@ app.use(compress(compressConfig));
 app.use(koaStatic(resolve("../../website-web/dist")));
 
 // Start server
-http2.createSecureServer(sslCert(), app.callback()).listen(443);
+http2.createSecureServer(sslCert(), app.callback()).listen(isDev ? 8000 : 443);
 console.log(
-  `http2 server is running${isDev ? ": https://localhost:443" : "."}`
+  `http2 server is running${isDev ? ": https://localhost:8000" : "."}`
 );
