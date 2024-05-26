@@ -3,17 +3,11 @@
   "version": "1.0.0",
   "author": "chentao",
   "scripts": {
-    "serve": "node server/start.js",
-    "format": "prettier --write --parser typescript \"(src|server)/**/*.(t|j)s?(x)\""
-  },
-  "dependencies": {
-    "@koa/cors": "^5.0.0",
-    "koa": "^2.15.3",
-    "koa-compress": "^5.1.1",
-    "koa-mount": "^4.0.0",
-    "koa-router": "^12.0.1",
-    "koa-sslify": "^5.0.1",
-    "koa-static": "^5.0.0"
+    "dev:web": "pnpm --filter @website/web run dev",
+    "dev:api": "pm2 stop 0 && pnpm --filter @website/api run dev",
+    "release:web": "pnpm --filter @website/web run build",
+    "release:api": "pnpm --filter @website/api run build && pm2 restart 0",
+    "format": "prettier --write --parser typescript \"packages/**/*.(t|j)s?(x)\""
   },
   "devDependencies": {
     "prettier": "^2.4.1"
