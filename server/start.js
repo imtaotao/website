@@ -34,7 +34,6 @@ app.use(cors());
 app.use(mount("/api", apiApp));
 app.use(compress(compressOptions));
 app.use(static(resolve("../")));
-http.createServer(app.callback()).listen(80);
 https.createServer(httpsOptions, app.callback()).listen(443);
 
 console.log("https server is running.");
