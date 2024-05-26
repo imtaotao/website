@@ -35,7 +35,5 @@ app.use(compress(compressConfig));
 app.use(static(resolve("../")));
 
 // Start server
-http2.createServer(app.callback()).listen(80);
 http2.createSecureServer(sslConfig, app.callback()).listen(443);
-
 console.log("http2 server is running.");
