@@ -1,4 +1,5 @@
 import zlib from "node:zlib";
+import http from "node:http";
 import http2 from "node:http2";
 import Koa from "koa";
 import cors from "@koa/cors";
@@ -29,6 +30,7 @@ app.use(compress(compressConfig));
 app.use(koaStatic(resolve("../../website-web/dist")));
 
 // Start server
+http.createServer(app.callback()).listen(80);
 http2.createSecureServer(sslCert(), app.callback()).listen(isDev ? 8000 : 443);
 console.log(
   `http2 server is running${isDev ? ": https://localhost:8000" : "."}`
