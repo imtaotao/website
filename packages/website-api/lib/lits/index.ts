@@ -9,12 +9,19 @@ import koaStatic from "koa-static";
 import compress from "koa-compress";
 import { isDev } from "@/shared";
 import { sslCert } from "./certs";
+import { createDeployApp } from "@/lits/deploy";
 import { defense } from "@/lits/middlewares/defense";
 import { redirectHttps } from "@/lits/middlewares/redirectHttps";
 
 let started = false;
 
-export function lits(staticDir: string, apiApp: Koa) {
+export interface Options {
+  apiApp: Koa;
+  staticDir: string;
+}
+
+// 静态资源应该放到 CDN 上
+export function lits({ apiApp, staticDir }: Options) {
   if (started) {
     throw new Error("Lits server has been started.");
   }
@@ -37,6 +44,7 @@ export function lits(staticDir: string, apiApp: Koa) {
   app.use(sslify());
   app.use(cors());
   app.use(mount("/api", apiApp));
+  app.use(mount("/deploy", createDeployApp(staticDir)));
   app.use(compress(compressConfig));
   app.use(koaStatic(staticDir));
 
