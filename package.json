@@ -10,7 +10,8 @@
     "release:web": "tsnd --respawn scripts/release.ts --type=web",
     "release:api": "tsnd --respawn scripts/release.ts --type=api",
     "release:all": "tsnd --respawn scripts/release.ts --type=all",
-    "format": "prettier --write --parser typescript \"packages/**/*.(t|j)s?(x)\""
+    "format": "prettier --write --parser typescript \"packages/**/*.(t|j)s?(x)\"",
+    "prepare": "husky"
   },
   "lint-staged": {
     "*.js": [
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "husky": "^9.0.11",
+    "lint-staged": "^15.2.5",
     "prettier": "^2.4.1",
     "ts-node-dev": "^2.0.0"
   },
