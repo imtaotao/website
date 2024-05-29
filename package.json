@@ -7,9 +7,9 @@
     "dev:api": "npx pnpm --filter @website/api run dev",
     "build:web": "npx pnpm --filter @website/web run build",
     "build:api": "npx pnpm --filter @website/api run build",
-    "release:web": "tsnd --respawn scripts/release.ts --type=web",
-    "release:api": "tsnd --respawn scripts/release.ts --type=api",
-    "release:all": "tsnd --respawn scripts/release.ts --type=all",
+    "release:web": "tsnd scripts/release.ts --type=web",
+    "release:api": "tsnd scripts/release.ts --type=api",
+    "release:all": "tsnd scripts/release.ts --type=all",
     "format": "prettier --write --parser typescript \"packages/**/*.(t|j)s?(x)\"",
     "prepare": "husky"
   },
