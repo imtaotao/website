@@ -1,7 +1,7 @@
 import Koa from "koa";
 import Router from "koa-router";
 
-export function createDeployApp(staticDir: string) {
+export function createDeployApp(_staticDir: string) {
   const router = new Router();
 
   router.get("/web", (ctx) => {
