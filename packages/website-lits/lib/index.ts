@@ -7,21 +7,24 @@ import mount from "koa-mount";
 import sslify from "koa-sslify";
 import koaStatic from "koa-static";
 import compress from "koa-compress";
-import { isDev } from "@/shared";
-import { sslCert } from "./certs";
-import { createDeployApp } from "@/lits/deploy";
-import { defense } from "@/lits/middlewares/defense";
-import { redirectHttps } from "@/lits/middlewares/redirectHttps";
+import { isDev, SSL } from "@website/utils/node";
+import { createDeployApp } from "./deploy";
+import { defense } from "./middlewares/defense";
+import { redirectHttps } from "./middlewares/redirectHttps";
 
 let started = false;
 
 export interface Options {
   apiApp: Koa;
   staticDir: string;
+  ssl: {
+    key: string;
+    cert: string;
+  };
 }
 
 // 静态资源应该放到 CDN 上
-export function lits({ apiApp, staticDir }: Options) {
+export function lits({ ssl, apiApp, staticDir }: Options) {
   if (started) {
     throw new Error("Lits server has been started.");
   }
@@ -50,11 +53,11 @@ export function lits({ apiApp, staticDir }: Options) {
 
   // Start server
   if (isDev) {
-    http2.createSecureServer(sslCert(), app.callback()).listen(8000);
+    http2.createSecureServer(ssl, app.callback()).listen(8000);
     console.log("http2 server is running: https://localhost:8000");
   } else {
     http.createServer(app.callback()).listen(80);
-    http2.createSecureServer(sslCert(), app.callback()).listen(443);
+    http2.createSecureServer(ssl, app.callback()).listen(443);
     console.log("http2 server is running.");
   }
 }

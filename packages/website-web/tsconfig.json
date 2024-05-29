@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "outDir": "./dist",
     "target": "ESNext",
     "jsx": "preserve",
     "lib": ["DOM", "ESNext"],

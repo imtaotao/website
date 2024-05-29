@@ -1,0 +1,29 @@
+{
+  "name": "@website/utils",
+  "author": "chentao",
+  "scripts": {
+    "build": "rimraf ./dist && tsc"
+  },
+  "exports": {
+    "./node": {
+      "require": "./src/node/index.ts",
+      "types": "./src/node/index.ts",
+      "prod": "./dist/node/index.js"
+    },
+    "./web": {
+      "require": "./src/web/index.ts",
+      "types": "./src/web/index.ts",
+      "prod": "./dist/web/index.js"
+    },
+    "./common": {
+      "require": "./src/common/index.ts",
+      "types": "./src/common/index.ts",
+      "prod": "./dist/common/index.js"
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "rimraf": "^5.0.7",
+    "typescript": "^5.4.5"
+  }
+}

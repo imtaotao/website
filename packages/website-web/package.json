@@ -1,6 +1,5 @@
 {
   "name": "@website/web",
-  "version": "1.0.0",
   "author": "chentao",
   "scripts": {
     "dev": "vite --port 2333",
