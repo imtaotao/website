@@ -10,8 +10,9 @@
     "release:web": "tsnd scripts/release.ts --type=web",
     "release:api": "tsnd scripts/release.ts --type=api",
     "release:all": "tsnd scripts/release.ts --type=all",
-    "format": "prettier --write --parser typescript \"packages/**/*.(t|j)s?(x)\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "setup": "corepack enable && pnpm install",
+    "format": "prettier --write --parser typescript \"packages/**/*.(t|j)s?(x)\""
   },
   "lint-staged": {
     "*.js": [
@@ -22,13 +23,11 @@
     ]
   },
   "devDependencies": {
+    "execa": "^9.1.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.5",
     "prettier": "^2.4.1",
     "ts-node-dev": "^2.0.0"
   },
-  "engines": {
-    "node": "^20.6.0",
-    "pnpm": "^9.1.*"
-  }
+  "packageManager": "pnpm@9.1.3"
 }
