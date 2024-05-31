@@ -12,7 +12,15 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": [
+        "lib/*",
+        // In development mode,
+        // need to specify aliases for other application packages.
+        "node_modules/@website/lits/lib/*"
+      ]
+    }
   },
   "exclude": ["dist", "node_modules"]
 }

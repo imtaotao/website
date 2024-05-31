@@ -2,7 +2,7 @@
   "name": "@website/utils",
   "author": "chentao",
   "scripts": {
-    "build": "rimraf ./dist && tsc"
+    "build": "rimraf ./dist && tsc && tsc-alias"
   },
   "exports": {
     "./node": {
@@ -18,11 +18,12 @@
     "./common": {
       "require": "./src/common/index.ts",
       "types": "./src/common/index.ts",
-      "prod": "./dist/common/index.js"
+      "production": "./dist/common/index.js"
     }
   },
   "devDependencies": {
     "@types/node": "^20.12.12",
+    "tsc-alias": "^1.8.10",
     "rimraf": "^5.0.7",
     "typescript": "^5.4.5"
   }
