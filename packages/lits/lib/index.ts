@@ -19,8 +19,8 @@ export interface Options {
   devPort: number;
   staticDir: string;
   ssl: {
-    key: string;
-    cert: string;
+    key?: string | null;
+    cert?: string | null;
   };
 }
 
@@ -35,7 +35,6 @@ const compressConfig = {
   },
 };
 
-// 静态资源应该放到 CDN 上
 export function lits({ ssl, apiApp, devPort, staticDir }: Options) {
   return new Promise<void>((resolve) => {
     if (started) {
@@ -44,23 +43,26 @@ export function lits({ ssl, apiApp, devPort, staticDir }: Options) {
     }
     started = true;
     const app = new Koa();
-    app.use(redirectHttps());
+    if (!isDev) {
+      app.use(redirectHttps());
+      app.use(sslify());
+    }
     app.use(defense());
-    app.use(sslify());
     app.use(cors());
     app.use(mount("/api", apiApp));
     app.use(mount("/deploy", createDeployApp(staticDir)));
     app.use(compress(compressConfig));
     app.use(koaStatic(staticDir));
 
-    // Start server
     if (isDev) {
-      http2.createSecureServer(ssl, app.callback()).listen(devPort, resolve);
+      http.createServer(app.callback()).listen(devPort, resolve);
     } else {
       let i = 0;
       const meter = () => ++i === 2 && resolve();
       http.createServer(app.callback()).listen(80, meter);
-      http2.createSecureServer(ssl, app.callback()).listen(443, meter);
+      http2
+        .createSecureServer(ssl as NonNullable<{}>, app.callback())
+        .listen(443, meter);
     }
   });
 }

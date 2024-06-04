@@ -24,14 +24,14 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0(@types/node@20.12.12)(node-notifier@8.0.2)(typescript@5.4.5)
 
-  packages/website-api:
+  packages/api:
     dependencies:
       '@website/lits':
         specifier: workspace:*
-        version: link:../website-lits
+        version: link:../lits
       '@website/utils':
         specifier: workspace:*
-        version: link:../website-utils
+        version: link:../utils
       koa:
         specifier: ^2.15.3
         version: 2.15.3
@@ -67,14 +67,14 @@ importers:
         specifier: ^5.4.5
         version: 5.4.5
 
-  packages/website-lits:
+  packages/lits:
     dependencies:
       '@koa/cors':
         specifier: ^5.0.0
         version: 5.0.0
       '@website/utils':
         specifier: workspace:*
-        version: link:../website-utils
+        version: link:../utils
       koa:
         specifier: ^2.15.3
         version: 2.15.3
@@ -137,7 +137,7 @@ importers:
         specifier: ^5.4.5
         version: 5.4.5
 
-  packages/website-utils:
+  packages/utils:
     devDependencies:
       '@types/node':
         specifier: ^20.12.12
@@ -152,7 +152,7 @@ importers:
         specifier: ^5.4.5
         version: 5.4.5
 
-  packages/website-web:
+  packages/web:
     dependencies:
       '@rustle/oops':
         specifier: ^0.0.6
@@ -1392,7 +1392,7 @@ packages:
     deprecated: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
 
   inherits@2.0.3:
-    resolution: {integrity: sha1-Yzwsg+PaQqUC9SRmAiSA9CCCYd4=}
+    resolution: {integrity: sha512-x00IRNXNy63jwGkJmzPigoySHbaqpNuzKbBOmzK+g2OdZpQ9w+sxCN+VSB3ja7IAge2OP2qpfxTjeNcyjmW1uw==}
 
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
@@ -1568,7 +1568,7 @@ packages:
     hasBin: true
 
   json-buffer@3.0.1:
-    resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==}
+    resolution: {integrity: sha1-kziAKjDTtmBfvgYT4JQAjKjAWhM=}
 
   json-schema-traverse@0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
@@ -2211,7 +2211,7 @@ packages:
     resolution: {integrity: sha512-vZXmzPrL+EmC4T/4rVlT2jNVMWCi/O4DIiSj3UHg1OE5kCKbk4mfrXc6dZksLgRM/TZlKnousKH9bbTazUWRRw==}
 
   tsscmp@1.0.6:
-    resolution: {integrity: sha512-LxhtAkPDTkVCMQjt2h6eBVY28KCjikZqZfMcC15YBeNjkgUpdCfBu5HoiOTDu86v6smE8yOjyEktJ8hlbANHQA==}
+    resolution: {integrity: sha1-hbmVg6w1iexL/vgltQAKqRHWBes=}
     engines: {node: '>=0.6.x'}
 
   type-check@0.4.0:
