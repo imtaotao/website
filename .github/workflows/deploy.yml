@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - feat/dev
 
 jobs:
   build-and-deploy:
@@ -29,6 +28,11 @@ jobs:
 
       - name: Build web
         run: pnpm run build:web
+
+      - name: Auto generate cname file
+        run: |
+          echo "imtaotao.me" > ./packages/web/dist/CNAME
+          echo "CNAME file created with content: www.imtaotao.me"
 
       - name: Deploy web to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
