@@ -8,7 +8,8 @@ export function App() {
     <div>
       Hi 👋, My name is <a href="https://github.com/imtaotao">Arthur</a>, I am a
       front-end developer who has been working for many years. Welcome to
-      communicate with me. 👏🏻
+      communicate with me. 👏🏻 Follow me on:{" "}
+      <a href="https://github.com/imtaotao">github</a>
     </div>
   );
 }
