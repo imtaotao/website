@@ -37,6 +37,11 @@ jobs:
           echo "imtaotao.me" > ./app/dist/CNAME
           echo "CNAME file created with content: www.imtaotao.me"
 
+      - name: Auto generate wx file
+        run: |
+          echo "637c3f02747e5902d8af99968a7dc43296630950" > ./app/dist/467aa3479feeea161c90dcc396ea3ee4.txt
+          echo "wx file created with content: 637c3f02747e5902d8af99968a7dc43296630950"
+
       - name: Deploy app to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
