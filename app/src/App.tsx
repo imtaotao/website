@@ -1,5 +1,7 @@
-import React from "react";
-import "./App.css";
+import { hello } from "@website-kernel/shared";
+import "#app/App.css";
+
+hello();
 
 export function App() {
   return (

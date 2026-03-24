@@ -1,0 +1,41 @@
+{
+  "exclude": ["**/tsup.config.ts", "scripts"],
+  "compilerOptions": {
+    "module": "NodeNext",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "allowJs": false,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "forceConsistentCasingInFileNames": true,
+    "pretty": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noEmitOnError": true,
+    "skipDefaultLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "strictPropertyInitialization": false,
+    "resolveJsonModule": true,
+
+    "baseUrl": ".",
+    "outDir": "dist",
+    "strict": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "declaration": true,
+    "sourceMap": false,
+    "noUnusedLocals": true,
+    "esModuleInterop": true,
+    "paths": {
+      // externals
+      "@website-kernel/*": ["./packages/kernel-*/src"],
+
+      // app
+      "#app/*": ["./app/src/*"],
+
+      // packages
+      "#shared/*": ["./packages/kernel-shared/src/*"]
+    }
+  }
+}

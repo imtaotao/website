@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -26,16 +26,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build web
-        run: pnpm run build:web
+      - name: Build kernel-shared
+        run: pnpm run build:packages
+
+      - name: Build app
+        run: pnpm run build
 
       - name: Auto generate cname file
         run: |
-          echo "imtaotao.me" > ./packages/web/dist/CNAME
+          echo "imtaotao.me" > ./app/dist/CNAME
           echo "CNAME file created with content: www.imtaotao.me"
 
-      - name: Deploy web to GitHub Pages
+      - name: Deploy app to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./packages/web/dist
+          publish_dir: ./app/dist

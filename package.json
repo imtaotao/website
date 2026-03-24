@@ -1,17 +1,15 @@
 {
   "name": "website",
   "version": "1.0.0",
-  "author": "chentao",
+  "author": "chentao.arthur",
   "scripts": {
-    "dev:web": "pnpm --filter @website/web run dev",
-    "dev:api": "pnpm --filter @website/api run dev",
-    "build:web": "pnpm --filter @website/web run build",
-    "build:api": "pnpm --filter @website/api run build",
-    "release:web": "tsx scripts/release.ts --type=web",
-    "release:api": "tsx scripts/release.ts --type=api",
-    "release:all": "tsx scripts/release.ts --type=all",
     "prepare": "husky",
-    "format": "prettier --write --parser typescript \"packages/**/*.(t|j)s?(x)\""
+    "dev": "pnpm --filter @website/app run dev",
+    "build": "pnpm --filter @website/app run build",
+    "preview": "pnpm --filter @website/app run preview",
+    "dev:packages": "pnpm --parallel --filter @website-kernel/* run dev",
+    "build:packages": "pnpm --parallel --filter @website-kernel/* run build",
+    "format": "prettier --write --parser typescript \"(app|packages)/**/*.(t|j)s?(x)\""
   },
   "lint-staged": {
     "*.js": [
@@ -22,15 +20,20 @@
     ]
   },
   "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/minimist": "^1.2.5",
+    "typescript": "catalog:",
+    "tsx": "^4.11.2",
     "execa": "^9.1.0",
     "husky": "^9.0.11",
-    "lint-staged": "^15.2.5",
     "prettier": "^2.4.1",
-    "tsx": "^4.11.2"
+    "minimist": "^1.2.8",
+    "lint-staged": "^15.2.5",
+    "esbuild-plugin-replace": "^1.4.0"
   },
   "packageManager": "pnpm@10.27.0",
   "engines": {
-    "node": ">=20",
+    "node": ">=22",
     "pnpm": "=10.27.0"
   }
 }
