@@ -9,6 +9,7 @@
     "preview": "pnpm --filter @website/app run preview",
     "dev:packages": "pnpm --parallel --filter @website-kernel/* run dev",
     "build:packages": "pnpm --parallel --filter @website-kernel/* run build",
+    "format:md": "prettier --write --parser markdown \".claude/**/*.(md|mdx)\"",
     "format": "prettier --write --parser typescript \"(app|packages)/**/*.(t|j)s?(x)\""
   },
   "lint-staged": {
