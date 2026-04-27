@@ -34,6 +34,11 @@ version: 0.1.0
 - 空行：逻辑分组之间保留 `1` 个空行，避免连续多空行。
 - 导入顺序：第三方 -> 内部模块 -> 相对路径；同组按字母序。
 - 你可以在执行完部分指令或者编写代码之后，在本项目的根路径使用 `pnpm run format` 格式化代码。
+- export 出去的函数使用 `function` 声明，模块内部的函数则使用箭头函数 `=>`。
+- 包和 app 内部引入其他模块时，可以读取 `tsconfig.json` 文件里面的 `compilerOptions.paths` 属性，使用 `#` 引入。
+- 不要显示的声明函数的返回值类型，而是尽量用自动推导，避免重复声明。
+- 善用 `object`, `map` 来枚举一些数据，而不是写很多 if else 语句。
+- 打印的日志（`console.log`）如果太长，你应该学会分局，并用 `+` 来拼接。
 
 ### 命名
 
@@ -88,13 +93,13 @@ version: 0.1.0
 推荐：
 
 ```ts
-const isEnabled = featureFlags.includes("new-ui");
+const isEnabled = featureFlags.includes('new-ui');
 ```
 
 不推荐：
 
 ```ts
-const enabled = featureFlags.includes("new-ui");
+const enabled = featureFlags.includes('new-ui');
 ```
 
 ### 示例 2：早返回减少嵌套

@@ -1,15 +1,20 @@
-import { hello } from "@website-kernel/shared";
-import "#app/App.css";
+import { BrowserRouter, Route, Routes } from 'react-router';
+import { Theme } from '@radix-ui/themes';
 
-hello();
+import '@radix-ui/themes/styles.css';
+import '#app/App.css';
+
+import { ResumePage } from '#app/pages/ResumePage';
 
 export function App() {
   return (
-    <div>
-      Hi 👋, My name is <a href="https://github.com/imtaotao">Arthur</a>, I am a
-      front-end developer who has been working for many years. Welcome to
-      communicate with me. 👏🏻 Follow me on:{" "}
-      <a href="https://github.com/imtaotao">github</a>
-    </div>
+    <BrowserRouter>
+      <Theme>
+        <Routes>
+          <Route path="/resume" element={<ResumePage />} />
+          <Route path="*" element={null} />
+        </Routes>
+      </Theme>
+    </BrowserRouter>
   );
 }

@@ -49,6 +49,7 @@ version: 0.1.0
 - CSS 方案：`Tailwind CSS`（约定作为全站主要样式方式；落地到配置与依赖后以其为准）。
 - 代码风格：Prettier（根目录 `pnpm format`）
 - Git hooks：Husky + lint-staged（提交时对变更文件做格式化）
+- icon 图标：`@radix-ui/react-icons`（如缺少特定平台图标，则补充到 `app/src/assets/image/`）
 
 ## 常用命令与用途
 
@@ -62,7 +63,6 @@ version: 0.1.0
 - `pnpm build:packages`：并行构建所有 `@website-kernel/*` 包（CI 中会先跑它）
 - `pnpm format`：格式化 `app/` 与 `packages/` 下的 `js/ts/tsx` 代码
 - `pnpm format:md`：格式化 `claude/` 下的 `md/mdx` 文件
-
 
 在单个包内或使用 `--filter`：
 

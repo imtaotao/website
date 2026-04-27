@@ -1,0 +1,212 @@
+schemaVersion: 1
+
+basics:
+  name: 陈涛
+  location: 
+  phone: 15211133566
+  email: dwchentao@163.com
+  links:
+    - label: GitHub
+      url: https://github.com/imtaotao
+    - label: 知乎
+      url: https://www.zhihu.com/people/chen-tao-2-78
+
+summary:
+  - Hi 👋, 我是陈涛，目前在字节跳动工作，参与一些有趣的项目，例如微前端、微组件、前端部署服务以及高效的共享开发模型。现阶段我正在学习一些编译方面的知识，如果你也对这些感兴趣，欢迎关注我，让我们一起创造有趣的作品！
+
+skills:
+  - category: 前端
+    items:
+      - name: 微前端
+        level: 95
+      - name: TypeScript
+        level: 90
+      - name: React
+        level: 85
+      - name: Node.js
+        level: 80
+
+experiences:
+  - company: 湖南成功软件
+    role: 
+    startAt: 2016-08
+    endAt: 2017-10
+    department: 业务开发组
+    highlights:
+      - 业务侧：负责业务功能开发与维护。
+
+  - company: 编程猫
+    department: 硬件开发组
+    role: 
+    startAt: 2017-10
+    endAt: 2018-10
+    highlights:
+      - 业务侧：参与“萌新号”WebApp：Blockly 驱动硬件小车。
+      - 业务侧：负责遥控、积木模块等核心功能。
+      - 技术侧：自研拖拽/滑动条组件，移动端与 PC 端高度可定制。
+      - 技术侧：探索与客户端数据通信方案（PoC）。
+      - 项目链接：https://github.com/imtaotao/input-range
+      - 项目链接：https://github.com/imtaotao/Swop
+
+  - company: 珍爱网
+    role: 
+    startAt: 2019-03
+    endAt: 2020-05
+    department: 技术平台部
+    highlights:
+      - 业务侧：负责优恋空间小程序社交/互动/推荐等模块。
+      - 业务侧：支持活动 H5 与小程序交付。
+      - 技术侧：实践小程序状态管理库，支撑约 92 个组件/页面的模块化状态。
+      - 技术侧：自研弹幕库，兼顾轻量接入与性能。
+      - 项目链接：https://github.com/imtaotao/mp-store
+      - 项目链接：https://github.com/imtaotao/danmuku
+
+  - company: 腾讯
+    department: 微视增长组
+    role: 
+    startAt: 2020-06
+    endAt: 2020-07
+    highlights:
+      - 业务侧：参与“疾风”搭建平台开发，支持运营快速生成推广页。
+
+  - company: 字节跳动
+    department: 今日头条
+    role: 
+    startAt: 2020-07
+    endAt: 2022-07
+    highlights:
+      - 业务侧：负责头条号业务（创作学院、互动贴纸等）。
+      - 业务侧：设计并实现远程组件方案，提升活动页开发与协作效率。
+      - 技术侧：参与开源微前端框架 Garfish 设计/开发/维护，服务多部门 1000+ 项目。
+      - 技术侧：开发 Garfish 调试脚手架，支持代理调试、模板创建、性能/错误数据采集（待开源）。
+      - 项目链接：https://github.com/modern-js-dev/garfish
+
+  - company: 字节跳动
+    department: aPaaS
+    role: 
+    startAt: 2022-07
+    endAt: 2024-04
+    highlights:
+      - 业务侧：推进 aPaaS 对接抖音电商，支持业务渐进式接入低代码。
+      - 业务侧：开发并保障共享组件库上线。
+      - 技术侧：负责混合应用容器与 SDK，支持第三方接入低代码页面/组件。
+      - 技术侧：实现自定义域名/路径、跨系统登录等能力。
+
+  - company: 字节跳动
+    department: TikTok Shop
+    role: 
+    startAt: 2024-04
+    endAt: present
+    highlights:
+      - 技术侧：负责电商前端部署服务的建设，page-server、ssr-server、性能优化。
+      - 技术侧：工程基建（CLI、工程模板）。
+      - 技术侧：支持合规需求与机房迁移等专项。
+
+openSourceProjects:
+  - name: danmu
+    description: 轻量弹幕库
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/danmu
+
+  - name: aidly
+    description: 实用的 JS 工具库
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/aidly
+
+  - name: hooks-plugin
+    description: 微内核模式底层库
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/hooks-plugin
+
+  - name: fetch-npm-package
+    description: 在浏览器中下载并解压 npm 包
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/fetch-npm-package
+
+  - name: conditional-export
+    description: Node.js 条件导出规范实现
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/conditional-export
+
+  - name: super-fast-md5
+    description: 高性能 MD5 实现
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/super-fast-md5
+
+  - name: garfish
+    description: 字节跳动微前端框架
+    links:
+      - label: GitHub
+        url: https://github.com/bytedance/garfish
+
+  - name: oops
+    description: 类 React Hooks 库
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/oops
+
+  - name: mp-store
+    description: 小程序状态管理库（实战）
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/mp-store
+
+  - name: liberty
+    description: 浏览器端 CJS runtime
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/liberty
+
+  - name: wobbly
+    description: 轻量动画库（副作用隔离验证）
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/wobbly
+
+  - name: icon-font
+    description: Icon Font 生成工具
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/icon-font
+
+  - name: rustle-music
+    description: Grass + Hearken 的 Electron 音乐应用
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/rustle-music
+
+  - name: hearken
+    description: WebAudio 封装的音频库
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/hearken
+
+  - name: grass
+    description: MVVM 框架实验
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/Grass
+
+  - name: promise 实现
+    description: Promise 实现（异步/Event Loop）
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/promise
+
+  - name: input-range
+    description: 高度可定制的滑动条组件
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/input-range
+
+  - name: matrix
+    description: CSS 矩阵变换工具
+    links:
+      - label: GitHub
+        url: https://github.com/imtaotao/matrix

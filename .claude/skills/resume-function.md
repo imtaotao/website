@@ -23,12 +23,13 @@ version: 0.1.0
 
 ## 内容结构
 
-- 区块范围：基本信息、简介、技能、工作经历。
+- 区块范围：基本信息、简介、技能、开源项目、工作经历。
 - 日期格式：统一使用 `YYYY-MM`（示例：`2023-04`）。
 - 字段约定（建议）：
-  - 基本信息：`name`、`title`、`location`（可选）、`email`（可选）、`links[]`（可选，社交平台链接，含 `label`/`url`，例如 GitHub/知乎）。
+  - 基本信息：`name`、`title`、`location`（可选）、`phone`（可选）、`email`（可选）、`links[]`（可选，社交平台链接，含 `label`/`url`，例如 GitHub/知乎）。
   - 简介：`summary`（1-3 段短文或要点）。
   - 技能：`skills[]`（按类别分组：`category` + `items[]`；每个 item 包含 `name` + `level(1-100)`）。
+  - 开源项目：`openSourceProjects[]`（每项包含 `name` + `description?` + `links?[]`；`links` 与 `basics.links` 同结构）。
   - 工作经历：`experiences[]`（按时间倒序），每段包含 `company`、`role`、`startAt`、`endAt`（在职可用 `present` 或空值）、`highlights[]`（每条为具体做过的事情/产出）。
 
 ## 展示与交互
@@ -53,6 +54,7 @@ version: 0.1.0
   - `basics`: object（基本信息）
   - `summary`: string[]（简介要点，按顺序展示）
   - `skills`: { category: string; items: { name: string; level: number }[] }[]（技能分组；`level` 取值 `1-100`）
+  - `openSourceProjects`: { name: string; description?: string; links?: { label: string; url: string }[] }[]（开源项目）
   - `experiences`: object[]（工作经历，按时间倒序；若不保证顺序则渲染侧排序）
   - `experienceIncludes?`: string[]（可选：拆分模式下，按顺序列出经历 YAML 的相对路径）
 
@@ -60,16 +62,21 @@ version: 0.1.0
 
   - `name`: string
   - `title`: string
+  - `avatar?`: string（可选：头像图片 URL/路径）
   - `location?`: string
+  - `phone?`: string
   - `email?`: string
   - `links?`: { label: string; url: string }[]（社交平台链接，例如 GitHub/知乎）
 
 - `experiences[]` 字段
   - `company`: string
+  - `department?`: string（可选：部门/团队，用于在公司内分组展示）
   - `role`: string
   - `startAt`: string（日期，格式 `YYYY-MM`）
   - `endAt`: string（日期，格式 `YYYY-MM`）| `present`（在职）
-  - `highlights`: string[]（每条为“做过的事情/产出”，建议一句话一个要点）
+  - `businessHighlights?`: string[]（可选：业务侧要点，每条一句话）
+  - `techHighlights?`: string[]（可选：技术侧要点，每条一句话）
+  - `highlights`: string[]（其它要点/链接等；也兼容旧格式：在该数组里用 `业务侧：...` / `技术侧：...` 前缀区分）
 
 ### YAML 示例
 
@@ -78,7 +85,9 @@ schemaVersion: 1
 basics:
   name: 张三
   title: 前端工程师
+  avatar: /assets/avatar.jpg
   location: 北京
+  phone: 13800000000
   email: zhangsan@example.com
   links:
     - label: GitHub
@@ -105,8 +114,15 @@ skills:
         level: 75
       - name: Prettier
         level: 75
+openSourceProjects:
+  - name: Garfish
+    description: 微前端框架，聚焦运行时隔离与工程化能力。
+    links:
+      - label: GitHub
+        url: https://github.com/modern-js-dev/garfish
 experiences:
   - company: 字节跳动
+    department: XXX 团队
     role: 前端工程师
     startAt: 2022-07
     endAt: present

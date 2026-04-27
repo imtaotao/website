@@ -1,15 +1,15 @@
-import path from "node:path";
-import { defineConfig } from "vitest/config";
+import path from 'node:path';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   define: {
-    __DEV__: "true",
-    __TEST__: "true",
+    __DEV__: 'true',
+    __TEST__: 'true',
     __VERSION__: `'unknown'`,
   },
   resolve: {
     alias: {
-      "#shared": path.resolve(__dirname, "./src"),
+      '#shared': path.resolve(__dirname, './src'),
     },
   },
 });
