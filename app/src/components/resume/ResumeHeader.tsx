@@ -7,37 +7,12 @@ import {
   Link2Icon,
   MobileIcon,
 } from '@radix-ui/react-icons';
-import defaultAvatarUrl from '#app/assets/image/avatar.jpg';
 import zhihuIconUrl from '#app/assets/image/zhihu.svg';
+import defaultAvatarUrl from '#app/assets/image/avatar.jpg';
+import { copyToClipboard } from '#app/lib/clipboard';
 
 const iconClassName = 'h-3.5 w-3.5 text-zinc-500';
 const socialIconClassName = 'h-4 w-4 text-zinc-500';
-
-const copyToClipboard = async (text: string) => {
-  if (!text) return false;
-
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    // fallback
-    try {
-      const el = document.createElement('textarea');
-      el.value = text;
-      el.style.position = 'fixed';
-      el.style.left = '-9999px';
-      el.style.top = '0';
-      document.body.appendChild(el);
-      el.focus();
-      el.select();
-      const ok = document.execCommand('copy');
-      document.body.removeChild(el);
-      return ok;
-    } catch {
-      return false;
-    }
-  }
-};
 
 const ContactItem = (props: {
   icon: ReactNode;
@@ -55,17 +30,17 @@ const ContactItem = (props: {
         if (e.key === 'Enter' || e.key === ' ') props.onCopy();
       }}
       className={
-        'inline-flex select-text items-center gap-2 rounded-md border px-2 py-1 text-xs font-medium ' +
+        'inline-flex select-text items-center gap-2 rounded-md border border-transparent px-3.5 py-2 text-xs font-medium ' +
         'cursor-copy transition-colors ' +
         (props.copied
-          ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-          : 'border-zinc-200/70 bg-zinc-50 text-zinc-600 hover:border-zinc-300 hover:bg-zinc-100')
+          ? 'border-emerald-200 bg-emerald-50/60 text-emerald-700'
+          : 'bg-zinc-50 text-zinc-600 hover:bg-zinc-100')
       }
     >
       {props.icon}
       <span className="leading-none">{props.text}</span>
       {props.copied ? (
-        <span className="ml-1 text-[10px] font-semibold tracking-wide">
+        <span className="ml-1 whitespace-nowrap text-[10px] font-semibold tracking-wide">
           已复制
         </span>
       ) : null}
@@ -137,7 +112,7 @@ export function ResumeHeader(props: { basics: ResumeBasics }) {
       <div className="pr-28 md:pr-32">
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
           <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
-            {basics.name}
+            <a href="/">{basics.name}</a>
           </h1>
           {basics.title ? (
             <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-medium text-zinc-700">

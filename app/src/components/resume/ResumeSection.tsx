@@ -8,7 +8,7 @@ export function ResumeSection(props: {
   const decorated = props.decorated ?? true;
 
   return (
-    <section className="mb-10 md:mb-12">
+    <section data-export-keep-together="true" className="mb-10 md:mb-12">
       {decorated ? (
         <div className="mb-4 flex items-center gap-3">
           <div className="h-px flex-1 bg-zinc-300/60" />

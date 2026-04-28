@@ -33,7 +33,9 @@
     "dist"
   ],
   "dependencies": {
-    "aidly": "catalog:"
+    "aidly": "catalog:",
+    "jspdf": "^4.2.1",
+    "html-to-image": "^1.11.13"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "catalog:",

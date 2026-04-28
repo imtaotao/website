@@ -2,7 +2,6 @@ schemaVersion: 1
 
 basics:
   name: 陈涛
-  location: 
   phone: 15211133566
   email: dwchentao@163.com
   links:
@@ -59,7 +58,7 @@ experiences:
       - 技术侧：实践小程序状态管理库，支撑约 92 个组件/页面的模块化状态。
       - 技术侧：自研弹幕库，兼顾轻量接入与性能。
       - 项目链接：https://github.com/imtaotao/mp-store
-      - 项目链接：https://github.com/imtaotao/danmuku
+      - 项目链接：https://imtaotao.github.io/danmu/document/en/
 
   - company: 腾讯
     department: 微视增长组
@@ -101,6 +100,9 @@ experiences:
       - 技术侧：负责电商前端部署服务的建设，page-server、ssr-server、性能优化。
       - 技术侧：工程基建（CLI、工程模板）。
       - 技术侧：支持合规需求与机房迁移等专项。
+
+openSourceProjectsIntro:
+  - 以下是我维护的开源项目, 如果有你感兴趣的部分, 还原讨论 👏🏻
 
 openSourceProjects:
   - name: danmu
@@ -157,12 +159,6 @@ openSourceProjects:
       - label: GitHub
         url: https://github.com/imtaotao/mp-store
 
-  - name: liberty
-    description: 浏览器端 CJS runtime
-    links:
-      - label: GitHub
-        url: https://github.com/imtaotao/liberty
-
   - name: wobbly
     description: 轻量动画库（副作用隔离验证）
     links:
@@ -181,29 +177,23 @@ openSourceProjects:
       - label: GitHub
         url: https://github.com/imtaotao/rustle-music
 
-  - name: hearken
-    description: WebAudio 封装的音频库
-    links:
-      - label: GitHub
-        url: https://github.com/imtaotao/hearken
-
   - name: grass
     description: MVVM 框架实验
     links:
       - label: GitHub
         url: https://github.com/imtaotao/Grass
 
-  - name: promise 实现
+  - name: promise
     description: Promise 实现（异步/Event Loop）
     links:
       - label: GitHub
         url: https://github.com/imtaotao/promise
 
-  - name: input-range
-    description: 高度可定制的滑动条组件
+  - name: virtual-es-module
+    description: ESM polyfill，支持动态导入、条件导出等特性
     links:
       - label: GitHub
-        url: https://github.com/imtaotao/input-range
+        url: https://github.com/imtaotao/virtual-es-module
 
   - name: matrix
     description: CSS 矩阵变换工具

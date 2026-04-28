@@ -85,7 +85,6 @@ schemaVersion: 1
 basics:
   name: 张三
   title: 前端工程师
-  avatar: /assets/avatar.jpg
   location: 北京
   phone: 13800000000
   email: zhangsan@example.com

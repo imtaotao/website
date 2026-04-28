@@ -77,12 +77,6 @@ importers:
       aidly:
         specifier: 'catalog:'
         version: 1.37.0
-      html-to-image:
-        specifier: ^1.11.13
-        version: 1.11.13
-      jspdf:
-        specifier: ^4.2.1
-        version: 4.2.1
       react:
         specifier: ^19.2.5
         version: 19.2.5
@@ -138,6 +132,12 @@ importers:
       aidly:
         specifier: 'catalog:'
         version: 1.37.0
+      html-to-image:
+        specifier: ^1.11.13
+        version: 1.11.13
+      jspdf:
+        specifier: ^4.2.1
+        version: 4.2.1
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 'catalog:'

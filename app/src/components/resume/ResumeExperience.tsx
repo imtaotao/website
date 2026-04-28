@@ -2,6 +2,11 @@ import { useCallback, useRef, useState } from 'react';
 import { type ResumeExperience } from '@website-kernel/shared';
 import { CodeIcon, HomeIcon, RocketIcon } from '@radix-ui/react-icons';
 
+import bytedanceIconUrl from '#app/assets/image/bytedance.svg';
+import codemonIconUrl from '#app/assets/image/codemon.svg';
+import zhenaiIconUrl from '#app/assets/image/zhenai.svg';
+import { copyToClipboard } from '#app/lib/clipboard';
+
 const formatRange = (startAt: string, endAt: string): string => {
   const end = endAt === 'present' ? '至今' : endAt;
   return `${startAt} — ${end}`;
@@ -23,30 +28,6 @@ const maxEndDate = (a: string, b: string) => {
   return a.localeCompare(b) >= 0 ? a : b;
 };
 
-const copyToClipboard = async (text: string) => {
-  if (!text) return false;
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    try {
-      const el = document.createElement('textarea');
-      el.value = text;
-      el.style.position = 'fixed';
-      el.style.left = '-9999px';
-      el.style.top = '0';
-      document.body.appendChild(el);
-      el.focus();
-      el.select();
-      const ok = document.execCommand('copy');
-      document.body.removeChild(el);
-      return ok;
-    } catch {
-      return false;
-    }
-  }
-};
-
 type HighlightKind = 'business' | 'tech' | 'other';
 
 type CompanyLogoSpec = {
@@ -54,13 +35,14 @@ type CompanyLogoSpec = {
   className: string;
   render?: (company: string) => React.ReactNode;
   label?: string;
+  iconSrc?: string;
 };
 
 const COMPANY_LOGO_SPEC: Array<CompanyLogoSpec> = [
   {
     match: (c) => c.includes('字节'),
-    label: 'B',
-    className: 'bg-[#49a6ed] text-white',
+    iconSrc: bytedanceIconUrl,
+    className: 'bg-white',
   },
   {
     match: (c) => c.includes('腾讯'),
@@ -69,13 +51,13 @@ const COMPANY_LOGO_SPEC: Array<CompanyLogoSpec> = [
   },
   {
     match: (c) => c.includes('珍爱'),
-    label: 'Z',
-    className: 'bg-rose-500 text-white',
+    iconSrc: zhenaiIconUrl,
+    className: 'bg-white',
   },
   {
     match: (c) => c.includes('编程猫'),
-    label: 'C',
-    className: 'bg-amber-500 text-white',
+    iconSrc: codemonIconUrl,
+    className: 'bg-white',
   },
   {
     match: (c) => c.includes('湖南'),
@@ -96,13 +78,19 @@ const companyInitial = (company: string) => {
 const CompanyLogo = (props: { company: string }) => {
   const name = props.company;
   const base =
-    'inline-flex h-4 w-4 items-center justify-center rounded-[4px] text-[10px] font-bold leading-none';
+    'inline-flex h-4 w-4 items-center justify-center overflow-hidden rounded-[4px] text-[10px] font-bold leading-none';
 
   const spec = COMPANY_LOGO_SPEC.find((s) => s.match(name));
   if (spec) {
     return (
       <span aria-hidden className={base + ' ' + spec.className} title={name}>
-        {spec.render ? spec.render(name) : spec.label ?? companyInitial(name)}
+        {spec.iconSrc ? (
+          <img alt="" aria-hidden src={spec.iconSrc} className="h-4 w-4" />
+        ) : spec.render ? (
+          spec.render(name)
+        ) : (
+          spec.label ?? companyInitial(name)
+        )}
       </span>
     );
   }
@@ -234,18 +222,15 @@ export function ResumeExperienceList(props: {
 
   return (
     <div className="space-y-10">
-      {companies.map((c) => (
-        <article
-          key={c.company}
-          className="overflow-hidden rounded-[3px] border border-zinc-200/70 bg-zinc-50/60 px-4 py-3"
-        >
-          <div className="inline-flex items-center gap-2 text-base font-semibold tracking-tight text-zinc-900">
-            <CompanyLogo company={c.company} />
-            <span>{c.company}</span>
-          </div>
+      {companies.map((c) =>
+        (() => {
+          const companyKey = c.company;
+          const copied = copiedKey === companyKey;
 
-          <div className="mt-3 space-y-6">
-            {c.departments.map((d) => {
+          const companyBlockText = [
+            c.company,
+            '',
+            ...c.departments.flatMap((d) => {
               const depStartAt = d.items.reduce(
                 (acc, cur) => minYearMonth(acc, cur.startAt),
                 d.items[0]?.startAt ?? '',
@@ -257,129 +242,150 @@ export function ResumeExperienceList(props: {
               const depRangeText =
                 depStartAt && depEndAt ? formatRange(depStartAt, depEndAt) : '';
 
-              const depKey = `${c.company}:${
-                d.department ?? '__default'
-              }:${depRangeText}`;
-              const copied = copiedKey === depKey;
+              const lines: Array<string> = [];
+              const header = `${d.department ? d.department : ''}${
+                depRangeText ? ` (${depRangeText})` : ''
+              }`.trim();
+              if (header) lines.push(header);
 
-              const depBlockText = [
-                `${c.company}${d.department ? ` / ${d.department}` : ''}`,
-                depRangeText,
-                '',
-                ...d.items.flatMap((e) => {
-                  const lines: Array<string> = [];
-                  if (e.role) lines.push(e.role);
-                  const hl = collectHighlights(e).map((x) => `- ${x.text}`);
-                  lines.push(...hl);
-                  lines.push('');
-                  return lines;
-                }),
-              ]
-                .join('\n')
-                .trim();
+              for (const e of d.items) {
+                if (e.role) lines.push(e.role);
+                const hl = collectHighlights(e).map((x) => `- ${x.text}`);
+                lines.push(...hl);
+                lines.push('');
+              }
 
-              return (
-                <section
-                  key={`${c.company}:${d.department ?? '__default'}`}
-                  role="button"
-                  tabIndex={0}
-                  title="点击复制"
-                  onClick={() => onCopy(depKey, depBlockText)}
-                  onKeyDown={(ev) => {
-                    if (ev.key === 'Enter' || ev.key === ' ') {
-                      onCopy(depKey, depBlockText);
-                    }
-                  }}
-                  className={
-                    'cursor-copy rounded-md px-1 py-0.5 transition-colors ' +
-                    (copied
-                      ? 'bg-emerald-50/60 outline outline-emerald-200'
-                      : 'hover:bg-white/60')
-                  }
-                >
-                  {d.department ? (
-                    <div className="grid w-full min-w-0 grid-cols-[minmax(0,1fr)_140px] items-baseline gap-x-3 text-sm font-semibold text-zinc-700 sm:grid-cols-[minmax(0,1fr)_156px] sm:gap-x-4">
-                      <span className="min-w-0">{d.department}</span>
-                      <span className="min-w-0 text-right font-mono text-[10px] font-medium tracking-[0.04em] text-zinc-400 sm:text-xs sm:tracking-[0.16em]">
-                        {depRangeText}
-                        {copied ? (
-                          <span className="ml-1 font-sans text-[10px] font-semibold text-emerald-700">
-                            <span className="sm:hidden">✓</span>
-                            <span className="hidden sm:inline">已复制</span>
+              if (lines.length && lines[lines.length - 1] === '') lines.pop();
+              return lines.length ? [...lines, ''] : [];
+            }),
+          ]
+            .join('\n')
+            .trim();
+
+          return (
+            <article
+              key={c.company}
+              data-export-keep-together="strict"
+              role="button"
+              tabIndex={0}
+              title="点击复制"
+              onClick={() => onCopy(companyKey, companyBlockText)}
+              onKeyDown={(ev) => {
+                if (ev.key === 'Enter' || ev.key === ' ') {
+                  onCopy(companyKey, companyBlockText);
+                }
+              }}
+              className={
+                'cursor-copy overflow-hidden rounded-[3px] border px-4 py-4 transition-colors ' +
+                (copied
+                  ? 'border-emerald-200 bg-emerald-50/40'
+                  : 'border-zinc-200/70 bg-zinc-50/60 hover:bg-white/60')
+              }
+            >
+              <div className="inline-flex items-center gap-2 text-base font-semibold tracking-tight text-zinc-900">
+                <CompanyLogo company={c.company} />
+                <span>{c.company}</span>
+                {copied ? (
+                  <span className="ml-1 whitespace-nowrap font-sans text-[10px] font-semibold text-emerald-700">
+                    <span className="sm:hidden">✓</span>
+                    <span className="hidden sm:inline">已复制</span>
+                  </span>
+                ) : null}
+              </div>
+
+              <div className="mt-3 space-y-6">
+                {c.departments.map((d) => {
+                  const depStartAt = d.items.reduce(
+                    (acc, cur) => minYearMonth(acc, cur.startAt),
+                    d.items[0]?.startAt ?? '',
+                  );
+                  const depEndAt = d.items.reduce(
+                    (acc, cur) => maxEndDate(acc, cur.endAt),
+                    d.items[0]?.endAt ?? '',
+                  );
+                  const depRangeText =
+                    depStartAt && depEndAt
+                      ? formatRange(depStartAt, depEndAt)
+                      : '';
+
+                  return (
+                    <section
+                      key={`${c.company}:${d.department ?? '__default'}`}
+                      data-export-keep-together="strict"
+                      className="rounded-md px-3 py-2"
+                    >
+                      {d.department ? (
+                        <div className="grid w-full min-w-0 grid-cols-[minmax(0,1fr)_140px] items-baseline gap-x-3 text-sm font-semibold text-zinc-700 sm:grid-cols-[minmax(0,1fr)_156px] sm:gap-x-4">
+                          <span className="min-w-0">{d.department}</span>
+                          <span className="min-w-0 text-right font-mono text-[10px] font-medium tracking-[0.04em] text-zinc-400 sm:text-xs sm:tracking-[0.16em]">
+                            {depRangeText}
                           </span>
-                        ) : null}
-                      </span>
-                    </div>
-                  ) : depRangeText ? (
-                    <div className="grid w-full min-w-0 grid-cols-[minmax(0,1fr)_140px] items-baseline gap-x-3 sm:grid-cols-[minmax(0,1fr)_156px] sm:gap-x-4">
-                      <span />
-                      <span className="min-w-0 text-right font-mono text-[10px] font-medium tracking-[0.04em] text-zinc-400 sm:text-xs sm:tracking-[0.16em]">
-                        {depRangeText}
-                        {copied ? (
-                          <span className="ml-1 font-sans text-[10px] font-semibold text-emerald-700">
-                            <span className="sm:hidden">✓</span>
-                            <span className="hidden sm:inline">已复制</span>
-                          </span>
-                        ) : null}
-                      </span>
-                    </div>
-                  ) : null}
-
-                  <div
-                    className={
-                      d.department
-                        ? 'mt-3 space-y-6 md:mt-2 md:space-y-5'
-                        : 'space-y-6 md:space-y-5'
-                    }
-                  >
-                    {d.items.map((e, idx) => {
-                      const items = collectHighlights(e);
-
-                      return (
-                        <div
-                          key={`${idx}:${e.company}:${e.department ?? ''}:${
-                            e.role
-                          }:${e.startAt}:${e.endAt}`}
-                          data-export-keep-together="true"
-                        >
-                          {e.role ? (
-                            <div className="text-sm font-semibold text-zinc-900">
-                              {e.role}
-                            </div>
-                          ) : null}
-
-                          {items.length ? (
-                            <ul className="resume-work-font mt-3 space-y-2 text-[13px] font-medium leading-6 text-zinc-800 md:mt-2 md:space-y-1.5 md:text-[14px] md:leading-5">
-                              {items.map((it, i) => {
-                                const textClassName = 'text-zinc-800';
-
-                                return (
-                                  <li
-                                    key={`${idx}:${i}:${it.kind}:${it.text}`}
-                                    data-export-keep-together="true"
-                                    className={
-                                      'flex gap-3 md:gap-2 ' + textClassName
-                                    }
-                                  >
-                                    <HighlightKindIcon kind={it.kind} />
-                                    <span className="flex-1 select-text">
-                                      {renderHighlightText(it.text)}
-                                    </span>
-                                  </li>
-                                );
-                              })}
-                            </ul>
-                          ) : null}
                         </div>
-                      );
-                    })}
-                  </div>
-                </section>
-              );
-            })}
-          </div>
-        </article>
-      ))}
+                      ) : depRangeText ? (
+                        <div className="grid w-full min-w-0 grid-cols-[minmax(0,1fr)_140px] items-baseline gap-x-3 sm:grid-cols-[minmax(0,1fr)_156px] sm:gap-x-4">
+                          <span />
+                          <span className="min-w-0 text-right font-mono text-[10px] font-medium tracking-[0.04em] text-zinc-400 sm:text-xs sm:tracking-[0.16em]">
+                            {depRangeText}
+                          </span>
+                        </div>
+                      ) : null}
+
+                      <div
+                        className={
+                          d.department
+                            ? 'mt-3 space-y-6 md:mt-2 md:space-y-5'
+                            : 'space-y-6 md:space-y-5'
+                        }
+                      >
+                        {d.items.map((e, idx) => {
+                          const items = collectHighlights(e);
+
+                          return (
+                            <div
+                              key={`${idx}:${e.company}:${e.department ?? ''}:${
+                                e.role
+                              }:${e.startAt}:${e.endAt}`}
+                              data-export-keep-together="strict"
+                            >
+                              {e.role ? (
+                                <div className="text-sm font-semibold text-zinc-900">
+                                  {e.role}
+                                </div>
+                              ) : null}
+
+                              {items.length ? (
+                                <ul className="resume-work-font mt-3 space-y-2 text-[13px] font-medium leading-6 text-zinc-800 md:mt-2 md:space-y-1.5 md:text-[14px] md:leading-5">
+                                  {items.map((it, i) => {
+                                    const textClassName = 'text-zinc-800';
+
+                                    return (
+                                      <li
+                                        key={`${idx}:${i}:${it.kind}:${it.text}`}
+                                        className={
+                                          'flex gap-3 md:gap-2 ' + textClassName
+                                        }
+                                      >
+                                        <HighlightKindIcon kind={it.kind} />
+                                        <span className="flex-1 select-text">
+                                          {renderHighlightText(it.text)}
+                                        </span>
+                                      </li>
+                                    );
+                                  })}
+                                </ul>
+                              ) : null}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </section>
+                  );
+                })}
+              </div>
+            </article>
+          );
+        })(),
+      )}
     </div>
   );
 }
