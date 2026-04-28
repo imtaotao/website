@@ -1,5 +1,5 @@
-export { normalizeResumeModel } from '#shared/resume';
-export { exportElementToPdf } from '#shared/exportPdf';
+export { exportElementToPdf } from '#shared/resumeExport';
+export { normalizeResumeModel } from '#shared/resumeParser';
 export type {
   ResumeBasics,
   ResumeExperience,
@@ -9,4 +9,4 @@ export type {
   ResumeSchemaVersion,
   ResumeSkillGroup,
   ResumeSkillItem,
-} from '#shared/resume';
+} from '#shared/resumeParser';
