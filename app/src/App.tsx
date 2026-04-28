@@ -8,8 +8,11 @@ import { HomePage } from '#app/pages/HomePage';
 import { ResumePage } from '#app/pages/ResumePage';
 
 export function App() {
+  // GitHub Pages / 子路径部署时，确保路由与资源路径一致。
+  // 注意：此处避免使用 import.meta（tsconfig NodeNext + CJS 下会报错）。
+  const basename = (window.__APP_BASE__ || '/').replace(/\/$/, '');
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename || undefined}>
       <Theme>
         <Routes>
           <Route path="/" element={<HomePage />} />

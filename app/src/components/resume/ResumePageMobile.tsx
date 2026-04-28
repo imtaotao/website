@@ -9,7 +9,7 @@ import { ResumeSummary } from '#app/components/resume/ResumeSummary';
 import { ResumeSkills } from '#app/components/resume/ResumeSkills';
 import { ResumeExperienceList } from '#app/components/resume/ResumeExperience';
 import { ResumeOpenSourceProjects } from '#app/components/resume/ResumeOpenSourceProjects';
-import { exportElementToJpg, exportElementToPdf } from '#app/lib/export';
+import { exportElementToPdf } from '#app/lib/export';
 
 export function ResumePageMobile(props: { model: ResumeModel }) {
   const { model } = props;
@@ -22,11 +22,14 @@ export function ResumePageMobile(props: { model: ResumeModel }) {
           <ResumeExportBar
             onExportPdf={async () => {
               if (!exportRef.current) return;
-              await exportElementToPdf(exportRef.current);
-            }}
-            onExportJpg={async () => {
-              if (!exportRef.current) return;
-              await exportElementToJpg(exportRef.current);
+              try {
+                await exportElementToPdf(exportRef.current);
+              } catch (err) {
+                console.error('[export] export pdf failed', err);
+                window.alert(
+                  'PDF 导出失败，请稍后重试；如果仍失败，可尝试切换到电脑端导出。',
+                );
+              }
             }}
           />
         </div>

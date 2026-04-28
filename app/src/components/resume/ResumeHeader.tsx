@@ -148,6 +148,23 @@ export function ResumeHeader(props: { basics: ResumeBasics }) {
 
         {hasLinks || hasContacts ? (
           <div className="mt-5 space-y-2">
+            {hasLinks ? (
+              <nav className="flex flex-wrap gap-x-5 gap-y-2 text-xs font-medium">
+                {links.map((l) => (
+                  <a
+                    key={`${l.label}:${l.url}`}
+                    href={l.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-950"
+                  >
+                    {labelIcon(l.label)}
+                    <span>{l.label}</span>
+                  </a>
+                ))}
+              </nav>
+            ) : null}
+
             {hasContacts ? (
               <div className="flex flex-wrap items-center gap-2">
                 {basics.phone ? (
@@ -175,23 +192,6 @@ export function ResumeHeader(props: { basics: ResumeBasics }) {
                   />
                 ) : null}
               </div>
-            ) : null}
-
-            {hasLinks ? (
-              <nav className="flex flex-wrap gap-x-5 gap-y-2 text-xs font-medium">
-                {links.map((l) => (
-                  <a
-                    key={`${l.label}:${l.url}`}
-                    href={l.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-950"
-                  >
-                    {labelIcon(l.label)}
-                    <span>{l.label}</span>
-                  </a>
-                ))}
-              </nav>
             ) : null}
           </div>
         ) : null}

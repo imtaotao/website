@@ -45,6 +45,20 @@
     sans-serif;
 }
 
+/* 移动端优先使用系统字体：避免加载体积很大的自定义字体资源 */
+@media (max-width: 767px) {
+  .resume-root {
+    font-family: system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto,
+      "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+  }
+
+  .resume-work-font {
+    font-family: system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto,
+      "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+    font-weight: 400;
+  }
+}
+
 .resume-work-font {
   font-family: "FZLanTingWork", "FZLanTing", Inter, system-ui, Avenir,
     Helvetica, Arial, sans-serif;

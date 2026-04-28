@@ -1,7 +1,6 @@
 import { jsPDF } from 'jspdf';
 import { toPng } from 'html-to-image';
 
-const EXPORT_PADDING_CSS_PX = 24;
 const PDF_MARGIN_MM = 10;
 
 // 经验值：部分浏览器/设备的 canvas 单边上限接近 16384px。
@@ -11,11 +10,20 @@ const MAX_CANVAS_SIDE_PX = 16384;
 const PDF_IMAGE_FORMAT = 'JPEG' as const;
 const PDF_JPEG_QUALITY = 0.82;
 
-const downloadDataUrl = (dataUrl: string, filename: string) => {
-  const a = document.createElement('a');
-  a.href = dataUrl;
-  a.download = filename;
-  a.click();
+// 需求：导出的 PDF 文件体积控制在 5MB 以内。
+const PDF_MAX_BYTES = 5 * 1024 * 1024;
+
+const downloadBlob = (blob: Blob, filename: string) => {
+  const url = URL.createObjectURL(blob);
+  try {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+  } finally {
+    // 给浏览器一点时间开始下载。
+    setTimeout(() => URL.revokeObjectURL(url), 30_000);
+  }
 };
 
 const nowDateString = (): string => {
@@ -221,47 +229,6 @@ const chooseSliceHeightPx = (args: {
   return sliceHeight;
 };
 
-export async function exportElementToJpg(el: HTMLElement) {
-  const desiredRatio = getExportPixelRatio();
-  const rect = el.getBoundingClientRect();
-  const pixelRatio = clampPixelRatioForSize({
-    desired: desiredRatio,
-    widthCssPx: rect.width,
-    heightCssPx: rect.height,
-  });
-  if (pixelRatio < desiredRatio) {
-    // 避免触发 canvas 上限导致“静默截断”
-    console.warn(
-      `[export] clamp pixelRatio ${desiredRatio.toFixed(2)} -> ` +
-        `${pixelRatio.toFixed(2)} to avoid canvas truncation`,
-    );
-  }
-  await prepareForExport(el);
-
-  // Export as PNG first, then add padding and encode as JPG.
-  const { dataUrl: pngDataUrl } = await renderPngWithRetry({
-    el,
-    widthCssPx: rect.width,
-    heightCssPx: rect.height,
-    initialPixelRatio: pixelRatio,
-  });
-  const img = await loadImage(pngDataUrl);
-
-  const paddingPx = Math.round(EXPORT_PADDING_CSS_PX * pixelRatio);
-  const canvas = document.createElement('canvas');
-  canvas.width = img.naturalWidth + paddingPx * 2;
-  canvas.height = img.naturalHeight + paddingPx * 2;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(img, paddingPx, paddingPx);
-
-  const jpgDataUrl = canvas.toDataURL('image/jpeg', 0.95);
-  downloadDataUrl(jpgDataUrl, `chentao-${nowDateString()}.jpg`);
-}
-
 const loadImage = async (dataUrl: string): Promise<HTMLImageElement> => {
   return await new Promise((resolve, reject) => {
     const img = new Image();
@@ -288,136 +255,179 @@ const pngDataUrlToJpegDataUrl = async (pngDataUrl: string, quality: number) => {
 export async function exportElementToPdf(el: HTMLElement) {
   await prepareForExport(el);
 
-  const pdf = new jsPDF({
-    orientation: 'p',
-    unit: 'mm',
-    format: 'a4',
-  });
-
-  const pageWidthMm = pdf.internal.pageSize.getWidth();
-  const pageHeightMm = pdf.internal.pageSize.getHeight();
-
-  const marginMm = PDF_MARGIN_MM;
-  const contentWidthMm = Math.max(1, pageWidthMm - marginMm * 2);
-  const contentHeightMm = Math.max(1, pageHeightMm - marginMm * 2);
-
   // 不要把整页内容一次性转成超长 PNG：会触发 canvas 上限导致“中间截断”。
   // 这里按 A4 比例切页，然后每页单独截图。
   const rootRect = el.getBoundingClientRect();
   const rootWidthCssPx = Math.max(1, rootRect.width);
   const totalHeightCssPx = Math.max(1, rootRect.height);
 
-  const idealPageHeightCssPx =
-    (contentHeightMm / contentWidthMm) * rootWidthCssPx;
+  const buildPdf = async (args: {
+    desiredPixelRatio: number;
+    jpegQuality: number;
+  }): Promise<{ pdf: jsPDF; bytes: number; blob: Blob }> => {
+    const { desiredPixelRatio, jpegQuality } = args;
 
-  // PDF 更关注文件体积与可读性：像素比过高会导致体积暴涨。
-  const desiredRatio = Math.min(2, getExportPixelRatio());
-  // 每页截图高度有限，像素比可尽量高，但仍需保证不超 canvas 上限。
-  const pixelRatio = clampPixelRatioForSize({
-    desired: desiredRatio,
-    widthCssPx: rootWidthCssPx,
-    heightCssPx: idealPageHeightCssPx,
-  });
-  if (pixelRatio < desiredRatio) {
-    console.warn(
-      `[export] clamp pixelRatio ${desiredRatio.toFixed(
-        2,
-      )} -> ${pixelRatio.toFixed(2)} to avoid canvas truncation`,
-    );
-  }
-
-  const keepTogether = getKeepTogetherRangesCssPx(el);
-
-  const renderSlice = async (args: {
-    offsetYCssPx: number;
-    sliceHeightCssPx: number;
-  }) => {
-    const { offsetYCssPx, sliceHeightCssPx } = args;
-
-    const host = document.createElement('div');
-    host.style.position = 'fixed';
-    // 注意：不能用 opacity:0/visibility:hidden，否则 html-to-image 会把结果渲染成透明/空白。
-    // 放到屏幕外即可，不影响用户视图。
-    host.style.left = '-100000px';
-    host.style.top = '0';
-    host.style.width = `${rootWidthCssPx}px`;
-    host.style.height = `${sliceHeightCssPx}px`;
-    host.style.overflow = 'hidden';
-    host.style.background = '#ffffff';
-    host.style.pointerEvents = 'none';
-    host.style.display = 'block';
-
-    const cloned = el.cloneNode(true) as HTMLElement;
-    cloned.style.transform = `translateY(-${offsetYCssPx}px)`;
-    cloned.style.transformOrigin = 'top left';
-    cloned.style.width = `${rootWidthCssPx}px`;
-
-    host.appendChild(cloned);
-    document.body.appendChild(host);
-    try {
-      // clone 内的图片需要重新加载；不等资源就绪可能会截图成空白。
-      await prepareForExport(host);
-      const result = await renderPngWithRetry({
-        el: host,
-        widthCssPx: rootWidthCssPx,
-        heightCssPx: sliceHeightCssPx,
-        initialPixelRatio: pixelRatio,
-      });
-      return result.dataUrl;
-    } finally {
-      document.body.removeChild(host);
-    }
-  };
-
-  let offsetY = 0;
-  let pageIndex = 0;
-  while (offsetY < totalHeightCssPx - 0.5) {
-    const idealSliceHeightCssPx = Math.min(
-      idealPageHeightCssPx,
-      totalHeightCssPx - offsetY,
-    );
-
-    const sliceHeightCssPx = Math.min(
-      idealSliceHeightCssPx,
-      chooseSliceHeightPx({
-        offsetY,
-        idealPageHeightPx: idealPageHeightCssPx,
-        imgHeightPx: totalHeightCssPx,
-        keepTogether,
-      }),
-    );
-
-    if (sliceHeightCssPx <= 0.5) break;
-
-    const slicePngDataUrl = await renderSlice({
-      offsetYCssPx: offsetY,
-      sliceHeightCssPx,
+    const pdf = new jsPDF({
+      orientation: 'p',
+      unit: 'mm',
+      format: 'a4',
+      // 尽可能压缩内部对象流。
+      compress: true,
     });
 
-    // PDF 用 JPEG 会比 PNG 小很多，基本可以稳定压到 5MB 内。
-    const sliceDataUrl =
-      PDF_IMAGE_FORMAT === 'JPEG'
-        ? await pngDataUrlToJpegDataUrl(slicePngDataUrl, PDF_JPEG_QUALITY)
-        : slicePngDataUrl;
+    const pageWidthMm = pdf.internal.pageSize.getWidth();
+    const pageHeightMm = pdf.internal.pageSize.getHeight();
 
-    // 按“DOM 真实尺寸”计算页面高度，避免由于 PNG 像素取整导致的页间缝隙/缺行。
-    const sliceHeightMm = (sliceHeightCssPx / rootWidthCssPx) * contentWidthMm;
+    const marginMm = PDF_MARGIN_MM;
+    const contentWidthMm = Math.max(1, pageWidthMm - marginMm * 2);
+    const contentHeightMm = Math.max(1, pageHeightMm - marginMm * 2);
 
-    if (pageIndex > 0) pdf.addPage();
-    pdf.addImage(
-      sliceDataUrl,
-      PDF_IMAGE_FORMAT,
-      marginMm,
-      marginMm,
-      contentWidthMm,
-      sliceHeightMm,
-      undefined,
-      'FAST',
+    const idealPageHeightCssPx =
+      (contentHeightMm / contentWidthMm) * rootWidthCssPx;
+
+    // 每页截图高度有限，但仍需保证不超 canvas 上限。
+    const pixelRatio = clampPixelRatioForSize({
+      desired: desiredPixelRatio,
+      widthCssPx: rootWidthCssPx,
+      heightCssPx: idealPageHeightCssPx,
+    });
+
+    const keepTogether = getKeepTogetherRangesCssPx(el);
+
+    const renderSlice = async (sliceArgs: {
+      offsetYCssPx: number;
+      sliceHeightCssPx: number;
+    }) => {
+      const { offsetYCssPx, sliceHeightCssPx } = sliceArgs;
+
+      const host = document.createElement('div');
+      host.style.position = 'fixed';
+      // 注意：不能用 opacity:0/visibility:hidden，否则 html-to-image 会把结果渲染成透明/空白。
+      // 同时也不要把被截图节点本身挪到屏幕外（left:-100000px），否则在 foreignObject 中可能被裁掉，导致空白页。
+      host.style.left = '0';
+      host.style.top = '0';
+      // 避免遮挡用户视图，但也不要把节点挪到极端的负坐标（某些浏览器/实现会导致截图为空白）。
+      host.style.transform = 'translateX(-200vw)';
+      host.style.width = `${rootWidthCssPx}px`;
+      host.style.height = `${sliceHeightCssPx}px`;
+      host.style.overflow = 'hidden';
+      host.style.background = '#ffffff';
+      host.style.pointerEvents = 'none';
+      host.style.display = 'block';
+
+      const cloned = el.cloneNode(true) as HTMLElement;
+      cloned.style.transform = `translateY(-${offsetYCssPx}px)`;
+      cloned.style.transformOrigin = 'top left';
+      cloned.style.width = `${rootWidthCssPx}px`;
+
+      host.appendChild(cloned);
+      document.body.appendChild(host);
+      try {
+        // clone 内的图片需要重新加载；不等资源就绪可能会截图成空白。
+        await prepareForExport(host);
+        const result = await renderPngWithRetry({
+          el: host,
+          widthCssPx: rootWidthCssPx,
+          heightCssPx: sliceHeightCssPx,
+          initialPixelRatio: pixelRatio,
+        });
+        return result.dataUrl;
+      } finally {
+        document.body.removeChild(host);
+      }
+    };
+
+    let offsetY = 0;
+    let pageIndex = 0;
+    while (offsetY < totalHeightCssPx - 0.5) {
+      const idealSliceHeightCssPx = Math.min(
+        idealPageHeightCssPx,
+        totalHeightCssPx - offsetY,
+      );
+
+      const sliceHeightCssPx = Math.min(
+        idealSliceHeightCssPx,
+        chooseSliceHeightPx({
+          offsetY,
+          idealPageHeightPx: idealPageHeightCssPx,
+          imgHeightPx: totalHeightCssPx,
+          keepTogether,
+        }),
+      );
+
+      if (sliceHeightCssPx <= 0.5) break;
+
+      const slicePngDataUrl = await renderSlice({
+        offsetYCssPx: offsetY,
+        sliceHeightCssPx,
+      });
+
+      // PDF 用 JPEG 会比 PNG 小很多。
+      const sliceDataUrl =
+        PDF_IMAGE_FORMAT === 'JPEG'
+          ? await pngDataUrlToJpegDataUrl(slicePngDataUrl, jpegQuality)
+          : slicePngDataUrl;
+
+      // 按“DOM 真实尺寸”计算页面高度，避免由于 PNG 像素取整导致的页间缝隙/缺行。
+      const sliceHeightMm =
+        (sliceHeightCssPx / rootWidthCssPx) * contentWidthMm;
+
+      if (pageIndex > 0) pdf.addPage();
+      pdf.addImage(
+        sliceDataUrl,
+        PDF_IMAGE_FORMAT,
+        marginMm,
+        marginMm,
+        contentWidthMm,
+        sliceHeightMm,
+        undefined,
+        'FAST',
+      );
+
+      offsetY += sliceHeightCssPx;
+      pageIndex += 1;
+    }
+
+    const arrayBuffer = pdf.output('arraybuffer') as ArrayBuffer;
+    const bytes = arrayBuffer.byteLength;
+    const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
+    return { pdf, bytes, blob };
+  };
+
+  // 先保证清晰度，再逐步降质量/分辨率，确保体积 <= 5MB。
+  const baseDesiredRatio = Math.min(2, getExportPixelRatio());
+  const attempts: Array<{ desiredPixelRatio: number; jpegQuality: number }> = [
+    { desiredPixelRatio: baseDesiredRatio, jpegQuality: PDF_JPEG_QUALITY },
+    { desiredPixelRatio: baseDesiredRatio, jpegQuality: 0.72 },
+    { desiredPixelRatio: Math.min(baseDesiredRatio, 1.5), jpegQuality: 0.68 },
+    { desiredPixelRatio: Math.min(baseDesiredRatio, 1.25), jpegQuality: 0.62 },
+    { desiredPixelRatio: 1, jpegQuality: 0.58 },
+  ];
+
+  let last: { bytes: number; blob: Blob } | null = null;
+  for (let i = 0; i < attempts.length; i += 1) {
+    const { desiredPixelRatio, jpegQuality } = attempts[i]!;
+    const { bytes, blob } = await buildPdf({ desiredPixelRatio, jpegQuality });
+    last = { bytes, blob };
+
+    if (bytes <= PDF_MAX_BYTES) {
+      downloadBlob(blob, `chentao-${nowDateString()}.pdf`);
+      return;
+    }
+
+    console.warn(
+      `[export] pdf size ${(bytes / 1024 / 1024).toFixed(2)}MB > 5MB, ` +
+        `retry with desiredPixelRatio=${desiredPixelRatio.toFixed(2)}, ` +
+        `jpegQuality=${jpegQuality.toFixed(2)}`,
     );
-
-    offsetY += sliceHeightCssPx;
-    pageIndex += 1;
   }
 
-  pdf.save(`chentao-${nowDateString()}.pdf`);
+  // 兜底：仍然下载最后一次（已经尽可能压缩），同时在控制台提示。
+  if (last) {
+    console.warn(
+      `[export] pdf still > 5MB after retries: ` +
+        `${(last.bytes / 1024 / 1024).toFixed(2)}MB`,
+    );
+    downloadBlob(last.blob, `chentao-${nowDateString()}.pdf`);
+  }
 }

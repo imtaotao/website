@@ -27,11 +27,11 @@ export function ResumeShell(props: {
         </div>
       ) : null}
 
-      <div className="mx-auto w-full max-w-[960px] px-0 py-0 md:px-6 md:py-7">
+      <div className="mx-auto w-full max-w-240 px-0 py-0 md:px-6 md:py-7">
         <div
           className={
-            'mx-auto w-full max-w-[794px] rounded-none border-0 bg-white px-5 py-6 shadow-md shadow-zinc-200/60 ' +
-            'md:rounded-[6px] md:border-0 md:px-8 md:py-7'
+            'mx-auto w-full max-w-198.5 rounded-none border-0 bg-white px-5 py-6 shadow-md shadow-zinc-200/60 ' +
+            'md:rounded-md md:border-0 md:px-8 md:py-7'
           }
         >
           {props.children}

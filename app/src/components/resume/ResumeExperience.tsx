@@ -113,14 +113,14 @@ const CompanyLogo = (props: { company: string }) => {
 const HighlightKindIcon = (props: { kind: HighlightKind }) => {
   if (props.kind === 'business') {
     return (
-      <RocketIcon className="mt-[5px] h-3.5 w-3.5 shrink-0 text-zinc-500" />
+      <RocketIcon className="mt-1.25 h-3.5 w-3.5 shrink-0 text-zinc-500" />
     );
   }
   if (props.kind === 'tech') {
-    return <CodeIcon className="mt-[5px] h-3.5 w-3.5 shrink-0 text-zinc-500" />;
+    return <CodeIcon className="mt-1.25 h-3.5 w-3.5 shrink-0 text-zinc-500" />;
   }
   return (
-    <span className="mt-[10px] h-[3px] w-[3px] shrink-0 rounded-full bg-zinc-300" />
+    <span className="mt-2.5 h-0.75 w-0.75 shrink-0 rounded-full bg-zinc-300" />
   );
 };
 
@@ -293,7 +293,7 @@ export function ResumeExperienceList(props: {
                   className={
                     'cursor-copy rounded-md px-1 py-0.5 transition-colors ' +
                     (copied
-                      ? 'bg-emerald-50/60 outline outline-1 outline-emerald-200'
+                      ? 'bg-emerald-50/60 outline outline-emerald-200'
                       : 'hover:bg-white/60')
                   }
                 >
@@ -326,7 +326,11 @@ export function ResumeExperienceList(props: {
                   ) : null}
 
                   <div
-                    className={d.department ? 'mt-3 space-y-6' : 'space-y-6'}
+                    className={
+                      d.department
+                        ? 'mt-3 space-y-6 md:mt-2 md:space-y-5'
+                        : 'space-y-6 md:space-y-5'
+                    }
                   >
                     {d.items.map((e, idx) => {
                       const items = collectHighlights(e);
@@ -345,7 +349,7 @@ export function ResumeExperienceList(props: {
                           ) : null}
 
                           {items.length ? (
-                            <ul className="resume-work-font mt-3 space-y-2 text-[13px] font-medium leading-6 text-zinc-800">
+                            <ul className="resume-work-font mt-3 space-y-2 text-[13px] font-medium leading-6 text-zinc-800 md:mt-2 md:space-y-1.5 md:text-[14px] md:leading-5">
                               {items.map((it, i) => {
                                 const textClassName = 'text-zinc-800';
 
@@ -353,7 +357,9 @@ export function ResumeExperienceList(props: {
                                   <li
                                     key={`${idx}:${i}:${it.kind}:${it.text}`}
                                     data-export-keep-together="true"
-                                    className={'flex gap-3 ' + textClassName}
+                                    className={
+                                      'flex gap-3 md:gap-2 ' + textClassName
+                                    }
                                   >
                                     <HighlightKindIcon kind={it.kind} />
                                     <span className="flex-1 select-text">

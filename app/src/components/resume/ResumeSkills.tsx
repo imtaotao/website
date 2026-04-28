@@ -13,7 +13,7 @@ const levelBar = (level: number) => {
     <div className="flex items-center" aria-hidden="true" title={`${v}/100`}>
       <div
         className={
-          'relative h-2 w-[84px] overflow-hidden rounded-full border border-zinc-200/60 bg-zinc-100/70 ' +
+          'relative h-2 w-21 overflow-hidden rounded-full border border-zinc-200/60 bg-zinc-100/70 ' +
           'shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]'
         }
       >

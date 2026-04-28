@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirecting...</title>
+    <script>
+      // GitHub Pages 不支持 SPA 的“服务端重写”。
+      // 直链访问 /resume 会命中 404.html。这里把原始路径塞进 query，再跳回 index.html。
+      // index.html 会在 React 初始化前把地址还原。
+      (function () {
+        var l = window.location;
+        var base = '%BASE_URL%';
+        var redirect = l.pathname + l.search + l.hash;
+        l.replace(base + '?__redirect=' + encodeURIComponent(redirect));
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>

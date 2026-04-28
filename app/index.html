@@ -5,6 +5,26 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>chentao.arthur</title>
+    <script>
+      // 供 React Router 读取部署 base（兼容 GitHub Pages 子路径部署）。
+      window.__APP_BASE__ = '%BASE_URL%';
+    </script>
+    <script>
+      // GitHub Pages 直链路由会先落到 404.html。
+      // 404.html 会把原始路径写入 __redirect，这里在应用启动前把地址还原。
+      (function () {
+        try {
+          var url = new URL(window.location.href);
+          var redirect = url.searchParams.get('__redirect');
+          if (!redirect) return;
+          url.searchParams.delete('__redirect');
+          // 还原成真实路由（包含 base 前缀），让 BrowserRouter 正常匹配。
+          window.history.replaceState(null, '', redirect);
+        } catch (_) {
+          // ignore
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
