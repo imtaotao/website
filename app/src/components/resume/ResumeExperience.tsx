@@ -2,9 +2,10 @@ import { useCallback, useRef, useState } from 'react';
 import { type ResumeExperience } from '@website-kernel/shared';
 import { CodeIcon, HomeIcon, RocketIcon } from '@radix-ui/react-icons';
 
-import bytedanceIconUrl from '#app/assets/image/bytedance.svg';
-import codemonIconUrl from '#app/assets/image/codemon.svg';
 import zhenaiIconUrl from '#app/assets/image/zhenai.svg';
+import codemonIconUrl from '#app/assets/image/codemon.svg';
+import tencentIconUrl from '#app/assets/image/tencent.svg';
+import bytedanceIconUrl from '#app/assets/image/bytedance.svg';
 import { copyToClipboard } from '#app/lib/clipboard';
 
 const formatRange = (startAt: string, endAt: string): string => {
@@ -46,8 +47,8 @@ const COMPANY_LOGO_SPEC: Array<CompanyLogoSpec> = [
   },
   {
     match: (c) => c.includes('腾讯'),
-    label: 'T',
-    className: 'bg-[#006EFF] text-white',
+    iconSrc: tencentIconUrl,
+    className: 'bg-white',
   },
   {
     match: (c) => c.includes('珍爱'),

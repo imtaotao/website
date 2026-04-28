@@ -219,6 +219,61 @@ const renderElementSliceToPngDataUrlByWrappingPage = async (args: {
   }
 };
 
+const renderFixedSizeElementToPngDataUrlByWrapping = async (args: {
+  el: HTMLElement;
+  widthCssPx: number;
+  heightCssPx: number;
+  pixelRatio: number;
+}) => {
+  const { el, widthCssPx, heightCssPx, pixelRatio } = args;
+
+  // 目的：避免某些浏览器在直接对“页面内元素（可能处于 subpixel x）”截图时出现轻微水平偏移。
+  // 通过把元素 clone 到一个固定尺寸、x=0 的 wrapper 中，再进行 toPng，保证对齐稳定。
+  const host = document.createElement('div');
+  host.setAttribute('data-export-hide', 'true');
+  host.style.position = 'fixed';
+  host.style.left = '-100000px';
+  host.style.top = '0';
+  host.style.width = '1px';
+  host.style.height = '1px';
+  host.style.overflow = 'hidden';
+  host.style.pointerEvents = 'none';
+  host.style.opacity = '0';
+  document.body.appendChild(host);
+
+  try {
+    const page = document.createElement('div');
+    page.style.width = `${Math.max(1, widthCssPx)}px`;
+    page.style.height = `${Math.max(1, heightCssPx)}px`;
+    page.style.overflow = 'hidden';
+    page.style.background = '#ffffff';
+
+    const cloned = el.cloneNode(true) as HTMLElement;
+    // 强制消除 clone 在 wrapper 内的“居中/外边距”影响，保持与原始 bbox 一致。
+    cloned.style.margin = '0';
+    cloned.style.width = `${Math.max(1, widthCssPx)}px`;
+    cloned.style.height = `${Math.max(1, heightCssPx)}px`;
+    cloned.style.maxWidth = 'none';
+
+    page.appendChild(cloned);
+    host.appendChild(page);
+
+    await nextFrame();
+
+    return await toPng(page, {
+      backgroundColor: '#ffffff',
+      pixelRatio,
+      cacheBust: true,
+      filter: (node) => {
+        if (!(node instanceof HTMLElement)) return true;
+        return !isHiddenForExport(node);
+      },
+    });
+  } finally {
+    host.remove();
+  }
+};
+
 const convertPngDataUrlToJpegDataUrl = async (args: {
   pngDataUrl: string;
   jpegQuality: number;
@@ -452,7 +507,12 @@ export async function exportElementToPdf(
           message: `渲染页面 ${pageIndex + 1}/${total}…`,
         });
 
-        const pngDataUrl = await renderElementToPngDataUrl(pageEl, pixelRatio);
+        const pngDataUrl = await renderFixedSizeElementToPngDataUrlByWrapping({
+          el: pageEl,
+          widthCssPx,
+          heightCssPx,
+          pixelRatio,
+        });
         const dataUrl = EXPORT_PDF_ENABLE_COMPRESSION
           ? await convertPngDataUrlToJpegDataUrl({
               pngDataUrl,

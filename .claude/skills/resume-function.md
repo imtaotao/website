@@ -88,6 +88,7 @@ basics:
   location: 北京
   phone: 13800000000
   email: zhangsan@example.com
+  school: 北京大学
   links:
     - label: GitHub
       url: https://github.com/zhangsan

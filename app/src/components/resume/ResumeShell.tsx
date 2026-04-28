@@ -114,8 +114,10 @@ export const ResumeShell = forwardRef<
   {
     children: ReactNode;
     topBar?: ReactNode;
+    paged?: boolean;
   }
 >(function ResumeShell(props, ref) {
+  const paged = props.paged ?? true;
   const A4_RATIO = 297 / 210;
   const PAGE_GAP_PX = 28;
   // 页脚占用的固定高度（需要和渲染样式保持一致，否则会出现“内容被页脚挤压而截断”的错觉）
@@ -139,6 +141,7 @@ export const ResumeShell = forwardRef<
   }, []);
 
   useLayoutEffect(() => {
+    if (!paged) return;
     let raf = 0;
     const measure = () => {
       const page = measurePageRef.current;
@@ -205,7 +208,12 @@ export const ResumeShell = forwardRef<
       cancelAnimationFrame(raf);
       ro.disconnect();
     };
-  }, []);
+  }, [paged]);
+
+  const setForwardedRef = (node: HTMLDivElement | null) => {
+    if (typeof ref === 'function') ref(node);
+    else if (ref) (ref as RefObject<HTMLDivElement | null>).current = node;
+  };
 
   return (
     <div
@@ -232,94 +240,107 @@ export const ResumeShell = forwardRef<
 
       <div className="mx-auto w-full max-w-240 px-0 py-0 md:px-6 md:py-7">
         <div className="relative">
-          {/* 测量用（不展示）：用于计算分页高度与切页点，必须和真实页面同宽 */}
-          <div
-            data-export-hide="true"
-            className="pointer-events-none absolute left-0 top-0 w-full"
-            style={{ visibility: 'hidden' }}
-          >
-            <div ref={measurePageRef} className={pageCardClassName}>
+          {paged ? (
+            <>
+              {/* 测量用（不展示）：用于计算分页高度与切页点，必须和真实页面同宽 */}
               <div
-                ref={measureInnerRef}
-                data-export-page-inner
-                className={pageInnerClassName}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  height: '100%',
-                }}
+                data-export-hide="true"
+                className="pointer-events-none absolute left-0 top-0 w-full"
+                style={{ visibility: 'hidden' }}
               >
-                <div ref={measureContentRef}>{props.children}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* 屏幕端按 A4 分页展示（每页之间留间距） */}
-          <div
-            ref={(node) => {
-              pagedRootRef.current = node;
-              if (typeof ref === 'function') ref(node);
-              else if (ref)
-                (ref as RefObject<HTMLDivElement | null>).current = node;
-            }}
-            data-export-paged="true"
-            className="flex flex-col items-center"
-            style={{ gap: PAGE_GAP_PX }}
-          >
-            {pages.map((p, i) => (
-              <div
-                key={i}
-                data-export-page="true"
-                className={pageCardClassName}
-                style={{
-                  height: pageHeightPx ?? undefined,
-                  overflow: 'hidden',
-                }}
-              >
-                <div
-                  data-export-page-inner
-                  className={pageInnerClassName}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: '100%',
-                  }}
-                >
+                <div ref={measurePageRef} className={pageCardClassName}>
                   <div
-                    style={
-                      pageHeightPx
-                        ? { height: p.heightPx, overflow: 'hidden' }
-                        : { flex: 1, overflow: 'hidden' }
-                    }
+                    ref={measureInnerRef}
+                    data-export-page-inner
+                    className={pageInnerClassName}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      height: '100%',
+                    }}
                   >
-                    <div
-                      style={{
-                        transform: `translateY(-${p.offsetY}px)`,
-                        transformOrigin: 'top left',
-                      }}
-                    >
-                      {props.children}
-                    </div>
-                  </div>
-
-                  {/* 留白区域：放不下就挪到下一页，空一点没关系 */}
-                  {pageHeightPx ? <div style={{ flex: 1 }} /> : null}
-
-                  <div
-                    style={{ height: FOOTER_HEIGHT_PX }}
-                    className="flex items-center justify-between border-t border-zinc-200/70 px-0 text-[10px] font-medium text-zinc-400"
-                  >
-                    <span className="truncate">
-                      {document.title || 'Resume'}
-                    </span>
-                    <span className="shrink-0 tabular-nums">
-                      {i + 1} / {pages.length}
-                    </span>
+                    <div ref={measureContentRef}>{props.children}</div>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+
+              {/* 屏幕端按 A4 分页展示（每页之间留间距） */}
+              <div
+                ref={(node) => {
+                  pagedRootRef.current = node;
+                  setForwardedRef(node);
+                }}
+                data-export-paged="true"
+                className="flex flex-col items-center"
+                style={{ gap: PAGE_GAP_PX }}
+              >
+                {pages.map((p, i) => (
+                  <div
+                    key={i}
+                    data-export-page="true"
+                    className={pageCardClassName}
+                    style={{
+                      height: pageHeightPx ?? undefined,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <div
+                      data-export-page-inner
+                      className={pageInnerClassName}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        height: '100%',
+                      }}
+                    >
+                      <div
+                        style={
+                          pageHeightPx
+                            ? { height: p.heightPx, overflow: 'hidden' }
+                            : { flex: 1, overflow: 'hidden' }
+                        }
+                      >
+                        <div
+                          style={{
+                            transform: `translateY(-${p.offsetY}px)`,
+                            transformOrigin: 'top left',
+                          }}
+                        >
+                          {props.children}
+                        </div>
+                      </div>
+
+                      {/* 留白区域：放不下就挪到下一页，空一点没关系 */}
+                      {pageHeightPx ? <div style={{ flex: 1 }} /> : null}
+
+                      <div
+                        style={{ height: FOOTER_HEIGHT_PX }}
+                        className="flex items-center justify-between border-t border-zinc-200/70 px-0 text-[10px] font-medium text-zinc-400"
+                      >
+                        <span className="truncate">
+                          {document.title || 'Resume'}
+                        </span>
+                        <span className="shrink-0 tabular-nums">
+                          {i + 1} / {pages.length}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div
+              ref={(node) => {
+                setForwardedRef(node);
+              }}
+              className="mx-auto w-full max-w-198.5"
+            >
+              <div className={pageCardClassName}>
+                <div className={pageInnerClassName}>{props.children}</div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

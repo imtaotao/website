@@ -4,6 +4,7 @@ basics:
   name: 陈涛
   phone: 15211133566
   email: dwchentao@163.com
+  school: 湖南工商大学
   links:
     - label: GitHub
       url: https://github.com/imtaotao
@@ -102,7 +103,7 @@ experiences:
       - 技术侧：支持合规需求与机房迁移等专项。
 
 openSourceProjectsIntro:
-  - 以下是我维护的开源项目, 如果有你感兴趣的部分, 还原讨论 👏🏻
+  - 以下是我维护的开源项目, 如果你也感兴趣, 欢迎讨论 👏🏻
 
 openSourceProjects:
   - name: danmu

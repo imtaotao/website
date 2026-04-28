@@ -8,6 +8,7 @@ export type ResumeLink = {
 export type ResumeBasics = {
   name: string;
   title: string;
+  school?: string;
   avatar?: string;
   location?: string;
   phone?: string;
@@ -141,6 +142,7 @@ export function normalizeResumeModel(input: unknown) {
   const basics: ResumeBasics = {
     name: asString(basicsRaw.name) ?? '',
     title: asString(basicsRaw.title) ?? '',
+    school: asString(basicsRaw.school),
     avatar: asString(basicsRaw.avatar),
     location: asString(basicsRaw.location),
     phone: asText(basicsRaw.phone),

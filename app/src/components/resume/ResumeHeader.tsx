@@ -6,6 +6,7 @@ import {
   GlobeIcon,
   Link2Icon,
   MobileIcon,
+  ReaderIcon,
 } from '@radix-ui/react-icons';
 import zhihuIconUrl from '#app/assets/image/zhihu.svg';
 import defaultAvatarUrl from '#app/assets/image/avatar.jpg';
@@ -88,7 +89,9 @@ const labelIcon = (label: string) => {
 
 export function ResumeHeader(props: { basics: ResumeBasics }) {
   const { basics } = props;
-  const hasContacts = Boolean(basics.phone || basics.email || basics.location);
+  const hasContacts = Boolean(
+    basics.phone || basics.email || basics.location || basics.school,
+  );
   const hasLinks = Boolean(basics.links?.length);
   const links = basics.links ?? [];
 
@@ -142,6 +145,14 @@ export function ResumeHeader(props: { basics: ResumeBasics }) {
 
             {hasContacts ? (
               <div className="flex flex-wrap items-center gap-2">
+                {basics.school ? (
+                  <ContactItem
+                    icon={<ReaderIcon className={iconClassName} />}
+                    text={basics.school}
+                    copied={copiedText === basics.school}
+                    onCopy={() => onCopy(basics.school!)}
+                  />
+                ) : null}
                 {basics.phone ? (
                   <ContactItem
                     icon={<MobileIcon className={iconClassName} />}
