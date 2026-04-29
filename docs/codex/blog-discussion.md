@@ -52,12 +52,12 @@
 ### 7. 工程约定
 
 - 通用逻辑可以放到`packages/kernel-blog/` 包承载博客相关通用能力。
-- 博客文章内容放到 `packages/kernel-blog/` 内维护。
-- `kernel-blog` 内使用独立目录存放文章 MDX 文件。
+- 博客文章内容放到 `app/src/content/blog/` 内维护。
+- `kernel-blog` 负责博客通用能力，不直接承载文章内容目录。
 
 ### 8. 内容目录结构
 
-- `articles/` 采用扁平的文章单元目录结构。
+- `app/src/content/blog/` 采用扁平的文章单元目录结构。
 - 每篇文章在自己的独立目录中维护 `index.mdx` 与相关资源。
 - 文章目录先不通过年份、系列等子目录表达分类语义。
 

@@ -15,6 +15,7 @@
 - 新增实现前，先遵循现有目录结构和项目模式。
 - 可复用工具优先放到 `packages/kernel-shared/`，不要散落在 `app/` 内。
 - 合适时优先使用 `tsconfig.json` 里已有的 TypeScript 路径别名。
+- 这个项目只有最外层的一个 `tsconfig.json`，app 和 packages 里面的包都不要有自己的 `tsconfig.json`。
 - 简历相关实现，以 `docs/codex/` 下文档为准。
 
 ## 常用命令
@@ -44,7 +45,7 @@
 
 ## commit 提交格式
 
-commit 使用英文提交。
+commit 使用英文提交，不要一个个文件添加，可以通过 `git commit .` 来提交所有的改动。
 
 ```shell
 <type>(<scope>): <subject>
@@ -66,6 +67,11 @@ chore - 构建过程或辅助工具的变动
 revert - 回退
 build - 打包
 ```
+
+## 模块导入方式
+
+- `package` 和 `app` 内部优先使用 `#` 开头导入，模块名字声明在这个项目最外层的 `tsconfig.json` 的 `path` 属性里面。
+- `package` 和 `app` 使用外部依赖时，优先读取自己 `package.json` 里面声明的依赖（app 引用 package 里面的包也是外部依赖）。
 
 ## 迁移说明
 

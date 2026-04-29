@@ -1,0 +1,47 @@
+---
+title: 搭博客内容层时，我最先在意什么
+slug: building-a-blog-core
+tags:
+  - architecture
+  - frontend
+publishedAt: 2026-04-29
+updatedAt: 2026-04-29
+summary: 先把内容模型、路由和资源边界收住，再去讨论页面表现和配套能力，整体节奏会稳很多。
+cover: ./image/cover.svg
+---
+
+# 搭博客内容层时，我最先在意什么
+
+很多博客项目一开始就急着做视觉、动效或者评论系统，但对我来说，最先要定下来的其实是内容模型。
+
+如果内容层本身没有收住，后面的页面、数据读取和构建流程通常都会反复返工。
+
+## 我会先把这些问题定清楚
+
+- 文章内容放在哪里
+- `slug` 怎么维护
+- 标签是不是主分类方式
+- 图片资源要不要和文章放在一起
+
+这些决定看上去不显眼，但它们会直接影响后面的维护方式。
+
+## 第一版应该先完成最小闭环
+
+我更倾向于先把下面这些能力走通：
+
+- 博客列表页
+- 文章详情页
+- 标签索引页
+- 本地内容加载
+
+```ts
+type BlogArticleFrontmatter = {
+  title: string;
+  slug: string;
+  tags: Array<string>;
+  summary: string;
+  cover?: string;
+};
+```
+
+等这部分稳定以后，再去谈更重的 MDX 组件、SEO 或订阅能力，整个项目会健康很多。

@@ -45,23 +45,26 @@
 
 ## 内容组织
 
-博客内容放在 `packages/kernel-blog/` 中维护。
+博客文章内容放在 `app/src/content/blog/` 中维护，博客通用逻辑放在 `packages/kernel-blog/` 中维护。
 
 建议目录草案：
 
 ```text
+app/src/content/blog/
+  react-render-notes/
+    index.mdx
+    cover.jpg
+    demo.png
+  my-first-post/
+    index.mdx
+    cover.jpg
+
 packages/kernel-blog/
-  articles/
-    react-render-notes/
-      index.mdx
-      cover.jpg
-      demo.png
-    my-first-post/
-      index.mdx
-      cover.jpg
   src/
     index.ts
+    browser.ts
     tags.ts
+    frontmatter.ts
     content/
       load-articles.ts
       article-schema.ts
@@ -71,7 +74,7 @@ packages/kernel-blog/
 
 目录约定：
 
-- `articles/` 下采用扁平的文章单元目录结构。
+- `app/src/content/blog/` 下采用扁平的文章单元目录结构。
 - 每篇文章有自己的独立目录。
 - 文章正文统一放在 `index.mdx`。
 - `cover` 和正文内使用的本地图片与文章放在同一目录。
@@ -150,7 +153,8 @@ export const blogTagMap = {
 
 第一版建议把博客内容层的通用逻辑收敛到 `packages/kernel-blog/`：
 
-- 扫描 `articles/` 目录
+- 提供 frontmatter 解析与标准化能力
+- 提供标签配置与类型定义
 - 读取并解析 `MDX` 文件与 frontmatter
 - 校验 frontmatter 必填字段
 - 校验文章中引用的标签是否存在于标签映射中
@@ -164,7 +168,7 @@ export const blogTagMap = {
 - 路由定义
 - 页面级视觉布局
 
-也就是说，`kernel-blog` 负责内容和数据准备，`app/` 负责页面消费和展示。
+也就是说，`kernel-blog` 负责博客通用能力，`app/` 负责文章内容组织、页面消费和展示。
 
 ## 建议导出 API
 
@@ -249,9 +253,9 @@ export const blogTagMap = {
 
 建议按以下顺序推进：
 
-1. 在 `kernel-blog` 中建立文章目录约定、标签配置和类型定义。
-2. 完成文章扫描、frontmatter 解析、标签聚合和基础校验。
-3. 在 `app/` 中接入博客路由。
+1. 在 `kernel-blog` 中建立标签配置、类型定义和 frontmatter 解析能力。
+2. 在 `app/src/content/blog/` 中建立文章目录约定与文章内容。
+3. 在 `app/` 中接入文章读取、标签聚合和博客路由。
 4. 完成 `/blog`、`/blog/:slug`、`/blog/tags`、`/blog/tags/:tag` 四类页面。
 5. 补齐公式、代码高亮、图片渲染。
 6. 再根据页面效果决定列表页密度和详情页增强能力。

@@ -5,6 +5,9 @@ import '@radix-ui/themes/styles.css';
 import '#app/App.css';
 
 import { HomePage } from '#app/pages/HomePage';
+import { BlogArticlePage } from '#app/pages/BlogArticlePage';
+import { BlogHomePage } from '#app/pages/BlogHomePage';
+import { BlogTagPage } from '#app/pages/BlogTagPage';
 import { ResumePage } from '#app/pages/ResumePage';
 
 export function App() {
@@ -16,6 +19,9 @@ export function App() {
       <Theme>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/blog" element={<BlogHomePage />} />
+          <Route path="/blog/:slug" element={<BlogArticlePage />} />
+          <Route path="/blog/tags/:tag" element={<BlogTagPage />} />
           <Route path="/resume" element={<ResumePage />} />
           <Route path="*" element={null} />
         </Routes>

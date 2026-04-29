@@ -5,6 +5,7 @@ type Segment =
   | { type: 'text'; text: string }
   | { type: 'highlight'; text: string }
   | { type: 'resumeLink'; text: string }
+  | { type: 'blogLink'; text: string }
   | { type: 'externalLink'; text: string; url: string };
 
 type Block = { type: 'paragraph'; segments: Array<Segment> };
@@ -57,7 +58,9 @@ const HOME: {
           text: 'GitHub',
           url: 'https://github.com/imtaotao',
         },
-        { type: 'text', text: ' 上看到我维护的项目。若想交流合作或招聘机会，' },
+        { type: 'text', text: ' 上看到我维护的项目，也可以顺路看看我的 ' },
+        { type: 'blogLink', text: '博客' },
+        { type: 'text', text: '。若想交流合作或招聘机会，' },
         { type: 'resumeLink', text: '这是我的简历' },
         { type: 'text', text: '。' },
       ],
@@ -88,6 +91,13 @@ const renderSegments = (segs: Array<Segment>) => {
         <ExternalLink key={idx} href={s.url}>
           {s.text}
         </ExternalLink>
+      );
+    }
+    if (s.type === 'blogLink') {
+      return (
+        <Link key={idx} to="/blog" className="home-link">
+          <InkUnderline>{s.text}</InkUnderline>
+        </Link>
       );
     }
     return (

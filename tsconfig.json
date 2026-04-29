@@ -30,11 +30,13 @@
     "paths": {
       // externals
       "@website-kernel/*": ["./packages/kernel-*/src"],
+      "@website-kernel/blog/browser": ["./packages/kernel-blog/src/browser.ts"],
 
       // app
       "#app/*": ["./app/src/*"],
 
       // packages
+      "#blog/*": ["./packages/kernel-blog/src/*"],
       "#shared/*": ["./packages/kernel-shared/src/*"]
     }
   }
