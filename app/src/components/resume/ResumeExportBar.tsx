@@ -5,8 +5,11 @@ export function ResumeExportBar(props: {
   exporting?: boolean;
   progress?: number;
   progressText?: string;
+  disabled?: boolean;
+  disabledText?: string;
 }) {
   const exporting = props.exporting ?? false;
+  const disabled = props.disabled ?? false;
   const progress = Math.min(100, Math.max(0, props.progress ?? 0));
 
   return (
@@ -16,7 +19,7 @@ export function ResumeExportBar(props: {
           size="1"
           variant="soft"
           color="gray"
-          disabled={exporting}
+          disabled={exporting || disabled}
           onClick={props.onExportPdf}
         >
           {exporting ? `导出中 ${Math.round(progress)}%` : '导出 PDF'}
@@ -36,6 +39,10 @@ export function ResumeExportBar(props: {
               style={{ width: `${progress}%` }}
             />
           </div>
+        </div>
+      ) : disabled && props.disabledText ? (
+        <div className="w-52 text-[11px] font-medium text-zinc-500">
+          {props.disabledText}
         </div>
       ) : null}
     </div>

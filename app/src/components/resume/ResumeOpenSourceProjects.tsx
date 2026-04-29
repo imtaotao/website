@@ -75,6 +75,7 @@ const saveStarCache = (map: Record<string, number>) => {
 export function ResumeOpenSourceProjects(props: {
   intro?: Array<string>;
   items: Array<ResumeOpenSourceProject>;
+  onRemoteDataLoadingChange?: (loading: boolean) => void;
 }) {
   const intro = props.intro ?? [];
   if (!props.items.length && !intro.length) return null;
@@ -110,7 +111,10 @@ export function ResumeOpenSourceProjects(props: {
   }, [props.items, starsMap]);
 
   useEffect(() => {
-    if (!fullNames.length) return;
+    if (!fullNames.length) {
+      props.onRemoteDataLoadingChange?.(false);
+      return;
+    }
 
     const TTL_MS = 7 * 24 * 60 * 60 * 1000;
     const cached = loadStarCache();
@@ -132,9 +136,13 @@ export function ResumeOpenSourceProjects(props: {
     const missing = fullNames.filter(
       (full) => typeof merged[full] !== 'number',
     );
-    if (!missing.length) return;
+    if (!missing.length) {
+      props.onRemoteDataLoadingChange?.(false);
+      return;
+    }
 
     let canceled = false;
+    props.onRemoteDataLoadingChange?.(true);
 
     const run = async () => {
       const nextMap: Record<string, number> = { ...merged };
@@ -176,13 +184,15 @@ export function ResumeOpenSourceProjects(props: {
       if (canceled) return;
       setStarsMap(nextMap);
       saveStarCache(nextMap);
+      props.onRemoteDataLoadingChange?.(false);
     };
 
     void run();
     return () => {
       canceled = true;
+      props.onRemoteDataLoadingChange?.(false);
     };
-  }, [fullNames, props.items]);
+  }, [fullNames, props.items, props.onRemoteDataLoadingChange]);
 
   return (
     <div>

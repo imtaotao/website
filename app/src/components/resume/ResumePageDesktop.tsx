@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { type ResumeModel, exportElementToPdf } from '@website-kernel/shared';
 
 import { ResumeShell } from '#app/components/resume/ResumeShell';
@@ -18,6 +18,64 @@ export function ResumePageDesktop(props: { model: ResumeModel }) {
   const [exporting, setExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [exportProgressText, setExportProgressText] = useState('');
+  const [pageAssetsReady, setPageAssetsReady] = useState(false);
+  const [remoteDataLoading, setRemoteDataLoading] = useState(false);
+
+  useEffect(() => {
+    const node = exportRef.current;
+    if (!node) return;
+
+    let canceled = false;
+    setPageAssetsReady(false);
+
+    const waitForPageAssets = async () => {
+      const anyDoc = document as Document & {
+        fonts?: { ready?: Promise<unknown> };
+      };
+
+      try {
+        await anyDoc.fonts?.ready;
+      } catch {
+        // ignore
+      }
+
+      const imgs = Array.from(node.querySelectorAll('img'));
+      await Promise.all(
+        imgs.map(
+          (img) =>
+            new Promise<void>((resolve) => {
+              if (img.complete) return resolve();
+              const done = () => {
+                img.removeEventListener('load', done);
+                img.removeEventListener('error', done);
+                resolve();
+              };
+              img.addEventListener('load', done);
+              img.addEventListener('error', done);
+            }),
+        ),
+      );
+    };
+
+    const run = async () => {
+      try {
+        await waitForPageAssets();
+        if (canceled) return;
+        setPageAssetsReady(true);
+      } catch (err) {
+        console.error('[export] wait page assets failed', err);
+        if (canceled) return;
+        setPageAssetsReady(false);
+      }
+    };
+
+    void run();
+    return () => {
+      canceled = true;
+    };
+  }, [model]);
+
+  const canExportPdf = pageAssetsReady && !remoteDataLoading && !exporting;
 
   return (
     <ResumeShell
@@ -26,7 +84,10 @@ export function ResumePageDesktop(props: { model: ResumeModel }) {
         <ResumeExportBar
           onExportPdf={async () => {
             if (!exportRef.current) return;
-            if (exporting) return;
+            if (!canExportPdf) {
+              window.alert('页面尚未加载完成，暂不可导出 PDF');
+              return;
+            }
 
             exportTokenRef.current += 1;
             const token = exportTokenRef.current;
@@ -42,7 +103,6 @@ export function ResumePageDesktop(props: { model: ResumeModel }) {
                   setExportProgressText(p.message);
                 },
               });
-              // 给用户一点“完成”反馈，再隐藏进度条
               setTimeout(() => {
                 if (exportTokenRef.current !== token) return;
                 setExporting(false);
@@ -60,6 +120,7 @@ export function ResumePageDesktop(props: { model: ResumeModel }) {
           exporting={exporting}
           progress={exportProgress}
           progressText={exportProgressText}
+          disabled={!canExportPdf}
         />
       }
     >
@@ -109,6 +170,7 @@ export function ResumePageDesktop(props: { model: ResumeModel }) {
           <ResumeOpenSourceProjects
             intro={model.openSourceProjectsIntro}
             items={model.openSourceProjects}
+            onRemoteDataLoadingChange={setRemoteDataLoading}
           />
         </ResumeSection>
       ) : null}

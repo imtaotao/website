@@ -1,5 +1,5 @@
 import { jsPDF } from 'jspdf';
-import { toPng } from 'html-to-image';
+import { getFontEmbedCSS, toPng } from 'html-to-image';
 
 // 是否启用“体积压缩”策略：
 // - true：使用 JPEG + 多次尝试降低质量/分辨率，尽量把文件控制在 5MB 内
@@ -49,6 +49,15 @@ export type ExportPdfProgress =
 export type ExportPdfOptions = {
   onProgress?: (p: ExportPdfProgress) => void;
 };
+
+type PreparedOfflineExportState = {
+  fontEmbedCSS?: string;
+};
+
+const preparedOfflineExportState = new WeakMap<
+  HTMLElement,
+  PreparedOfflineExportState
+>();
 
 const emitProgress = (
   fn: ExportPdfOptions['onProgress'],
@@ -120,6 +129,73 @@ const waitForImages = async (root: HTMLElement) => {
   );
 };
 
+const imageToDataUrl = (img: HTMLImageElement) => {
+  const width = Math.max(1, img.naturalWidth || img.width || 1);
+  const height = Math.max(1, img.naturalHeight || img.height || 1);
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return undefined;
+
+  try {
+    ctx.drawImage(img, 0, 0, width, height);
+    return canvas.toDataURL('image/png');
+  } catch {
+    return undefined;
+  }
+};
+
+const replaceImageSrc = async (img: HTMLImageElement, dataUrl: string) => {
+  await new Promise<void>((resolve) => {
+    const done = () => {
+      img.removeEventListener('load', done);
+      img.removeEventListener('error', done);
+      resolve();
+    };
+
+    img.addEventListener('load', done);
+    img.addEventListener('error', done);
+    img.src = dataUrl;
+  });
+};
+
+export const prepareElementForOfflineExport = async (root: HTMLElement) => {
+  await waitForFonts();
+  await waitForImages(root);
+
+  const imageCache = new Map<string, string>();
+  const imgs = Array.from(root.querySelectorAll('img'));
+
+  for (const img of imgs) {
+    const src = img.currentSrc || img.src;
+    if (!src || src.startsWith('data:') || src.startsWith('blob:')) continue;
+
+    let dataUrl = imageCache.get(src);
+    if (!dataUrl) {
+      dataUrl = imageToDataUrl(img);
+      if (!dataUrl) continue;
+      imageCache.set(src, dataUrl);
+    }
+
+    img.removeAttribute('srcset');
+    img.removeAttribute('sizes');
+    await replaceImageSrc(img, dataUrl);
+  }
+
+  let fontEmbedCSS: string | undefined;
+  try {
+    fontEmbedCSS = await getFontEmbedCSS(root);
+  } catch {
+    fontEmbedCSS = undefined;
+  }
+
+  preparedOfflineExportState.set(root, {
+    fontEmbedCSS,
+  });
+};
+
 const getExportPixelRatio = () => {
   return Math.max(2, window.devicePixelRatio || 1);
 };
@@ -151,11 +227,13 @@ const prepareForExport = async (root: HTMLElement) => {
 const renderElementToPngDataUrl = async (
   el: HTMLElement,
   pixelRatio: number,
+  fontEmbedCSS?: string,
 ) => {
   return await toPng(el, {
     backgroundColor: '#ffffff',
     pixelRatio,
-    cacheBust: true,
+    cacheBust: false,
+    fontEmbedCSS,
     filter: (node) => {
       if (!(node instanceof HTMLElement)) return true;
       return !isHiddenForExport(node);
@@ -169,8 +247,16 @@ const renderElementSliceToPngDataUrlByWrappingPage = async (args: {
   offsetYCssPx: number;
   sliceHeightCssPx: number;
   pixelRatio: number;
+  fontEmbedCSS?: string;
 }) => {
-  const { el, widthCssPx, offsetYCssPx, sliceHeightCssPx, pixelRatio } = args;
+  const {
+    el,
+    widthCssPx,
+    offsetYCssPx,
+    sliceHeightCssPx,
+    pixelRatio,
+    fontEmbedCSS,
+  } = args;
 
   // 思路：用一个固定高度（单页）的 wrapper 包住整份内容 clone，并通过 translateY 上移。
   // wrapper 设置 overflow:hidden，确保真正“分页裁切”，避免 foreignObject 路线在某些浏览器出现中间截断。
@@ -208,7 +294,8 @@ const renderElementSliceToPngDataUrlByWrappingPage = async (args: {
     return await toPng(page, {
       backgroundColor: '#ffffff',
       pixelRatio,
-      cacheBust: true,
+      cacheBust: false,
+      fontEmbedCSS,
       filter: (node) => {
         if (!(node instanceof HTMLElement)) return true;
         return !isHiddenForExport(node);
@@ -224,8 +311,9 @@ const renderFixedSizeElementToPngDataUrlByWrapping = async (args: {
   widthCssPx: number;
   heightCssPx: number;
   pixelRatio: number;
+  fontEmbedCSS?: string;
 }) => {
-  const { el, widthCssPx, heightCssPx, pixelRatio } = args;
+  const { el, widthCssPx, heightCssPx, pixelRatio, fontEmbedCSS } = args;
 
   // 目的：避免某些浏览器在直接对“页面内元素（可能处于 subpixel x）”截图时出现轻微水平偏移。
   // 通过把元素 clone 到一个固定尺寸、x=0 的 wrapper 中，再进行 toPng，保证对齐稳定。
@@ -263,7 +351,8 @@ const renderFixedSizeElementToPngDataUrlByWrapping = async (args: {
     return await toPng(page, {
       backgroundColor: '#ffffff',
       pixelRatio,
-      cacheBust: true,
+      cacheBust: false,
+      fontEmbedCSS,
       filter: (node) => {
         if (!(node instanceof HTMLElement)) return true;
         return !isHiddenForExport(node);
@@ -314,10 +403,15 @@ const renderPngWithRetry = async (args: {
 }) => {
   const { el, widthCssPx, heightCssPx } = args;
   const maxAttempts = args.maxAttempts ?? 3;
+  const fontEmbedCSS = preparedOfflineExportState.get(el)?.fontEmbedCSS;
 
   let pixelRatio = args.initialPixelRatio;
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-    const dataUrl = await renderElementToPngDataUrl(el, pixelRatio);
+    const dataUrl = await renderElementToPngDataUrl(
+      el,
+      pixelRatio,
+      fontEmbedCSS,
+    );
     const img = await loadImage(dataUrl);
     const expectedWidthPx = Math.round(widthCssPx * pixelRatio);
     const expectedHeightPx = Math.round(heightCssPx * pixelRatio);
@@ -342,7 +436,7 @@ const renderPngWithRetry = async (args: {
     pixelRatio = next;
   }
 
-  const dataUrl = await renderElementToPngDataUrl(el, pixelRatio);
+  const dataUrl = await renderElementToPngDataUrl(el, pixelRatio, fontEmbedCSS);
   return { dataUrl, pixelRatio };
 };
 
@@ -447,7 +541,9 @@ export async function exportElementToPdf(
     percent: 2,
     message: '准备导出…',
   });
+  await prepareElementForOfflineExport(el);
   await prepareForExport(el);
+  const fontEmbedCSS = preparedOfflineExportState.get(el)?.fontEmbedCSS;
 
   // 如果页面本身已经按 A4 分页渲染（屏幕端分页视图），则按页逐个渲染。
   // 这样可以避免对超长容器截图时出现“中间截断”。
@@ -512,6 +608,7 @@ export async function exportElementToPdf(
           widthCssPx,
           heightCssPx,
           pixelRatio,
+          fontEmbedCSS,
         });
         const dataUrl = EXPORT_PDF_ENABLE_COMPRESSION
           ? await convertPngDataUrlToJpegDataUrl({
@@ -732,6 +829,7 @@ export async function exportElementToPdf(
             offsetYCssPx: s.offsetYCssPx,
             sliceHeightCssPx: s.sliceHeightCssPx,
             pixelRatio: slicePixelRatio,
+            fontEmbedCSS,
           });
           sliceDataUrl = EXPORT_PDF_ENABLE_COMPRESSION
             ? await convertPngDataUrlToJpegDataUrl({

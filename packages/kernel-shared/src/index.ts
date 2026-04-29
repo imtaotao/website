@@ -1,4 +1,7 @@
-export { exportElementToPdf } from '#shared/resumeExport';
+export {
+  exportElementToPdf,
+  prepareElementForOfflineExport,
+} from '#shared/resumeExport';
 export { normalizeResumeModel } from '#shared/resumeParser';
 export type {
   ResumeBasics,
