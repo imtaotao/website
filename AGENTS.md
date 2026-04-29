@@ -42,6 +42,31 @@
 - 简历界面说明：`docs/codex/resume-ui.md`
 - 本地代码风格：`docs/codex/style.md`
 
+## commit 提交格式
+
+commit 使用英文提交。
+
+```shell
+<type>(<scope>): <subject>
+// 注意冒号 : 后有空格
+// 如 feat(resume): 增加了简历导出相关功能
+```
+
+scope 选填表示 commit 的作用范围，如数据层、视图层，也可以是目录名称 subject 必填用于对 commit 进行简短的描述 type 必填表示提交类型，值有以下几种：
+
+```shell
+eat - 新功能 feature
+fix - 修复 bug
+docs - 文档注释
+style - 代码格式(不影响代码运行的变动)
+refactor - 重构、优化(既不增加新功能，也不是修复bug)
+perf - 性能优化
+test - 增加测试
+chore - 构建过程或辅助工具的变动
+revert - 回退
+build - 打包
+```
+
 ## 迁移说明
 
 原来的 `.claude/skills/` 目录暂时保留，用于兼容现有流程。面向 Codex 的项目说明现在统一放在本文件和 `docs/codex/` 目录下。
