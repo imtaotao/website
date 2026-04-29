@@ -17,7 +17,7 @@
     "allowSyntheticDefaultImports": true,
     "strictPropertyInitialization": false,
     "resolveJsonModule": true,
-
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "outDir": "dist",
     "strict": true,

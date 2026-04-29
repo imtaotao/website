@@ -71,6 +71,9 @@ importers:
       '@tailwindcss/vite':
         specifier: 4.2.4
         version: 4.2.4(vite@8.0.2(@types/node@20.12.12)(jiti@2.6.1)(tsx@4.11.2)(yaml@2.8.3))
+      '@website-kernel/blog':
+        specifier: workspace:*
+        version: link:../packages/kernel-blog
       '@website-kernel/shared':
         specifier: workspace:*
         version: link:../packages/kernel-shared
@@ -126,6 +129,28 @@ importers:
       vite-tsconfig-paths:
         specifier: ^6.1.1
         version: 6.1.1(typescript@5.8.2)(vite@8.0.2(@types/node@20.12.12)(jiti@2.6.1)(tsx@4.11.2)(yaml@2.8.3))
+
+  packages/kernel-blog:
+    dependencies:
+      aidly:
+        specifier: 'catalog:'
+        version: 1.37.0
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: 'catalog:'
+        version: 1.6.0(vitest@1.6.0(@types/node@20.12.12)(lightningcss@1.32.0))
+      rimraf:
+        specifier: 'catalog:'
+        version: 6.0.1
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.6.1)(postcss@8.5.8)(tsx@4.11.2)(typescript@5.8.2)(yaml@2.8.3)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.2
+      vitest:
+        specifier: 'catalog:'
+        version: 1.6.0(@types/node@20.12.12)(lightningcss@1.32.0)
 
   packages/kernel-shared:
     dependencies:

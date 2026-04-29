@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@website-kernel/blog": "workspace:*",
     "@website-kernel/shared": "workspace:*",
     "@tailwindcss/vite": "4.2.4",
     "@radix-ui/themes": "^3.3.0",
