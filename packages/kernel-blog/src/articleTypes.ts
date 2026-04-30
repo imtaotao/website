@@ -19,7 +19,7 @@ export type BlogArticleFrontmatter = {
   tags: Array<BlogTagKey>;
   publishedAt: string;
   updatedAt: string;
-  summary: string;
+  summary?: string;
   cover?: string;
 };
 

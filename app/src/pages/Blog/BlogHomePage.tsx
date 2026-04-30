@@ -1,36 +1,37 @@
 import { useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import {
   BookmarkFilledIcon,
   CalendarIcon,
   CodeIcon,
   FileTextIcon,
-  LayersIcon,
   MagnifyingGlassIcon,
   Pencil2Icon,
   ReaderIcon,
-  TextIcon,
   ViewGridIcon,
 } from '@radix-ui/react-icons';
 import {
   formatBlogDate,
   formatBlogMeta,
   getBlogArticles,
+  getBlogTagByKey,
   getBlogTagSummaries,
 } from '#app/lib/blog';
+import {
+  BLOG_TAG_QUERY_KEY,
+  createBlogTagNavigation,
+} from '#app/lib/blogNavigation';
 
 import '#app/pages/blog/BlogPage.css';
 
 const getTagIcon = (tag: string) => {
   switch (tag) {
-    case 'architecture':
-      return LayersIcon;
     case 'frontend':
       return CodeIcon;
     case 'notes':
       return Pencil2Icon;
-    case 'writing':
-      return TextIcon;
+    case 'thinking':
+      return ReaderIcon;
     default:
       return BookmarkFilledIcon;
   }
@@ -38,13 +39,18 @@ const getTagIcon = (tag: string) => {
 
 export default function BlogHomePage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const articles = getBlogArticles();
   const tags = getBlogTagSummaries();
 
-  const [activeTag, setActiveTag] = useState<string>('');
   const [query, setQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
+
+  const activeTag = useMemo(() => {
+    const value = searchParams.get(BLOG_TAG_QUERY_KEY)?.trim() ?? '';
+    return getBlogTagByKey(value) ? value : '';
+  }, [searchParams]);
 
   const normalizedQuery = useMemo(() => query.trim().toLowerCase(), [query]);
 
@@ -99,7 +105,7 @@ export default function BlogHomePage() {
           kind: 'tag',
           key: `tag:${tag.key}`,
           label: `# ${tag.label}`,
-          meta: `过滤到「${tag.label}」`,
+          meta: `过滤到标签 ${tag.label}`,
           tagKey: tag.key,
           score,
         });
@@ -166,7 +172,7 @@ export default function BlogHomePage() {
 
       return haystack.includes(normalizedQuery);
     });
-  }, [articles, activeTag, query]);
+  }, [activeTag, articles, normalizedQuery]);
 
   const activeTagMeta = useMemo(() => {
     if (!activeTag) return undefined;
@@ -178,8 +184,8 @@ export default function BlogHomePage() {
     setIsSearchFocused(false);
 
     if (suggestion.kind === 'tag') {
-      setActiveTag(suggestion.tagKey);
       setQuery('');
+      navigate(createBlogTagNavigation(suggestion.tagKey));
       return;
     }
 
@@ -197,10 +203,22 @@ export default function BlogHomePage() {
           </p>
           <h1 className="blog-home-title">博客</h1>
           <p className="blog-home-subtitle">
-            记录一些开发过程中的思考、实践与复盘。
+            记录一些我的技术分享思考、实践和日常生活。
           </p>
         </div>
         <div className="blog-home-actions">
+          <div className="blog-home-links">
+            <Link to="/resume" className="blog-pill blog-home-resume">
+              <FileTextIcon className="blog-pill-icon" />
+              <span className="blog-pill-label">简历</span>
+            </Link>
+            <div className="blog-home-meta">
+              <span>
+                {filteredArticles.length} / {articles.length} 篇
+              </span>
+            </div>
+          </div>
+
           <div className="blog-search">
             <MagnifyingGlassIcon className="blog-search-icon" />
             <input
@@ -296,11 +314,6 @@ export default function BlogHomePage() {
               </div>
             ) : null}
           </div>
-          <div className="blog-home-meta">
-            <span>
-              {filteredArticles.length} / {articles.length} 篇
-            </span>
-          </div>
         </div>
       </header>
 
@@ -322,35 +335,33 @@ export default function BlogHomePage() {
                 : 'blog-tags-item blog-tags-item--active'
             }
             aria-pressed={!activeTag}
-            onClick={() => setActiveTag('')}
+            onClick={() => navigate(createBlogTagNavigation())}
           >
             <ViewGridIcon className="blog-tags-icon" />
             <span className="blog-tags-label">全部</span>
             <span className="blog-tags-count">{articles.length}</span>
           </button>
-          {tags.map((tag) =>
-            (() => {
-              const TagIcon = getTagIcon(tag.key);
-              const isActive = tag.key === activeTag;
-              return (
-                <button
-                  key={tag.key}
-                  type="button"
-                  className={
-                    isActive
-                      ? 'blog-tags-item blog-tags-item--active'
-                      : 'blog-tags-item'
-                  }
-                  aria-pressed={isActive}
-                  onClick={() => setActiveTag(tag.key)}
-                >
-                  <TagIcon className="blog-tags-icon" />
-                  <span className="blog-tags-label">{tag.label}</span>
-                  <span className="blog-tags-count">{tag.count}</span>
-                </button>
-              );
-            })(),
-          )}
+          {tags.map((tag) => {
+            const TagIcon = getTagIcon(tag.key);
+            const isActive = tag.key === activeTag;
+            return (
+              <button
+                key={tag.key}
+                type="button"
+                className={
+                  isActive
+                    ? 'blog-tags-item blog-tags-item--active'
+                    : 'blog-tags-item'
+                }
+                aria-pressed={isActive}
+                onClick={() => navigate(createBlogTagNavigation(tag.key))}
+              >
+                <TagIcon className="blog-tags-icon" />
+                <span className="blog-tags-label">{tag.label}</span>
+                <span className="blog-tags-count">{tag.count}</span>
+              </button>
+            );
+          })}
         </div>
       </section>
 
@@ -387,7 +398,9 @@ export default function BlogHomePage() {
                 </span>
               </div>
               <h3 className="blog-index-title">{article.title}</h3>
-              <p className="blog-index-summary">{article.summary}</p>
+              {article.summary ? (
+                <p className="blog-index-summary">{article.summary}</p>
+              ) : null}
             </Link>
           ))}
         </div>

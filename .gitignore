@@ -13,6 +13,8 @@ dist-ssr
 *.local
 .env
 .corepack
+Microsoft
+dev/
 
 # Editor directories and files
 docs.md

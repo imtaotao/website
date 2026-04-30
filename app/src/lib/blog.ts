@@ -19,6 +19,8 @@ type RawAssetModule = Record<string, string>;
 export type BlogArticleView = BlogArticleFrontmatter & {
   Content: ComponentType<Record<string, unknown>>;
   coverUrl?: string;
+  sourcePath: string;
+  articleDir: string;
   tagLabels: Array<string>;
 };
 
@@ -62,6 +64,9 @@ const buildBlogArticles = () => {
         module.frontmatter,
         sourcePath,
       );
+      const articleDir = sourcePath
+        .replace(/\\/g, '/')
+        .slice(0, sourcePath.replace(/\\/g, '/').lastIndexOf('/'));
       const coverUrl = frontmatter.cover
         ? articleAssetModules[toArticleAssetKey(sourcePath, frontmatter.cover)]
         : undefined;
@@ -70,6 +75,8 @@ const buildBlogArticles = () => {
         ...frontmatter,
         Content: module.default,
         coverUrl,
+        sourcePath,
+        articleDir,
         tagLabels: frontmatter.tags.map((tag) => blogTagMap[tag]?.label ?? tag),
       };
     })
@@ -115,6 +122,22 @@ export const getBlogTagByKey = (tag: string) => {
 
 export const getBlogArticlesByTag = (tag: string) => {
   return BLOG_ARTICLES.filter((article) => article.tags.includes(tag));
+};
+
+export const resolveBlogAssetUrl = (
+  articleSourcePath: string,
+  assetPath: string,
+) => {
+  const normalizedPath = assetPath.trim();
+  if (!normalizedPath) return undefined;
+  if (/^(?:https?:)?\/\//.test(normalizedPath)) return normalizedPath;
+  if (/^(?:data|blob):/.test(normalizedPath)) return normalizedPath;
+  if (normalizedPath.startsWith('/')) return normalizedPath;
+
+  return (
+    articleAssetModules[toArticleAssetKey(articleSourcePath, normalizedPath)] ??
+    normalizedPath
+  );
 };
 
 export const formatBlogDate = (value: string) => {

@@ -49,11 +49,39 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+html {
+  background: #0f1117;
+}
+
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #ffffff;
+  background: #0f1117;
+}
+
+.app__theme {
+  min-height: 100vh;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+[data-is-root-theme="true"],
+.radix-themes,
+.rt-Theme,
+.app__theme {
+  margin: 0 !important;
+  padding-top: 0 !important;
+  border-top: 0 !important;
 }
 
 .app__suspenseFallback {

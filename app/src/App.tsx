@@ -30,7 +30,7 @@ export function App() {
   const basename = (window.__APP_BASE__ || '/').replace(/\/$/, '');
   return (
     <BrowserRouter basename={basename || undefined}>
-      <Theme>
+      <Theme className="app__theme">
         <Suspense fallback={<AppSuspenseFallback />}>
           <Routes>
             <Route path="/" element={<HomePage />} />

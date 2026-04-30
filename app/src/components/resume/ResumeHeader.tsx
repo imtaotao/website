@@ -9,7 +9,7 @@ import {
   ReaderIcon,
 } from '@radix-ui/react-icons';
 import zhihuIconUrl from '#app/assets/image/zhihu.svg';
-import defaultAvatarUrl from '#app/assets/image/avatar.jpg';
+import defaultAvatarUrl from '#app/assets/image/avatar1.jpg';
 import { copyToClipboard } from '#app/lib/browser';
 
 const iconClassName = 'h-3.5 w-3.5 text-zinc-500';

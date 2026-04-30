@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
+import { CalendarIcon, FileTextIcon, RocketIcon } from '@radix-ui/react-icons';
 
 import {
   formatBlogDate,
-  formatBlogMeta,
   getBlogArticleBySlug,
   getBlogTagByKey,
 } from '#app/lib/blog';
-import { BlogMdx, type MarkdownHeading } from '#app/components/blog/Markdown';
+import { createBlogTagNavigation } from '#app/lib/blogNavigation';
+import { BlogMdx } from '#app/components/blog/Markdown';
 
 import '#app/pages/blog/BlogPage.css';
 
@@ -17,9 +18,8 @@ export default function BlogArticlePage() {
   const { slug = '' } = useParams();
   const article = getBlogArticleBySlug(slug);
 
-  const [headings, setHeadings] = useState<Array<MarkdownHeading>>([]);
-
   const [progress, setProgress] = useState(0);
+  const [wordCount, setWordCount] = useState(0);
 
   useEffect(() => {
     let raf = 0;
@@ -53,17 +53,13 @@ export default function BlogArticlePage() {
     const root = document.querySelector('.blog-article-body');
     if (!root) return;
 
-    const nodes = Array.from(root.querySelectorAll('h2[id], h3[id]'));
-    const nextHeadings = nodes
-      .map((node) => {
-        const level = node.tagName === 'H3' ? 3 : 2;
-        const text = (node.textContent ?? '').trim();
-        const id = (node as HTMLElement).id;
-        return { level, text, id } as MarkdownHeading;
-      })
-      .filter((item) => item.text && item.id);
-
-    setHeadings(nextHeadings);
+    const text = (root.textContent ?? '').trim();
+    const latinWords = text
+      .replace(/[\u4e00-\u9fff]/g, ' ')
+      .split(/\s+/)
+      .filter(Boolean).length;
+    const cjkChars = (text.match(/[\u4e00-\u9fff]/g) ?? []).length;
+    setWordCount(latinWords + cjkChars);
 
     const hash = decodeURIComponent(window.location.hash.replace(/^#/, ''));
     if (!hash) return;
@@ -87,7 +83,7 @@ export default function BlogArticlePage() {
 
   return (
     <main className="blog-shell min-h-screen">
-      <article className="blog-page blog-article-page">
+      <article className="blog-article-page">
         <div className="blog-reading-progress" aria-hidden="true">
           <div
             className="blog-reading-progress-bar"
@@ -95,94 +91,72 @@ export default function BlogArticlePage() {
           />
         </div>
 
-        <Link to="/blog" className="blog-subtle-link">
-          返回主菜单
-        </Link>
-
-        <header className="blog-article-header">
-          <p className="blog-kicker">QUEST / ARTICLE</p>
-          <div className="blog-list-meta">
-            <time dateTime={article.publishedAt}>
-              {formatBlogDate(article.publishedAt)}
-            </time>
-            <span>{formatBlogMeta(article.tagLabels)}</span>
-          </div>
-
-          <h1 className="blog-article-title">{article.title}</h1>
-          <p className="blog-article-summary">{article.summary}</p>
-
-          <div className="blog-article-tag-list">
-            {article.tags.map((tag) => {
-              const tagMeta = getBlogTagByKey(tag);
-
-              return (
-                <Link
-                  key={tag}
-                  to={`/blog/tags/${tag}`}
-                  className="blog-tag-chip"
-                >
-                  {tagMeta?.label ?? tag}
-                </Link>
-              );
-            })}
-          </div>
-
-          <div className="blog-article-updates">
-            <time dateTime={article.publishedAt}>
-              发布于 {formatBlogDate(article.publishedAt)}
-            </time>
-            <time dateTime={article.updatedAt}>
-              更新于 {formatBlogDate(article.updatedAt)}
-            </time>
-          </div>
-        </header>
-
         {article.coverUrl ? (
-          <img
-            src={article.coverUrl}
-            alt={article.title}
-            className="blog-article-cover"
-          />
+          <div className="blog-article-cover-shell">
+            <img
+              src={article.coverUrl}
+              alt={article.title}
+              className="blog-article-cover"
+            />
+          </div>
         ) : null}
 
-        <div className="blog-article-layout">
-          <section className="blog-article-body">
-            <BlogMdx Content={article.Content} />
-          </section>
+        <div className="blog-article-frame">
+          <div className="blog-article-main">
+            <Link to="/blog" className="blog-subtle-link blog-article-back">
+              返回博客首页
+            </Link>
 
-          {headings.length ? (
-            <aside className="blog-article-toc" aria-label="章节目录">
-              <div className="blog-toc-card">
-                <div className="blog-toc-title">目录</div>
-                <nav className="blog-toc-list">
-                  {headings.map((heading) => (
-                    <a
-                      key={heading.id}
-                      href={`#${heading.id}`}
-                      className={
-                        heading.level === 3
-                          ? 'blog-toc-link blog-toc-link--l3'
-                          : 'blog-toc-link'
-                      }
-                      onClick={(event) => {
-                        event.preventDefault();
-                        const target = document.getElementById(heading.id);
-                        if (!target) return;
-                        window.history.replaceState(null, '', `#${heading.id}`);
-                        target.scrollIntoView({
-                          behavior: 'smooth',
-                          block: 'start',
-                        });
-                      }}
+            <header className="blog-article-header">
+              <h1 className="blog-article-title">{article.title}</h1>
+
+              <div className="blog-article-meta-row">
+                <span className="blog-meta-item">
+                  <CalendarIcon className="blog-meta-icon blog-meta-icon--blue" />
+                  <span>发布于 {formatBlogDate(article.publishedAt)}</span>
+                </span>
+                {wordCount ? (
+                  <span className="blog-meta-item">
+                    <FileTextIcon className="blog-meta-icon blog-meta-icon--amber" />
+                    <span>{wordCount} 字</span>
+                  </span>
+                ) : null}
+                {article.tags.map((tag) => {
+                  const tagMeta = getBlogTagByKey(tag);
+
+                  return (
+                    <Link
+                      key={tag}
+                      to={createBlogTagNavigation(tag)}
+                      className="blog-tag-chip"
                     >
-                      {heading.text}
-                    </a>
-                  ))}
-                </nav>
+                      {tagMeta?.label ?? tag}
+                    </Link>
+                  );
+                })}
               </div>
-            </aside>
-          ) : null}
+              {article.summary ? (
+                <p className="blog-article-summary">{article.summary}</p>
+              ) : null}
+            </header>
+
+            <section className="blog-article-body">
+              <BlogMdx
+                Content={article.Content}
+                articleSourcePath={article.sourcePath}
+              />
+            </section>
+          </div>
         </div>
+
+        <button
+          type="button"
+          className="blog-back-to-top"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          aria-label="返回顶部"
+        >
+          <RocketIcon className="blog-back-to-top-icon" />
+        </button>
       </article>
     </main>
   );

@@ -68,6 +68,17 @@ const assertDateString = (
   return text;
 };
 
+const normalizeSummary = (value: unknown, sourcePath: string) => {
+  if (value == null) return undefined;
+  const summary = asString(value);
+  if (!summary) {
+    throw new Error(
+      `Field "summary" must be a non-empty string in ${sourcePath}.`,
+    );
+  }
+  return summary;
+};
+
 export const extractFrontmatter = (source: string, sourcePath: string) => {
   const normalizedSource = source.replace(/^\uFEFF/, '');
   if (
@@ -122,7 +133,7 @@ export const normalizeBlogArticleFrontmatter = (
     tags: normalizeTags(input.tags, sourcePath),
     publishedAt: assertDateString(input.publishedAt, 'publishedAt', sourcePath),
     updatedAt: assertDateString(input.updatedAt, 'updatedAt', sourcePath),
-    summary: assertRequiredText(input.summary, 'summary', sourcePath),
+    summary: normalizeSummary(input.summary, sourcePath),
     cover: normalizeCover(input.cover, sourcePath),
   };
 };

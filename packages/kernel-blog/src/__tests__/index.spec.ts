@@ -129,6 +129,32 @@ Hello world
     expect(tag?.count).toBe(1);
   });
 
+  test('allows article without summary', () => {
+    const articleSourceModules = createArticleSourceModules([
+      {
+        slug: 'without-summary',
+        source: `---
+title: Without summary
+slug: without-summary
+tags:
+  - react
+publishedAt: 2026-04-12
+updatedAt: 2026-04-12
+---
+
+Hello world
+`,
+      },
+    ]);
+
+    const article = getArticleBySlug('without-summary', {
+      articleSourceModules,
+      tagMap,
+    });
+
+    expect(article?.summary).toBeUndefined();
+  });
+
   test('throws on unknown tags', () => {
     const articleSourceModules = createArticleSourceModules([
       {
