@@ -1,27 +1,35 @@
 import {
   blogTagMap,
-  extractFrontmatter,
-  type BlogArticleFrontmatter,
+  normalizeBlogArticleFrontmatter,
   type BlogTagSummary,
-} from '@website-kernel/blog/browser';
+  type BlogArticleFrontmatter,
+} from '@website-kernel/blog';
 
-type RawArticleModule = Record<string, string>;
+import type { ComponentType } from 'react';
+
+type MdxArticleModule = Record<
+  string,
+  {
+    default: ComponentType<Record<string, unknown>>;
+    frontmatter?: unknown;
+  }
+>;
 type RawAssetModule = Record<string, string>;
 
 export type BlogArticleView = BlogArticleFrontmatter & {
-  content: string;
+  Content: ComponentType<Record<string, unknown>>;
   coverUrl?: string;
   tagLabels: Array<string>;
 };
 
-const articleSourceModules = import.meta.glob('../content/blog/*/index.mdx', {
+// @ts-ignore
+const articleSourceModules = import.meta.glob('../blog/*/index.mdx', {
   eager: true,
-  query: '?raw',
-  import: 'default',
-}) as RawArticleModule;
+}) as MdxArticleModule;
 
+// @ts-ignore
 const articleAssetModules = import.meta.glob(
-  '../content/blog/*/image/*.{png,jpg,jpeg,webp,avif,svg}',
+  '../blog/*/image/*.{png,jpg,jpeg,webp,avif,svg}',
   {
     eager: true,
     import: 'default',
@@ -49,15 +57,18 @@ const toArticleAssetKey = (articlePath: string, assetPath: string) => {
 
 const buildBlogArticles = () => {
   return Object.entries(articleSourceModules)
-    .map(([sourcePath, source]) => {
-      const { frontmatter, content } = extractFrontmatter(source, sourcePath);
+    .map(([sourcePath, module]) => {
+      const frontmatter = normalizeBlogArticleFrontmatter(
+        module.frontmatter,
+        sourcePath,
+      );
       const coverUrl = frontmatter.cover
         ? articleAssetModules[toArticleAssetKey(sourcePath, frontmatter.cover)]
         : undefined;
 
       return {
         ...frontmatter,
-        content,
+        Content: module.default,
         coverUrl,
         tagLabels: frontmatter.tags.map((tag) => blogTagMap[tag]?.label ?? tag),
       };
@@ -104,4 +115,22 @@ export const getBlogTagByKey = (tag: string) => {
 
 export const getBlogArticlesByTag = (tag: string) => {
   return BLOG_ARTICLES.filter((article) => article.tags.includes(tag));
+};
+
+export const formatBlogDate = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}.${month}.${day}`;
+};
+
+export const formatBlogMeta = (tags: Array<string>) => {
+  if (tags.length === 0) {
+    return '未分类';
+  }
+  return tags.join(' / ');
 };

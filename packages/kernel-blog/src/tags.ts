@@ -1,4 +1,4 @@
-import type { BlogTagMap } from '#article-types';
+import type { BlogTagMap } from '#blog/articleTypes';
 
 export const blogTagMap: BlogTagMap = {
   architecture: {

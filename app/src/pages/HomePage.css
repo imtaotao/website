@@ -1,0 +1,69 @@
+.home-root {
+  background: #fff;
+}
+
+/* 左偏：保持阅读宽度，但不做居中 */
+.home-container {
+  margin-left: clamp(0px, 3vw, 56px);
+}
+
+/* 字体：标题尝试使用方正兰亭（超细），正文保持系统字体可读性 */
+.home-title-font {
+  font-family: "FZLanTing", ui-serif, "New York", "Times New Roman", Georgia,
+    "Songti SC", "STSong", serif;
+  font-weight: 200;
+  letter-spacing: -0.02em;
+}
+
+.home-body-font {
+  font-family: "FZLanTingWork", "FZLanTing", ui-sans-serif, system-ui,
+    -apple-system, "SF Pro Text", "Segoe UI", Roboto, "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+  font-weight: 400;
+}
+
+.home-link {
+  text-decoration: none;
+  color: #1d4ed8; /* blue-700 */
+}
+
+.home-link:hover {
+  color: #1e40af; /* blue-800 */
+}
+
+/* “带点艺术效果”的高亮下划线：像记号笔/墨迹的底色 */
+.home-ink {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+}
+
+.home-ink::after {
+  content: "";
+  position: absolute;
+  left: -0.14em;
+  right: -0.14em;
+  bottom: 0.08em;
+  height: 0.58em;
+  border-radius: 999px;
+  transform: rotate(-1.2deg);
+  z-index: -1;
+  background: linear-gradient(
+    90deg,
+    rgba(59, 130, 246, 0.20),
+    rgba(147, 197, 253, 0.14),
+    rgba(59, 130, 246, 0.20)
+  );
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.02),
+    0 10px 24px rgba(59, 130, 246, 0.12);
+}
+
+.home-link:hover .home-ink::after {
+  height: 0.62em;
+  transform: rotate(-0.9deg);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.03),
+    0 12px 28px rgba(59, 130, 246, 0.16);
+}
+

@@ -6,7 +6,7 @@ import zhenaiIconUrl from '#app/assets/image/zhenai.svg';
 import codemonIconUrl from '#app/assets/image/codemon.svg';
 import tencentIconUrl from '#app/assets/image/tencent.svg';
 import bytedanceIconUrl from '#app/assets/image/bytedance.svg';
-import { copyToClipboard } from '#app/lib/clipboard';
+import { copyToClipboard } from '#app/lib/browser';
 
 const formatRange = (startAt: string, endAt: string): string => {
   const end = endAt === 'present' ? '至今' : endAt;

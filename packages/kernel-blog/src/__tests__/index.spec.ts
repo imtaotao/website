@@ -1,8 +1,4 @@
-import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
-
-import { afterEach, describe, expect, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import {
   getAllArticles,
@@ -13,21 +9,17 @@ import {
   type BlogTagMap,
 } from '#index';
 
-const tempDirs: Array<string> = [];
+type ArticleSourceModules = Record<string, string>;
 
-const createTempArticlesDir = () => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'kernel-blog-'));
-  tempDirs.push(tempDir);
-
-  const articlesDir = path.join(tempDir, 'articles');
-  fs.mkdirSync(articlesDir);
-  return articlesDir;
-};
-
-const writeArticle = (articlesDir: string, dirname: string, source: string) => {
-  const articleDir = path.join(articlesDir, dirname);
-  fs.mkdirSync(articleDir, { recursive: true });
-  fs.writeFileSync(path.join(articleDir, 'index.mdx'), source);
+const createArticleSourceModules = (
+  entries: Array<{ slug: string; source: string }>,
+): ArticleSourceModules => {
+  return Object.fromEntries(
+    entries.map(({ slug, source }) => [
+      `/virtual/blog/${slug}/index.mdx`,
+      source,
+    ]),
+  );
 };
 
 const tagMap: BlogTagMap = {
@@ -43,20 +35,12 @@ const tagMap: BlogTagMap = {
   },
 };
 
-afterEach(() => {
-  for (const tempDir of tempDirs.splice(0)) {
-    fs.rmSync(tempDir, { recursive: true, force: true });
-  }
-});
-
 describe('kernel-blog content loading', () => {
   test('loads blog articles, sorts them, and aggregates tags', () => {
-    const articlesDir = createTempArticlesDir();
-
-    writeArticle(
-      articlesDir,
-      'older-post',
-      `---
+    const articleSourceModules = createArticleSourceModules([
+      {
+        slug: 'older-post',
+        source: `---
 title: Older post
 slug: older-post
 tags:
@@ -69,12 +53,10 @@ cover: ./cover.jpg
 
 # Older post
 `,
-    );
-
-    writeArticle(
-      articlesDir,
-      'newer-post',
-      `---
+      },
+      {
+        slug: 'newer-post',
+        source: `---
 title: Newer post
 slug: newer-post
 tags:
@@ -87,10 +69,11 @@ summary: Newer summary
 
 # Newer post
 `,
-    );
+      },
+    ]);
 
-    const articles = getAllArticles({ articlesDir, tagMap });
-    const tags = getAllTags({ articlesDir, tagMap });
+    const articles = getAllArticles({ articleSourceModules, tagMap });
+    const tags = getAllTags({ articleSourceModules, tagMap });
 
     expect(articles.map((article) => article.slug)).toEqual([
       'newer-post',
@@ -117,12 +100,10 @@ summary: Newer summary
   });
 
   test('returns article content by slug and filters by tag', () => {
-    const articlesDir = createTempArticlesDir();
-
-    writeArticle(
-      articlesDir,
-      'entry',
-      `---
+    const articleSourceModules = createArticleSourceModules([
+      {
+        slug: 'entry',
+        source: `---
 title: Entry
 slug: entry
 tags:
@@ -135,25 +116,24 @@ cover: ./cover.png
 
 Hello world
 `,
-    );
+      },
+    ]);
 
-    const article = getArticleBySlug('entry', { articlesDir, tagMap });
-    const byTag = getArticlesByTag('react', { articlesDir, tagMap });
-    const tag = getTagByKey('react', { articlesDir, tagMap });
+    const article = getArticleBySlug('entry', { articleSourceModules, tagMap });
+    const byTag = getArticlesByTag('react', { articleSourceModules, tagMap });
+    const tag = getTagByKey('react', { articleSourceModules, tagMap });
 
     expect(article?.content).toContain('Hello world');
-    expect(article?.articleDir).toContain(path.join('articles', 'entry'));
+    expect(article?.articleDir).toContain('/virtual/blog/entry');
     expect(byTag).toHaveLength(1);
     expect(tag?.count).toBe(1);
   });
 
   test('throws on unknown tags', () => {
-    const articlesDir = createTempArticlesDir();
-
-    writeArticle(
-      articlesDir,
-      'bad-entry',
-      `---
+    const articleSourceModules = createArticleSourceModules([
+      {
+        slug: 'bad-entry',
+        source: `---
 title: Bad entry
 slug: bad-entry
 tags:
@@ -165,9 +145,10 @@ summary: Bad summary
 
 Hello
 `,
-    );
+      },
+    ]);
 
-    expect(() => getAllArticles({ articlesDir, tagMap })).toThrow(
+    expect(() => getAllArticles({ articleSourceModules, tagMap })).toThrow(
       'Unknown tag "unknown"',
     );
   });

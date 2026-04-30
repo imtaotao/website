@@ -1,4 +1,4 @@
-import type { BlogTagMap, BlogTagSummary } from '#article-types';
+import type { BlogTagMap, BlogTagSummary } from '#blog/articleTypes';
 
 export const sortBlogTagSummaries = (items: Array<BlogTagSummary>) => {
   return items.sort((left, right) => {

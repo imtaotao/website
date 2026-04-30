@@ -8,6 +8,7 @@ export type {
   ResumeExperience,
   ResumeLink,
   ResumeModel,
+  ResumeModelInput,
   ResumeOpenSourceProject,
   ResumeSchemaVersion,
   ResumeSkillGroup,

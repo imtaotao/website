@@ -1,5 +1,5 @@
-import type { BlogArticleFrontmatter } from '#article-types';
 import { parse } from 'yaml';
+import type { BlogArticleFrontmatter } from '#blog/articleTypes';
 
 const FRONTMATTER_BOUNDARY = '---';
 

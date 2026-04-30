@@ -54,6 +54,68 @@ export type ResumeModel = {
   experiences: Array<ResumeExperience>;
 };
 
+/**
+ * 简历源数据（来自 YAML/JSON）的输入类型。
+ *
+ * 之所以 `normalizeResumeModel` 的实现仍使用 `unknown`：
+ * - YAML/JSON 解析结果在运行时是不可信的（可能缺字段/类型不对）
+ * - 用 `unknown` 强制走一次规范化/兜底逻辑，避免误把脏数据当作已校验的类型
+ *
+ * 这个类型主要用于：编辑器提示、复用字段结构、以及在 TS 场景下约束输入。
+ */
+export type ResumeLinkInput = ResumeLink;
+
+export type ResumeBasicsInput = Partial<Omit<ResumeBasics, 'links'>> & {
+  links?: Array<ResumeLinkInput>;
+};
+
+export type ResumeSkillItemInput = {
+  name: string;
+  level?: number;
+};
+
+export type ResumeSkillGroupInput = {
+  category: string;
+  items?: Array<ResumeSkillItemInput>;
+};
+
+export type ResumeExperienceInput = {
+  company: string;
+  department?: string;
+  role: string;
+  startAt: string;
+  endAt: string;
+  businessHighlights?: Array<string>;
+  techHighlights?: Array<string>;
+  highlights?: Array<string>;
+};
+
+export type ResumeOpenSourceProjectInput = {
+  /** 新字段 */
+  name?: string;
+  /** 旧字段 */
+  title?: string;
+  description?: string;
+  /** 旧字段 */
+  summary?: string;
+  links?: Array<ResumeLinkInput>;
+  stars?: number;
+};
+
+export type ResumeModelInput = {
+  schemaVersion?: ResumeSchemaVersion;
+  basics?: ResumeBasicsInput;
+  summary?: Array<string>;
+  skills?: Array<ResumeSkillGroupInput>;
+  openSourceProjectsIntro?: Array<string>;
+  openSourceProjects?: Array<ResumeOpenSourceProjectInput>;
+  experiences?: Array<ResumeExperienceInput>;
+  /** legacy */
+  projectsIntro?: Array<string>;
+  /** legacy */
+  projects?: Array<ResumeOpenSourceProjectInput>;
+};
+
 const isRecord = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 };
@@ -124,7 +186,7 @@ const splitLegacyHighlights = (items: Array<string>) => {
   return { business, tech, other };
 };
 
-export function normalizeResumeModel(input: unknown) {
+export function normalizeResumeModel(input: ResumeModelInput) {
   const root = isRecord(input) ? input : {};
 
   const basicsRaw = isRecord(root.basics) ? root.basics : {};

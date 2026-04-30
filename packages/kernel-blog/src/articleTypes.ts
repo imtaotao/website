@@ -35,4 +35,10 @@ export type BlogArticleDetail = BlogArticleMeta & {
 export type BlogContentOptions = {
   articlesDir?: string;
   tagMap?: BlogTagMap;
+  /**
+   * Browser/Vite 场景下通过 import.meta.glob 注入的文章源文件内容。
+   * key: sourcePath（glob 返回的模块 key）
+   * value: 源文件字符串（通常来自 ?raw）
+   */
+  articleSourceModules?: Record<string, string>;
 };

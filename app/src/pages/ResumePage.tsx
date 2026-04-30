@@ -1,10 +1,12 @@
 import { type ResumeModel } from '@website-kernel/shared';
 import { loadResumeModel } from '#app/lib/resume';
-import { useIsMobile } from '#app/lib/useIsMobile';
+import { useIsMobile } from '#app/lib/browser';
 import { ResumePageMobile } from '#app/components/resume/ResumePageMobile';
 import { ResumePageDesktop } from '#app/components/resume/ResumePageDesktop';
 
-export function ResumePage() {
+import '#app/pages/ResumePage.css';
+
+export default function ResumePage() {
   const model: ResumeModel = loadResumeModel();
   const isMobile = useIsMobile(768);
 

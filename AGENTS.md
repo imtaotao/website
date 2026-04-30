@@ -14,9 +14,11 @@
 - 优先做最小改动，不要顺手格式化或重命名无关代码。
 - 新增实现前，先遵循现有目录结构和项目模式。
 - 可复用工具优先放到 `packages/kernel-shared/`，不要散落在 `app/` 内。
+- 文件名优先使用驼峰命名法，如 `index.ts`、`useResume.ts` 等， React 组件命名也使用驼峰命名法，如 `Resume.tsx`。
 - 合适时优先使用 `tsconfig.json` 里已有的 TypeScript 路径别名。
 - 这个项目只有最外层的一个 `tsconfig.json`，app 和 packages 里面的包都不要有自己的 `tsconfig.json`。
 - 简历相关实现，以 `docs/codex/` 下文档为准。
+- icon 优先从 `@radix-ui/react-icons` 这个依赖里面获取，如果没有的话再自己创建 svg 图标。
 
 ## 常用命令
 

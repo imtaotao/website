@@ -1,6 +1,8 @@
 import { type ReactNode } from 'react';
 import { Link } from 'react-router';
 
+import '#app/pages/HomePage.css';
+
 type Segment =
   | { type: 'text'; text: string }
   | { type: 'highlight'; text: string }
@@ -108,7 +110,7 @@ const renderSegments = (segs: Array<Segment>) => {
   });
 };
 
-export function HomePage() {
+export default function HomePage() {
   return (
     <main className="min-h-screen bg-white">
       {/* 左偏布局：不居中对齐，右侧留白更大 */}

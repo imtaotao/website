@@ -9,6 +9,8 @@ declare global {
   interface Window {
     __APP_BASE__?: string;
   }
+
+  const __RESUME_JSON__: string;
 }
 
 export {};
