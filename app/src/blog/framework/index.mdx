@@ -1,0 +1,181 @@
+---
+title: 一点我对前端框架的感想
+slug: frontend-framework-thoughts
+tags:
+  - frontend
+  - thinking
+publishedAt: 2018-10-11
+updatedAt: 2018-10-11
+summary: 从命令式操作到声明式渲染，梳理我对 React、Vue 以及状态驱动 UI 这件事的一些理解。
+---
+
+# 一点我对前端框架的感想
+
+最近看了一些关于前端框架的文章，再加上我那段时间也在写自己的实验性框架 [Grass](https://github.com/imtaotao/Grass)，脑子里逐渐形成了一些更清晰的判断，所以想顺手记录下来。
+
+如果只看流行度，当时最热的还是 React 和 Vue。Angular 当然也很重要，但我自己主要用的还是 React 和 Vue，所以这篇文章只围绕这两者展开。
+
+## 从命令式到声明式
+
+早些年的前端开发，很多页面都建立在 jQuery 那一套命令式操作之上。写法大概是这样：
+
+```js
+$('xxx')
+  .add('xx')
+  .remove('xx')
+  .aa('')
+  .bb('');
+```
+
+这种模式在简单页面里没有太大问题，因为页面结构不复杂、状态变化也有限，直接改 DOM 反而很直观。但当业务规模变大之后，问题会逐渐暴露出来：
+
+- 数据状态不好维护
+- UI 状态不好维护
+
+说到底，命令式方式关注的是“怎么一步步改”，而现代前端更需要的是“在某个状态下，界面应该长什么样”。
+
+## 框架真正解决的是什么
+
+现代前端框架的核心表达式其实非常简单：
+
+```js
+UI = render(state);
+```
+
+这句话现在几乎已经成了共识，但它的意义还是值得反复强调：开发者应当把主要精力放在状态维护上，而视图更新这件事交给框架完成。
+
+也就是说，框架的价值不只是“封装了 DOM 操作”，而是把状态与视图建立成了稳定的映射关系。
+
+## JSX、Template、Virtual DOM，本质都只是手段
+
+如果对比 Vue 和 React，会很容易把讨论落到这些差异上：
+
+- `jsx` 和 `template`
+- `virtual-dom` 和细粒度绑定
+
+但这些差异并不是目的，它们只是实现声明式渲染的不同路径。
+
+只要满足同一份状态能够稳定映射出同一份视图，那么无论是 JSX 还是 Template，无论是 Virtual DOM 还是响应式绑定，本质上都在解决同一个问题。
+
+Vue 2 也可以写 JSX；反过来，只要愿意，Template 的思路也不是不能借到别的框架里。形式当然重要，但先理解目标更重要。
+
+## 状态变化如何映射到真实视图
+
+声明式渲染解决了“怎么描述 UI”，接下来还要回答一个问题：状态变了之后，框架具体怎么把变化落实到真实 DOM 上？
+
+这里大致有两类思路。
+
+### 1. 通过 Virtual DOM 做 diff
+
+React 的经典路线就是：状态变化后重新得到一棵新的 virtual-dom tree，再和旧树做 diff，找出差异，最后把差异同步到真实 DOM。
+
+### 2. 通过依赖收集做细粒度更新
+
+Vue 1 的思路更偏向细粒度绑定。它通过依赖收集，让某个数据字段和具体视图节点建立联系，等数据变化时，只更新受影响的部分。
+
+Vue 2 在组件层面做了一个折中：组件级更新依然借助依赖收集来触发，但组件内部视图的更新还是交给 Virtual DOM 处理。这样可以在可维护性和性能之间取一个更平衡的点。
+
+## 依赖收集大概是怎么工作的
+
+下面这段伪代码可以帮助理解 Vue 风格的响应式机制：
+
+```js
+const watcher = new Watcher(vm, expOrFn, cb);
+
+class Watcher {
+  constructor(vm, expOrFn, cb) {
+    this.vm = vm;
+    this.expOrFn = expOrFn;
+    this.cb = cb;
+    this.getter = parsePath(expOrFn);
+    this.value = this.get();
+  }
+
+  get() {
+    const vm = this.vm;
+    pushTarget(this);
+    const value = this.getter.call(vm, vm);
+    clearTarget();
+
+    return value;
+  }
+
+  update() {
+    cb();
+  }
+}
+
+class Dep {
+  append() {}
+
+  notify() {}
+}
+
+Dep.target = null;
+
+function defineReactive(data, key, val) {
+  const dep = new Dep();
+
+  Object.defineProperty(data, key, {
+    enumerable: true,
+    configurable: true,
+    get() {
+      dep.append();
+      return val;
+    },
+    set(newVal) {
+      if (val === newVal) return;
+
+      dep.notify();
+      val = newVal;
+    },
+  });
+}
+```
+
+这段代码当然不完整，但足够说明核心思路：在读取数据时收集依赖，在写入数据时通知更新。
+
+## React 和 Vue 的一个直观差别
+
+在 React 里，我们通常显式调用 `setState` 或者后来的状态更新 API，主动告诉框架“状态变了”。
+
+在 Vue 里，状态变更往往会通过响应式系统自动触发更新通知。
+
+两种方式都能走到同一个终点，只是通知机制不同：
+
+- React 更偏显式调度
+- Vue 更偏自动追踪
+
+理解这个差别以后，很多表层 API 的不同就没那么神秘了。
+
+## 视图和状态分离之后，问题还没有结束
+
+把视图和状态彻底分离当然是一大进步，但项目再大一点，状态本身也会变得难管。这也是 Redux、Vuex 这类状态管理工具存在的意义。
+
+换句话说，框架解决的是“如何根据状态生成 UI”，状态管理解决的是“如何让状态本身不失控”。
+
+## 我当时写 Grass 的想法
+
+Grass 是我自己写的一个实验性框架，它想做的事情并不复杂，还是那条老公式：
+
+```js
+UI = render(state);
+```
+
+当时我采用的是 `template + virtual-dom` 这条路线。Template 负责声明式描述，Virtual DOM 负责更新视图。
+
+状态更新这部分，早期还是依赖 `this.setState({})` 这种方式手动触发。后面如果继续做，我会更倾向于把响应式更新系统补上，思路上会借鉴 Vue。
+
+### 还有哪些可以继续优化
+
+现在回头看，Grass 当时有一个明显问题：Template 和 Virtual DOM 耦合得太紧了。
+
+更理想的做法应该是把 Template 编译成真正的 render 函数，把更多工作前移到编译阶段处理。这样线上运行时代码会更轻，状态和 UI 的映射也能提前固化下来。
+
+这其实也是现代框架不断演化的一条重要方向。
+
+## 总结
+
+现代前端框架带来的效率提升非常明显，它们极大简化了开发过程。但我一直觉得，只会“用框架”是不够的。
+
+更重要的是理解这些框架到底在解决什么问题、为什么这样设计，以及它们在状态、渲染、更新策略上的取舍。因为一旦这些底层思路吃透了，再看新的 API、新的框架，很多事情都会自然得多。

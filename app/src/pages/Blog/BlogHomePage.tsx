@@ -22,7 +22,7 @@ import {
   createBlogTagNavigation,
 } from '#app/lib/blogNavigation';
 
-import '#app/pages/blog/BlogPage.css';
+import '#app/pages/Blog/BlogPage.css';
 
 const getTagIcon = (tag: string) => {
   switch (tag) {

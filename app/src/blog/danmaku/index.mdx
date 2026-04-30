@@ -1,0 +1,378 @@
+---
+title: 这可能是你用过最顺手的弹幕库 🚀
+slug: danmaku-library
+tags:
+  - frontend
+publishedAt: 2025-04-25
+updatedAt: 2025-04-25
+summary: 介绍弹幕库新版本在轨道控制、自定义渲染、高级弹幕和插件机制上的核心能力。
+---
+
+# 这可能是我用过最顺手的弹幕库
+
+最近把五年前写的一个弹幕库重新整理了一遍。这个念头其实两年前就有，只是一直被别的事情打断。最近终于抽出一些周末和晚上的时间，把实现重构了一轮，也顺手把文档补齐了。
+
+这篇文章不打算面面俱到，而是挑几个最有代表性的能力说明一下。如果这些能力正好契合你的场景，或者你只是对弹幕系统的实现感兴趣，可以继续往下看。
+
+> 在线 Demo: https://imtaotao.github.io/danmu/
+>
+> GitHub: https://github.com/imtaotao/danmu
+>
+> 文档: https://imtaotao.github.io/danmu/document/zh/
+
+## 它能做什么
+
+这个弹幕库的重点不只是“把一条文字从右往左飘过去”，而是把几个常见的业务需求一起处理掉：
+
+- 灵活控制轨道布局
+- 自定义弹幕与容器样式
+- 提供可扩展的运动与渲染能力
+- 暴露足够丰富的 hooks，方便接业务逻辑
+
+如果只看接入成本，它也可以很轻量。
+
+## 快速开始
+
+一个最基础的示例大概是这样：
+
+```ts
+import { create } from 'danmu';
+
+const manager = create();
+
+manager.mount('#root');
+manager.startPlaying();
+
+manager.push('弹幕内容');
+```
+
+这套 API 的目标很明确：先把“能跑起来”做到足够直接，再把复杂能力按需打开。
+
+## 轨道可以怎么调
+
+库里支持类似 CSS `calc` 的表达式能力，所以不少位置、宽高、间距配置都可以通过表达式来描述。这让轨道布局的调整会轻松很多。
+
+- `number` 默认按 `px` 处理
+- `string` 支持表达式计算，可用 `+`、`-`、`*`、`/`
+- 目前只支持 `%` 和 `px` 两种单位
+
+比如轨道间距可以这样设置：
+
+```ts
+// 这里的 100% 指容器宽度
+manager.setGap('(100% - 10px) / 5');
+```
+
+### 只显示顶部 3 条轨道
+
+```ts
+manager.setTrackHeight('100% / 3');
+
+manager.setArea({
+  y: {
+    start: 0,
+    end: 150,
+  },
+});
+```
+
+这类配置适合做“只占顶部一小块区域”的场景。尤其是视频播放器里，很多时候并不希望弹幕把整个画面都盖住。
+
+### 只显示中间 3 条轨道
+
+```ts
+manager.setTrackHeight('100% / 3');
+
+manager.setArea({
+  y: {
+    start: '50%',
+    end: '50% + 150',
+  },
+});
+```
+
+### 只渲染不连续的轨道
+
+如果需求再进一步，比如只想渲染 `0`、`2`、`4` 这些轨道，就可以结合 `willRender` hook 来做：
+
+```ts
+manager.setTrackHeight('100% / 6');
+
+manager.setArea({
+  y: {
+    start: 0,
+    end: 300,
+  },
+});
+
+manager.use({
+  willRender(ref) {
+    if (ref.trackIndex === null) return ref;
+
+    if (ref.trackIndex % 2 === 1) {
+      ref.prevent = true;
+      manager.unshift(ref.danmaku);
+    }
+
+    return ref;
+  },
+});
+```
+
+这里的思路很直接：把不希望出现的轨道拦掉，再把弹幕重新放回队列，等待下一次渲染机会。
+
+## 自定义渲染
+
+弹幕系统一旦进入业务场景，最终都会走到“默认样式不够用”这一步。所以这个库在一开始就把弹幕本身和容器的样式控制都留出来了。
+
+### 给弹幕统一设置样式
+
+```ts
+import { create } from 'danmu';
+
+const styles = {
+  color: 'red',
+  fontSize: '15px',
+};
+
+const manager = create();
+
+for (const key in styles) {
+  manager.setStyle(key, styles[key]);
+}
+```
+
+### 在渲染时动态设置样式
+
+如果你希望新弹幕在进入时自动附加样式，或者补上 className，可以在 hook 里做：
+
+```ts
+import { create } from 'danmu';
+
+const styles = {
+  color: 'red',
+  fontSize: '15px',
+};
+
+const manager = create({
+  plugin: {
+    $moveStart(danmaku) {
+      for (const key in styles) {
+        danmaku.setStyle(key, styles[key]);
+      }
+
+      danmaku.node.classList.add('className');
+    },
+  },
+});
+
+manager.asyncEach((danmaku) => {
+  for (const key in styles) {
+    danmaku.setStyle(key, styles[key]);
+  }
+});
+```
+
+### 给容器设置样式
+
+```ts
+import { create } from 'danmu';
+
+const styles = {
+  background: 'red',
+};
+
+const manager = create({
+  plugin: {
+    init(manager) {
+      for (const key in styles) {
+        manager.container.setStyle(key, styles[key]);
+      }
+
+      manager.container.node.classList.add('className');
+    },
+  },
+});
+
+for (const key in styles) {
+  manager.container.setStyle(key, styles[key]);
+}
+```
+
+## 高级弹幕
+
+除了普通弹幕，这个库也支持“固定在某个位置停留一段时间”的高级弹幕。很多提示型内容、活动运营内容，都会用到这种能力。
+
+### 固定在顶部
+
+```ts
+manager.pushFlexibleDanmaku('弹幕内容', {
+  duration: 5000,
+  direction: 'none',
+  position(danmaku) {
+    return {
+      x: `50% - ${danmaku.getWidth() / 2}`,
+      y: 10,
+    };
+  },
+});
+```
+
+### 固定在某条轨道中间
+
+```ts
+manager.pushFlexibleDanmaku('弹幕内容', {
+  duration: 5000,
+  direction: 'none',
+  position(danmaku) {
+    const { middle } = manager.getTrack(2).location;
+
+    return {
+      x: `50% - ${danmaku.getWidth() / 2}`,
+      y: middle - danmaku.getHeight() / 2,
+    };
+  },
+});
+```
+
+### 固定在左侧
+
+```ts
+manager.pushFlexibleDanmaku('弹幕内容', {
+  duration: 5000,
+  direction: 'none',
+  position(danmaku) {
+    return {
+      x: 10,
+      y: `50% - ${danmaku.getHeight() / 2}`,
+    };
+  },
+});
+```
+
+这类能力的重点不是“多炫”，而是让定位控制真正从轨道系统里解耦出来。
+
+## 发送带图片的弹幕
+
+如果弹幕里不仅有文字，还想塞图片、头像，甚至一整块自定义内容，本质上就是把组件渲染到弹幕节点里。
+
+下面用 React 举个简单例子。
+
+### 先定义弹幕组件
+
+```tsx
+export function Danmaku({ danmaku }) {
+  return (
+    <div>
+      <img src="https://abc.jpg" />
+      {danmaku.data}
+    </div>
+  );
+}
+```
+
+### 再把组件挂到弹幕节点上
+
+```tsx
+import ReactDOM from 'react-dom/client';
+import { create } from 'danmu';
+
+import { Danmaku } from './Danmaku';
+
+const manager = create<string>({
+  plugin: {
+    $createNode(danmaku) {
+      ReactDOM.createRoot(danmaku.node).render(
+        <Danmaku danmaku={danmaku} />,
+      );
+    },
+  },
+});
+```
+
+走到这一步之后，弹幕节点里就不止能放图片，理论上可以塞任何你需要的内容。
+
+## 写一个插件
+
+这个库有一个我自己很喜欢的点，就是插件扩展足够直接。内核没有强行内置太多业务规则，但提供了 hooks 和 API，所以你可以在外层做出相当多定制。
+
+举一个简单例子：按用户 ID 或关键词过滤弹幕。
+
+### 插件实现
+
+```ts
+export function filter({ userIds, keywords }) {
+  return () => {
+    return {
+      name: 'filter-keywords-or-user',
+      version: '1.0.0',
+      willRender(ref) {
+        const { userId, content } = ref.danmaku.data.value;
+
+        if (userIds && userIds.includes(userId)) {
+          ref.prevent = true;
+        } else if (keywords) {
+          for (const word of keywords) {
+            if (content.includes(word)) {
+              ref.prevent = true;
+              break;
+            }
+          }
+        }
+
+        return ref;
+      },
+    };
+  };
+}
+```
+
+### 注册插件
+
+```ts
+import { create } from 'danmu';
+
+const manager = create<{
+  userId: number;
+  content: string;
+}>();
+
+manager.use(
+  filter({
+    userIds: [1],
+    keywords: ['菜'],
+  }),
+);
+```
+
+### 发送测试数据
+
+下面这些数据里，前两条会被拦掉，后两条会正常渲染：
+
+```ts
+manager.push({
+  userId: 1,
+  content: '',
+});
+
+manager.push({
+  userId: 2,
+  content: '你真菜',
+});
+
+manager.push({
+  userId: 2,
+  content: '',
+});
+
+manager.push({
+  userId: 2,
+  content: '你真棒',
+});
+```
+
+## 总结
+
+这篇文章只是把这个弹幕库里我觉得最值得提的几块能力抽出来讲了一遍。它的目标并不是做一个只能跑 demo 的玩具，而是把轨道、渲染、定位和扩展这几件事都处理得足够顺手。
+
+更完整的内容可以直接去看官方文档。如果它对你的业务或者学习有帮助，也欢迎去仓库点个 star。

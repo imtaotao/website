@@ -1,0 +1,256 @@
+---
+title: 说一说 Virtual DOM
+slug: virtual-dom
+tags:
+  - frontend
+publishedAt: 2018-10-15
+updatedAt: 2018-10-15
+summary: 从 Virtual DOM 的动机、结构和 diff 思路出发，梳理一次典型的 create、diff、patch 过程。
+---
+
+# 说一说 Virtual DOM
+
+在上一篇关于框架的文章里，我提到过：一个现代声明式渲染框架在收到“状态变化”的信号后，接下来一定要做一件事，那就是更新视图。
+
+更新视图的方法并不只有一种，Virtual DOM 只是其中一条路线。这篇文章就集中聊三件事：
+
+- 什么是 Virtual DOM
+- 为什么要引入它
+- 一个典型的 VDOM 实现大致会怎么组织
+
+如果你对具体实现感兴趣，也可以顺手看一下我之前写的这个实验仓库：[virtualDom](https://github.com/imtaotao/virtualDom)。
+
+## 什么是 Virtual DOM
+
+Virtual DOM 不是“真的 DOM”，它更像是真实 DOM 的一份轻量级描述。
+
+为什么要这么做？因为直接操作真实 DOM 的代价并不低。真实 DOM 节点本身结构复杂、属性很多、宿主环境开销也不小。如果每次状态变化都先去大规模创建和比对真实 DOM，成本会很高。
+
+用一个更轻量的 JavaScript 对象来保存界面结构，很多事情就会简单得多。
+
+比如下面这样一个 `tag` 函数：
+
+```ts
+function tag(tagName, attrs, children) {
+  return {
+    tagName,
+    attrs,
+    children,
+  };
+}
+```
+
+这个对象里只保留我们真正关心的信息：
+
+- 标签名
+- 属性
+- 子节点
+
+这就是一个非常简化的 Virtual DOM 节点。
+
+## 从 Virtual DOM 创建真实 DOM
+
+既然一份 VDOM 保存了结构信息，那么从它还原出真实 DOM 也是自然的下一步：
+
+```ts
+function createElement(vnode) {
+  const node = document.createElement(vnode.tagName);
+
+  applyProps(node, vnode.attrs);
+
+  vnode.children.forEach((childVNode) => {
+    node.appendChild(createElement(childVNode));
+  });
+
+  return node;
+}
+```
+
+到这里我们已经有了两样基础能力：
+
+1. 用对象保存视图结构
+2. 根据对象生成真实 DOM
+
+剩下最关键的部分就是：旧树和新树之间怎么找差异。
+
+## 一个 Virtual DOM 算法通常包含三步
+
+如果把流程抽象一下，大多数 Virtual DOM 实现都绕不开下面三步：
+
+1. `createVNode`
+2. `diff`
+3. `patch`
+
+先生成结构，再比对差异，最后把差异映射回真实 DOM。
+
+## 为什么 diff 不能太“暴力”
+
+本质上，Virtual DOM 是状态和真实 DOM 之间的一层缓冲。状态变化很快，真实 DOM 更新很慢，所以我们希望在“更轻”的那层先把计算做掉。
+
+但即便在 VDOM 层做 diff，也不能让算法复杂度失控。因此 React 在 reconciliation 里做过一些非常关键的假设：
+
+- 只对同层级节点做比较
+- 子元素移动依赖 `key` 作为稳定标识
+
+这些假设的价值在于，它们让问题从“通用树编辑问题”收缩成了一个在工程上可接受的近似解。
+
+## 差异通常有哪些类型
+
+在一次 diff 过程中，常见差异大致有这些：
+
+- `DELETE`
+- `INSERT`
+- `MOVES`
+- `PROPCHANGE`
+- `TEXT`
+
+也就是说，一个节点的变化不只是“删了”或者“加了”，它还可能是属性改了、文本改了，或者位置移动了。
+
+## diff 的大致过程
+
+下面这段伪代码可以帮助理解整体结构：
+
+```ts
+function diff(a, b) {
+  const patch = { a };
+  const index = 0;
+
+  walk(a, b, patch, index);
+
+  return patch;
+}
+
+function walk(a, b, patch, index) {
+  if (a === b) {
+    return;
+  }
+
+  const apply = patch[index];
+
+  if (a && b) {
+    const propsPatch = diffProps(a, b);
+
+    if (propsPatch) {
+      appendPatch(apply, propsPatch);
+    }
+
+    const childrenPatch = diffChildren(a, b);
+
+    if (childrenPatch) {
+      appendPatch(apply, childrenPatch);
+    }
+  } else if (!b) {
+    appendPatch(apply, removePatch);
+  }
+}
+```
+
+这段代码做的事情其实并不复杂：
+
+- 如果两个节点完全相同，就跳过
+- 如果两边都存在，就先比较属性，再比较子节点
+- 如果新节点不存在，那就是删除
+
+值得注意的一点是：同一个位置可能同时存在多种 patch，所以 patch 本身往往要支持数组结构。
+
+## 子节点怎么做 diff
+
+子节点 diff 往往是最容易把人绕进去的部分。简化之后，大概会像这样：
+
+```ts
+function diffChildren(a, b, patch, apply, index) {
+  const aChildren = a.children;
+  const orderedSet = reorder(aChildren, b.children);
+  const bChildren = orderedSet.children;
+
+  const len =
+    aChildren.length > bChildren.length ? aChildren.length : bChildren.length;
+
+  for (let i = 0; i < len; i++) {
+    const leftNode = aChildren[i];
+    const rightNode = bChildren[i];
+    index++;
+
+    if (leftNode) {
+      walk(leftNode, rightNode, patch, index);
+    } else if (rightNode) {
+      apply = appendPatch(apply, insertPatch);
+    }
+
+    if (isVNode(leftNode) && leftNode.count) {
+      index += leftNode.count;
+    }
+  }
+
+  if (orderedSet.moves) {
+    apply = appendPatch(apply, movesPatch);
+  }
+
+  return apply;
+}
+```
+
+这里有两个关键点：
+
+- 递归向下继续比较左右子树
+- 先通过 `reorder` 处理可复用子节点的顺序问题
+
+`reorder` 的存在，就是为了尽量识别“这是移动，不是删除再新增”。这也是 `key` 为什么重要的直接原因。
+
+## diff 的结果长什么样
+
+最终我们会得到一份 patch 集合，结构大概类似：
+
+```ts
+patch = {
+  0: remove,
+  1: [insert, moves],
+  6: props,
+};
+```
+
+这里的数字可以理解为深度优先遍历过程中的索引位置。因为树结构在遍历过程中被“拍平”成了一维索引，所以每个节点常常还会维护一个 `count`，帮助定位子树跨度。
+
+## 如何把 patch 映射回真实 DOM
+
+有了 patch 之后，最后一步就是把它执行到真实 DOM 上。
+
+```ts
+function applyPatch(vpatch, dom) {
+  const { type, vnode, patch } = vpatch;
+
+  switch (type) {
+    case 'REMOVE':
+      return removeNode(dom, vnode);
+    case 'INSERT':
+      return insertNode(dom, patch);
+    case 'ORDER':
+      reorderChildren(dom, patch);
+      return dom;
+    case 'PROPS':
+      applyProperties(dom, vnode);
+      return dom;
+    default:
+      return dom;
+  }
+}
+```
+
+这一步本身不神秘，它只是把之前分析好的差异，按类型落回真实 DOM：
+
+- 删除节点
+- 插入节点
+- 调整顺序
+- 更新属性
+
+## 总结
+
+如果只抓主线，一个 Virtual DOM 方案本质上就是三件事：
+
+1. 用 JavaScript 对象描述视图
+2. 对新旧对象树做 diff
+3. 把差异映射到真实 DOM
+
+它的意义不在于“完全不碰 DOM”，而在于把昂贵操作尽量延后，把更多比较工作放到更轻的数据结构里完成。
+
+至于列表重排、`reorder` 的具体细节，那又是另外一个很值得单独展开的话题。

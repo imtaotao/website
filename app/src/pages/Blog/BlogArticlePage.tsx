@@ -10,7 +10,7 @@ import {
 import { createBlogTagNavigation } from '#app/lib/blogNavigation';
 import { BlogMdx } from '#app/components/blog/Markdown';
 
-import '#app/pages/blog/BlogPage.css';
+import '#app/pages/Blog/BlogPage.css';
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 

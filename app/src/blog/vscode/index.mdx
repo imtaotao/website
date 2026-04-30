@@ -1,0 +1,59 @@
+---
+title: VS Code 主题与编辑器设置
+slug: vscode-theme-settings
+tags:
+  - notes
+publishedAt: 2022-01-16
+updatedAt: 2022-01-16
+summary: 记录一套偏 Monokai 风格的 VS Code 配置，包括主题、终端和编辑器细节上的个人取向。
+---
+
+# VS Code 主题与编辑器设置
+
+这里主要是整理我当时在 VS Code 里常用的一套外观和编辑器设置。
+
+在项目中，新建一个 `.vscode/settings.json`，然后将这段 `json` 粘贴进去就可以了。如果不适应导航栏在右边，可以将 `workbench.sideBar.location` 换回 `left`。
+
+## 效果图
+
+<ImageGallery
+  columns={2}
+  images={[
+    { src: './image/html.png', alt: 'html' },
+    { src: './image/tsx.png', alt: 'tsx' },
+  ]}
+/>
+
+## 配置内容
+
+```json
+{
+  // Visuals
+  "workbench.colorTheme": "Monokai Pro (Filter Machine)",
+  "workbench.iconTheme": "file-icons",
+  "workbench.sideBar.location": "right",
+  "workbench.editor.tabCloseButton": "left",
+  "workbench.editor.highlightModifiedTabs": true,
+  "workbench.activityBar.visible": true,
+
+  // Terminal
+  "terminal.integrated.cursorBlinking": true,
+  "terminal.integrated.cursorStyle": "line",
+  "terminal.integrated.fontWeight": "300",
+  "terminal.integrated.persistentSessionReviveProcess": "never",
+
+  // Editor
+  "editor.tabSize": 2,
+  "editor.lineNumbers": "interval",
+  "editor.guides.bracketPairs": "active",
+  "editor.cursorSmoothCaretAnimation": true,
+  "editor.renderWhitespace": "boundary",
+  "editor.unicodeHighlight.invisibleCharacters": false,
+
+  // 仅在 macOS 下使用
+  "editor.fontSize": 13,
+  "editor.fontFamily": "Monaco, 'Courier New', monospace",
+  "editor.fontLigatures": "'ss01', 'ss02', 'ss03', 'ss06', 'zero'"
+}
+```
+

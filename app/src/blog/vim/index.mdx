@@ -1,0 +1,239 @@
+---
+title: Vim 学习记录
+slug: vim-notes
+tags:
+  - notes
+publishedAt: 2021-07-16
+updatedAt: 2021-07-16
+summary: 记录一套我当时常用的 Vim 配置、插件管理方式，以及日常开发里比较顺手的插件组合。
+---
+
+# Vim 学习记录
+
+这篇文章整理 Vim 使用记录，主要包括两部分：
+
+- 一套我当时常用的 `.vimrc` 配置
+- 一组配合 `pathogen` 使用的插件清单
+
+## 学习资料
+
+如果你也在学 Vim，这两份资料我当时觉得很有帮助：
+
+- [知乎笔记](https://zhuanlan.zhihu.com/p/68111471)
+- [GitHub 文档](https://github.com/imtaotao/learn-vim)
+
+## `.vimrc` 配置
+
+下面这份配置基本覆盖了我那时最常用的编辑体验：主题、行号、折叠、缩进、窗口切换、插件快捷键等。
+
+```vim
+set backspace=indent,eol,start
+set hlsearch
+
+" 设置主题
+set background=dark
+colorscheme monokai
+
+" 设置行号
+set number
+
+" 设置当前行高亮
+set cursorline
+highlight CursorLine cterm=NONE ctermbg=black ctermfg=green guibg=NONE guifg=NONE
+
+" 设置折叠
+set foldmethod=indent
+set foldlevelstart=99
+nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
+
+" 设置 tab 为 2 空格
+set expandtab
+set shiftwidth=2
+set tabstop=2
+set smarttab
+set smartindent
+
+" 配置快捷键 <Leader>
+let mapleader=","
+
+" 配置多标签
+map <leader>tn :tabnew<cr>
+map <leader><leader>n :tabnext<cr>
+map <leader><leader>p :tabprev<cr>
+map <leader>tc :tabclose<cr>
+
+" 配置多窗口
+map <leader>sp :split<cr>
+map <leader>vs :vsplit<cr>
+map <leader>j <C-W>j
+map <leader>k <C-W>k
+map <leader>h <C-W>h
+map <leader>l <C-W>l
+
+" 设置粘贴模式开关
+map <leader>pp :setlocal paste!<cr>
+
+" 设置路径切换快捷键
+set autochdir
+map <leader>cd :pwd<cr>
+
+" 设置 NERDTree 开关
+map <leader>nn :NERDTreeToggle<cr>
+map <F3> :NERDTreeMirror<CR>
+map <F3> :NERDTreeToggle<CR>
+
+" DoxygenToolKit
+map <leader>d :Dox<cr>
+map <leader>da :DoxAuthor<cr>
+map <leader>dl :DoxLic<cr>
+
+" ale
+map <leader>ad :ALEDetail<cr>
+
+" YouCompleteMe
+map <leader>yd :YcmShowDetailedDiagnostic<cr>
+
+" ultisnips
+let g:UltiSnipsExpandTrigger="<c-j>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" pathogen 插件管理
+execute pathogen#infect()
+
+filetype plugin indent on
+
+" 语法高亮
+syntax enable
+syntax on
+```
+
+如果只看配置目标，这套东西主要是围绕三个方向展开的：
+
+- 让编辑区足够清爽且可读
+- 把多窗口、多标签切换做顺手
+- 尽量让补全、检查、文件树这些常见能力都有快捷入口
+
+## 插件管理
+
+我当时用的是 [vim-pathogen](https://github.com/tpope/vim-pathogen)。原因也很简单：它足够轻，思路也直接。
+
+安装方式如下：
+
+```shell
+mkdir -p ~/.vim/autoload ~/.vim/bundle ~/.vim/colors && \
+curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+```
+
+## 我常用的一些插件
+
+下面这些插件，都是按 `pathogen` 的方式直接装进 `~/.vim/bundle` 的。
+
+### `ale`
+
+用来做语法检查，属于比较高频的基础插件。
+
+```shell
+git clone https://github.com/dense-analysis/ale.git ~/.vim/bundle/ale
+```
+
+### `YouCompleteMe`
+
+自动补全工具，适合 JS、TS、Java、Python、Go 等常见语言场景。
+
+```shell
+# 自动补全工具（js、ts、java、python、go）
+```
+
+### `ack.vim`
+
+搜索体验不错，很多场景下可以替代 `grep`。
+
+```shell
+git clone https://github.com/mileszs/ack.vim.git ~/.vim/bundle/ack.vim
+```
+
+### `nerdtree`
+
+负责左侧文件树面板。
+
+```shell
+git clone https://github.com/preservim/nerdtree.git ~/.vim/bundle/nerdtree
+```
+
+### `vim-go`
+
+如果会写 Go，这个插件基本很难绕开。
+
+```shell
+git clone https://github.com/fatih/vim-go.git ~/.vim/bundle/vim-go
+```
+
+### `vim-vue`
+
+给 Vue 文件补语法支持。
+
+```shell
+git clone https://github.com/posva/vim-vue.git ~/.vim/bundle/vim-vue
+```
+
+### `vim-jsx`
+
+处理 JSX 高亮和语法体验。
+
+```shell
+git clone https://github.com/mxw/vim-jsx.git ~/.vim/bundle/vim-jsx
+```
+
+### `typescript-vim`
+
+TypeScript 基础支持。
+
+```shell
+git clone https://github.com/leafgarland/typescript-vim.git ~/.vim/bundle/typescript-vim
+```
+
+### `vim-javascript`
+
+JavaScript 语法高亮的经典插件之一。
+
+```shell
+git clone https://github.com/pangloss/vim-javascript.git ~/.vim/bundle/vim-javascript
+```
+
+### `vim-monokai`
+
+这是我个人很偏爱的主题。从 Sublime 到 VS Code 再到 Vim，我一直比较喜欢 Monokai 这条审美线。
+
+```shell
+git clone https://github.com/sickill/vim-monokai.git ~/.vim/bundle/vim-monokai
+mv ~/.vim/bundle/vim-monokai/colors/monokai.vim ~/.vim/colors/monokai.vim
+```
+
+### `vim-markdown`
+
+给 Markdown 提供更好的编辑体验。
+
+```shell
+git clone https://github.com/plasticboy/vim-markdown.git ~/.vim/bundle/vim-markdown
+```
+
+### `vim-snipmate`
+
+代码片段提示相关的一套组合。
+
+```shell
+cd ~/.vim/bundle
+git clone https://github.com/tomtom/tlib_vim.git
+git clone https://github.com/MarcWeber/vim-addon-mw-utils.git
+git clone https://github.com/garbas/vim-snipmate.git
+
+# Optional:
+git clone https://github.com/honza/vim-snippets.git
+```
+
+## 总结
+
+回头看，这份配置并不追求“极客感”或者“纯键盘信仰”，它更像是我当时为了把日常开发效率拉起来，逐步拼出来的一套实用组合。
+
+如果你也在用 Vim，完全可以不照抄，而是把其中你需要的部分摘出来，慢慢形成自己的编辑环境。毕竟编辑器这件事，最终一定会变得非常个人化。
