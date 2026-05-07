@@ -30,13 +30,34 @@ const articleSourceModules = import.meta.glob('../../../blog/*/index.mdx', {
 }) as MdxArticleModule;
 
 // @ts-ignore
-const articleAssetModules = import.meta.glob(
+const articleImageAssetModules = import.meta.glob(
   '../../../blog/*/image/*.{png,jpg,jpeg,webp,avif,svg}',
   {
     eager: true,
     import: 'default',
   },
 ) as RawAssetModule;
+
+// @ts-ignore
+const articleCoverAssetModules = import.meta.glob(
+  '../../../blog/*/cover.{png,svg,jpg,jpeg}',
+  {
+    eager: true,
+    import: 'default',
+  },
+) as RawAssetModule;
+
+const articleAssetModules = {
+  ...articleImageAssetModules,
+  ...articleCoverAssetModules,
+};
+
+const DEFAULT_COVER_FILENAMES = [
+  'cover.png',
+  'cover.svg',
+  'cover.jpg',
+  'cover.jpeg',
+];
 
 const compareDateDesc = (left: string, right: string) => {
   return Date.parse(right) - Date.parse(left);
@@ -57,6 +78,20 @@ const toArticleAssetKey = (articlePath: string, assetPath: string) => {
   return `${articleDir}/${normalizedAssetPath}`;
 };
 
+const resolveArticleCover = (sourcePath: string, cover?: string) => {
+  if (cover) {
+    return articleAssetModules[toArticleAssetKey(sourcePath, cover)];
+  }
+
+  for (const filename of DEFAULT_COVER_FILENAMES) {
+    const coverUrl =
+      articleCoverAssetModules[toArticleAssetKey(sourcePath, filename)];
+    if (coverUrl) return coverUrl;
+  }
+
+  return undefined;
+};
+
 const buildBlogArticles = () => {
   return Object.entries(articleSourceModules)
     .map(([sourcePath, module]) => {
@@ -67,9 +102,7 @@ const buildBlogArticles = () => {
       const articleDir = sourcePath
         .replace(/\\/g, '/')
         .slice(0, sourcePath.replace(/\\/g, '/').lastIndexOf('/'));
-      const coverUrl = frontmatter.cover
-        ? articleAssetModules[toArticleAssetKey(sourcePath, frontmatter.cover)]
-        : undefined;
+      const coverUrl = resolveArticleCover(sourcePath, frontmatter.cover);
 
       return {
         ...frontmatter,
@@ -127,6 +160,7 @@ export const getBlogTagSummaries = (): Array<BlogTagSummary> => {
         article.tags.includes(key),
       ).length,
     }))
+    .filter((tag) => tag.count > 0)
     .sort((left, right) => {
       if (left.order !== right.order) return left.order - right.order;
       return left.label.localeCompare(right.label);

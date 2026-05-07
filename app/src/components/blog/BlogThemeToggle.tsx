@@ -43,7 +43,7 @@ export function BlogThemeToggle(props: BlogThemeToggleProps) {
   return (
     <button
       type="button"
-      className="blog-theme-toggle"
+      className="blog-theme-toggle blog-article-action"
       onClick={props.onToggle}
       aria-label={label}
       title={label}

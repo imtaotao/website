@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
-import { CalendarIcon, FileTextIcon, RocketIcon } from '@radix-ui/react-icons';
+import {
+  ArrowLeftIcon,
+  CalendarIcon,
+  FileTextIcon,
+  RocketIcon,
+} from '@radix-ui/react-icons';
 
 import {
   formatBlogDate,
@@ -77,22 +82,8 @@ export default function BlogArticlePage() {
 
         <div className="blog-article-frame">
           <div className="blog-article-main">
-            <div className="blog-article-toolbar">
-              <Link to="/blog" className="blog-subtle-link blog-article-back">
-                返回博客首页
-              </Link>
-              <BlogThemeToggle
-                theme={blogTheme.theme}
-                onToggle={blogTheme.toggleTheme}
-              />
-            </div>
-
             <header className="blog-article-header">
               <h1 className="blog-article-title">{article.title}</h1>
-
-              {article.summary ? (
-                <p className="blog-article-summary">{article.summary}</p>
-              ) : null}
 
               <div className="blog-article-meta-row" aria-label="文章信息">
                 <span className="blog-meta-item">
@@ -130,14 +121,29 @@ export default function BlogArticlePage() {
           </div>
         </div>
 
-        <button
-          type="button"
-          className="blog-back-to-top"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          aria-label="返回顶部"
-        >
-          <RocketIcon className="blog-back-to-top-icon" />
-        </button>
+        <div className="blog-article-actions" aria-label="文章操作">
+          <Link
+            to="/blog"
+            className="blog-article-action blog-article-back"
+            aria-label="返回博客首页"
+            title="返回博客首页"
+          >
+            <ArrowLeftIcon className="blog-article-action-icon" />
+          </Link>
+          <BlogThemeToggle
+            theme={blogTheme.theme}
+            onToggle={blogTheme.toggleTheme}
+          />
+          <button
+            type="button"
+            className="blog-article-action blog-back-to-top"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            aria-label="返回顶部"
+            title="返回顶部"
+          >
+            <RocketIcon className="blog-back-to-top-icon" />
+          </button>
+        </div>
       </article>
     </main>
   );

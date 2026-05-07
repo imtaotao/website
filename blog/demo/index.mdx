@@ -6,7 +6,6 @@ tags:
 publishedAt: 2026-04-30
 updatedAt: 2026-04-30
 summary: 这是一篇集中展示博客正文能力的 demo，后续写文章时可以直接对照这里的写法。
-cover: ./image/cover.jpg
 ---
 
 # 博客内容能力 Demo
@@ -35,7 +34,7 @@ cover: ./image/cover.jpg
 
 ## 3. 列表和代码块
 
-```ts
+```ts {2-4,7,9-11} ln
 type BlogArticleFrontmatter = {
   title: string;
   slug: string;
@@ -56,7 +55,7 @@ const createBlogTagNavigation = (tag?: string) => {
 
 Markdown 图片直接写相对路径就行，不需要 `import`。
 
-![博客正文单图示例](./image/cover.jpg '这是一张正文里的单图，点击可以放大')
+![博客正文单图示例](./cover.jpg '这是一张正文里的单图，点击可以放大')
 
 ## 5. 数学表达式
 
@@ -82,10 +81,10 @@ $$
 <ImageGallery
   columns={2}
   images={[
-    { src: './image/cover.jpg', alt: '四宫格 1' },
-    { src: './image/cover.jpg', alt: '四宫格 2' },
-    { src: './image/cover.jpg', alt: '四宫格 3' },
-    { src: './image/cover.jpg', alt: '四宫格 4' },
+    { src: './cover.jpg', alt: '四宫格 1' },
+    { src: './cover.jpg', alt: '四宫格 2' },
+    { src: './cover.jpg', alt: '四宫格 3' },
+    { src: './cover.jpg', alt: '四宫格 4' },
   ]}
 />
 
@@ -94,12 +93,12 @@ $$
 <ImageGallery
   columns={3}
   images={[
-    { src: './image/cover.jpg', alt: '六宫格 1' },
-    { src: './image/cover.jpg', alt: '六宫格 2' },
-    { src: './image/cover.jpg', alt: '六宫格 3' },
-    { src: './image/cover.jpg', alt: '六宫格 4' },
-    { src: './image/cover.jpg', alt: '六宫格 5' },
-    { src: './image/cover.jpg', alt: '六宫格 6' },
+    { src: './cover.jpg', alt: '六宫格 1' },
+    { src: './cover.jpg', alt: '六宫格 2' },
+    { src: './cover.jpg', alt: '六宫格 3' },
+    { src: './cover.jpg', alt: '六宫格 4' },
+    { src: './cover.jpg', alt: '六宫格 5' },
+    { src: './cover.jpg', alt: '六宫格 6' },
   ]}
 />
 
@@ -108,15 +107,15 @@ $$
 <ImageGallery
   columns={3}
   images={[
-    { src: './image/cover.jpg', alt: '九宫格 1' },
-    { src: './image/cover.jpg', alt: '九宫格 2' },
-    { src: './image/cover.jpg', alt: '九宫格 3' },
-    { src: './image/cover.jpg', alt: '九宫格 4' },
-    { src: './image/cover.jpg', alt: '九宫格 5' },
-    { src: './image/cover.jpg', alt: '九宫格 6' },
-    { src: './image/cover.jpg', alt: '九宫格 7' },
-    { src: './image/cover.jpg', alt: '九宫格 8' },
-    { src: './image/cover.jpg', alt: '九宫格 9' },
+    { src: './cover.jpg', alt: '九宫格 1' },
+    { src: './cover.jpg', alt: '九宫格 2' },
+    { src: './cover.jpg', alt: '九宫格 3' },
+    { src: './cover.jpg', alt: '九宫格 4' },
+    { src: './cover.jpg', alt: '九宫格 5' },
+    { src: './cover.jpg', alt: '九宫格 6' },
+    { src: './cover.jpg', alt: '九宫格 7' },
+    { src: './cover.jpg', alt: '九宫格 8' },
+    { src: './cover.jpg', alt: '九宫格 9' },
   ]}
 />
 

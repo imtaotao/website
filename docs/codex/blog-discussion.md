@@ -63,9 +63,9 @@
 
 ### 9. Frontmatter 最小字段
 
-- 第一版至少包含：`title`、`slug`、`tags`、`publishedAt`、`updatedAt`、`summary`、`cover`。
+- 第一版至少包含：`title`、`slug`、`tags`、`publishedAt`、`updatedAt`、`summary`。
 - `slug` 使用手写方式维护，不从文件名自动生成。
-- `cover` 作为文章头图字段，首版可选，但整体设计优先按“有 cover”组织。
+- `cover` 作为文章头图字段可选；默认读取文章目录根部的 `cover.png`、`cover.svg`、`cover.jpg` 或 `cover.jpeg`。
 
 ### 10. 标签字段规范
 

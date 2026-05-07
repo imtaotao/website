@@ -77,7 +77,8 @@ packages/kernel-blog/
 - `app/src/content/blog/` 下采用扁平的文章单元目录结构。
 - 每篇文章有自己的独立目录。
 - 文章正文统一放在 `index.mdx`。
-- `cover` 和正文内使用的本地图片与文章放在同一目录。
+- 文章头图优先使用文章目录根部的 `cover.png`、`cover.svg`、`cover.jpg` 或 `cover.jpeg`，无需在 frontmatter 中声明。
+- 正文内使用的本地图片与文章放在同一目录或文章目录内的图片子目录。
 - 目录本身不表达分类含义，分类和聚合依赖 `tags`。
 
 ## Frontmatter 约定
@@ -90,7 +91,6 @@ packages/kernel-blog/
 - `publishedAt`
 - `updatedAt`
 - `summary`
-- `cover`
 
 字段说明：
 
@@ -100,7 +100,7 @@ packages/kernel-blog/
 - `publishedAt`: 发布时间，静态维护。
 - `updatedAt`: 更新时间，静态维护。
 - `summary`: 列表页和分享场景使用的简短摘要。
-- `cover`: 头图资源路径，首版可选，但页面设计默认优先按有图文章处理。
+- `cover`: 可选头图资源路径；通常不需要填写，构建时会自动读取文章目录根部的 `cover.*`。
 
 frontmatter 示例：
 
@@ -113,7 +113,6 @@ tags:
 publishedAt: 2026-04-29
 updatedAt: 2026-04-29
 summary: 一篇关于 React 渲染过程与实现细节的记录。
-cover: ./cover.jpg
 ```
 
 ## 标签配置
@@ -216,13 +215,12 @@ export const blogTagMap = {
 
 第一版建议使用相对简单的资源组织策略：
 
-- `cover` 指向文章目录内的本地文件
+- 文章头图默认使用文章目录根部的 `cover.png`、`cover.svg`、`cover.jpg` 或 `cover.jpeg`
 - 正文图片也优先使用文章目录内本地资源
 - 不额外建立全局博客图片目录
 
 当前仍可留待实现时细化的点：
 
-- `cover` 文件名是否统一推荐为 `cover.*`
 - `MDX` 中本地资源最终如何被构建工具解析
 
 ## 校验建议

@@ -29,6 +29,31 @@ const resolveResumeJson = () => {
 
 const RESUME_JSON = resolveResumeJson();
 
+const encodeCodeMeta = (value) => {
+  return String(value ?? '')
+    .trim()
+    .replace(/[^a-zA-Z0-9_{}.,-]+/g, '_');
+};
+
+const remarkCodeMetaClassName = () => {
+  return (tree) => {
+    const visit = (node) => {
+      if (!node || typeof node !== 'object') return;
+
+      if (node.type === 'code' && node.lang && node.meta) {
+        node.lang = `${node.lang}--meta-${encodeCodeMeta(node.meta)}`;
+      }
+
+      if (!Array.isArray(node.children)) return;
+      for (const child of node.children) {
+        visit(child);
+      }
+    };
+
+    visit(tree);
+  };
+};
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -40,6 +65,7 @@ export default defineConfig({
         remarkMath,
         remarkFrontmatter,
         remarkMdxFrontmatter,
+        remarkCodeMetaClassName,
       ],
     }),
     react(),
