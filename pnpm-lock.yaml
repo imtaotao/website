@@ -53,9 +53,18 @@ importers:
       minimist:
         specifier: ^1.2.8
         version: 1.2.8
+      postcss:
+        specifier: ^8.5.8
+        version: 8.5.8
       prettier:
         specifier: ^2.4.1
         version: 2.8.8
+      tailwindcss:
+        specifier: ^4.2.4
+        version: 4.2.4
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.6.1)(postcss@8.5.8)(tsx@4.11.2)(typescript@6.0.3)(yaml@2.8.3)
       tsx:
         specifier: ^4.11.2
         version: 4.11.2
@@ -80,6 +89,9 @@ importers:
       '@website-kernel/blog':
         specifier: workspace:*
         version: link:../packages/kernel-blog
+      '@website-kernel/demo':
+        specifier: workspace:*
+        version: link:../packages/kernel-demo
       '@website-kernel/shared':
         specifier: workspace:*
         version: link:../packages/kernel-shared
@@ -187,6 +199,25 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 1.6.0(@types/node@20.12.12)(lightningcss@1.32.0)
+
+  packages/kernel-demo:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.5
+    devDependencies:
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      rimraf:
+        specifier: 'catalog:'
+        version: 6.0.1
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.6.1)(postcss@8.5.8)(tsx@4.11.2)(typescript@6.0.3)(yaml@2.8.3)
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
 
   packages/kernel-shared:
     dependencies:
@@ -3105,11 +3136,6 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  nanoid@3.3.7:
-    resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
-    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
-    hasBin: true
-
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
@@ -3274,10 +3300,6 @@ packages:
         optional: true
       yaml:
         optional: true
-
-  postcss@8.4.38:
-    resolution: {integrity: sha512-Wglpdk03BSfXkHoQa3b/oulrotAkwrlLDRSOb9D0bN86FdRyE9lppSp33aHNPgBa0JKCoB+drFLZkQoRRYae5A==}
-    engines: {node: ^10 || ^12 || >=14}
 
   postcss@8.5.8:
     resolution: {integrity: sha512-OW/rX8O/jXnm82Ey1k44pObPtdblfiuWnrd8X7GJ7emImCOstunGbXUpp7HdBrFQX6rJzn3sPT397Wp5aCwCHg==}
@@ -7322,8 +7344,6 @@ snapshots:
 
   nanoid@3.3.11: {}
 
-  nanoid@3.3.7: {}
-
   natural-compare@1.4.0: {}
 
   npm-run-path@5.3.0:
@@ -7475,12 +7495,6 @@ snapshots:
       postcss: 8.5.8
       tsx: 4.11.2
       yaml: 2.8.3
-
-  postcss@8.4.38:
-    dependencies:
-      nanoid: 3.3.7
-      picocolors: 1.1.1
-      source-map-js: 1.2.0
 
   postcss@8.5.8:
     dependencies:
@@ -8314,7 +8328,7 @@ snapshots:
   vite@5.2.11(@types/node@20.12.12)(lightningcss@1.32.0):
     dependencies:
       esbuild: 0.20.2
-      postcss: 8.4.38
+      postcss: 8.5.8
       rollup: 4.60.0
     optionalDependencies:
       '@types/node': 20.12.12

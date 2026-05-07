@@ -14,6 +14,7 @@
     "@radix-ui/themes": "^3.3.0",
     "@tailwindcss/vite": "4.2.4",
     "@website-kernel/blog": "workspace:*",
+    "@website-kernel/demo": "workspace:*",
     "@website-kernel/shared": "workspace:*",
     "aidly": "catalog:",
     "highlight.js": "^11.11.1",
@@ -39,9 +40,9 @@
     "remark-frontmatter": "^5.0.0",
     "remark-mdx-frontmatter": "^5.2.0",
     "rimraf": "catalog:",
+    "yaml": "catalog:",
     "typescript": "catalog:",
     "vite": "^8.0.2",
-    "vite-tsconfig-paths": "^6.1.1",
-    "yaml": "catalog:"
+    "vite-tsconfig-paths": "^6.1.1"
   }
 }

@@ -43,7 +43,6 @@ const remarkCodeMetaClassName = () => {
       if (node.type === 'code' && node.lang && node.meta) {
         node.lang = `${node.lang}--meta-${encodeCodeMeta(node.meta)}`;
       }
-
       if (!Array.isArray(node.children)) return;
       for (const child of node.children) {
         visit(child);
@@ -56,6 +55,25 @@ const remarkCodeMetaClassName = () => {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  define: {
+    __RESUME_JSON__: JSON.stringify(RESUME_JSON),
+  },
+  resolve: {
+    alias: {
+      react: resolve(__dirname, 'node_modules/react'),
+      '@mdx-js/react': resolve(__dirname, 'node_modules/@mdx-js/react'),
+      'react/jsx-runtime': resolve(__dirname, 'node_modules/react/jsx-runtime.js'),
+      'react/jsx-dev-runtime': resolve(__dirname, 'node_modules/react/jsx-dev-runtime.js'),
+    },
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        404: resolve(__dirname, '404.html'),
+      },
+    },
+  },
   plugins: [
     mdx({
       providerImportSource: '@mdx-js/react',
@@ -72,29 +90,4 @@ export default defineConfig({
     tsconfigPaths(),
     tailwindcss(),
   ],
-  define: {
-    __RESUME_JSON__: JSON.stringify(RESUME_JSON),
-  },
-  resolve: {
-    alias: {
-      react: resolve(__dirname, 'node_modules/react'),
-      '@mdx-js/react': resolve(__dirname, 'node_modules/@mdx-js/react'),
-      'react/jsx-runtime': resolve(
-        __dirname,
-        'node_modules/react/jsx-runtime.js',
-      ),
-      'react/jsx-dev-runtime': resolve(
-        __dirname,
-        'node_modules/react/jsx-dev-runtime.js',
-      ),
-    },
-  },
-  build: {
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html'),
-        404: resolve(__dirname, '404.html'),
-      },
-    },
-  },
 });

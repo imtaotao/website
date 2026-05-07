@@ -23,7 +23,8 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.cjs"
       }
-    }
+    },
+    "./style.css": "./dist/index.css"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -31,6 +32,9 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
+  ],
+  "sideEffects": [
+    "*.css"
   ],
   "dependencies": {
     "yaml": "catalog:",

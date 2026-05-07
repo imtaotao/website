@@ -1,16 +1,11 @@
 {
-  "name": "@website-kernel/shared",
+  "name": "@website-kernel/demo",
   "version": "1.0.0",
   "author": "chentao.arthur",
   "scripts": {
     "dev": "tsup --watch",
     "build": "rimraf dist && tsup",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit --skipLibCheck"
-  },
-  "imports": {
-    "#*": "./src/*.js"
   },
   "exports": {
     ".": {
@@ -28,7 +23,6 @@
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
-  "unpkg": "./dist/index.global.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
@@ -36,16 +30,13 @@
   "sideEffects": [
     "*.css"
   ],
-  "dependencies": {
-    "aidly": "catalog:",
-    "jspdf": "^4.2.1",
-    "html-to-image": "^1.11.13"
+  "peerDependencies": {
+    "react": "^19.0.0"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "catalog:",
-    "tsup": "catalog:",
+    "@types/react": "^19.2.14",
     "rimraf": "catalog:",
-    "vitest": "catalog:",
+    "tsup": "catalog:",
     "typescript": "catalog:"
   }
 }

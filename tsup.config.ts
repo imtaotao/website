@@ -1,30 +1,108 @@
-import fs from "node:fs";
-import minimist from "minimist";
-import { replace } from "esbuild-plugin-replace";
+import fs from 'node:fs';
+import path from 'node:path';
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
+import { replace } from 'esbuild-plugin-replace';
+import minimist from 'minimist';
+import type { Options } from 'tsup';
+
+type EsbuildOnLoadArgs = Parameters<EsbuildOnLoadCallback>[0];
+type EsbuildPluginBuild = Parameters<TsupEsbuildPlugin['setup']>[0];
+type EsbuildOnLoadCallback = Parameters<EsbuildPluginBuild['onLoad']>[1];
+type EsbuildOnLoadResult = Awaited<ReturnType<EsbuildOnLoadCallback>>;
+type TsupEsbuildOptions = NonNullable<Options['esbuildOptions']>;
+type TsupEsbuildPlugin = NonNullable<Options['esbuildPlugins']>[number];
 
 const argv = minimist<{ watch: boolean }>(process.argv.slice(2));
 
+const require = createRequire(import.meta.url);
+const repoRoot = fileURLToPath(new URL('.', import.meta.url));
+const tailwindConfigPath = path.join(repoRoot, 'tailwind.config.js');
+
+type PackageJsonLike = {
+  name?: string;
+  version?: string;
+  author?: string;
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+  peerDependencies?: Record<string, string>;
+};
+
+function getPackageExternal(pkg: PackageJsonLike): string[] {
+  const depNames = new Set<string>([
+    ...Object.keys(pkg.dependencies ?? {}),
+    ...Object.keys(pkg.peerDependencies ?? {}),
+    ...Object.keys(pkg.devDependencies ?? {}),
+  ]);
+
+  const external = new Set<string>();
+  for (const name of depNames) {
+    external.add(name);
+    external.add(`${name}/*`);
+  }
+  return [...external];
+}
+
+function tailwindPostcssEsbuildPlugin() {
+  const plugin: TsupEsbuildPlugin = {
+    name: 'postcss-tailwind',
+    setup(build: EsbuildPluginBuild) {
+      build.onLoad({ filter: /\.css$/ }, async (args: EsbuildOnLoadArgs) => {
+        const css = await fs.promises.readFile(args.path, 'utf8');
+
+        const shouldProcessTailwind =
+          /@tailwind\s+(base|components|utilities)\b/.test(css) ||
+          /@import\s+['\"]tailwindcss/.test(css);
+
+        if (!shouldProcessTailwind) {
+          return {
+            contents: css,
+            loader: 'css',
+            resolveDir: path.dirname(args.path),
+          } satisfies EsbuildOnLoadResult;
+        }
+
+        const postcss = require('postcss');
+        const tailwindcss = require('tailwindcss');
+        const result = await postcss([
+          tailwindcss({ config: tailwindConfigPath }),
+        ]).process(css, { from: args.path });
+
+        return {
+          loader: 'css',
+          contents: result.css,
+          resolveDir: path.dirname(args.path),
+        } satisfies EsbuildOnLoadResult;
+      });
+    },
+  };
+  return plugin;
+}
+
 const formatMap = {
-  cjs: ".cjs",
-  iife: ".global.js",
-  esm: [".js", ".mjs"],
+  cjs: '.cjs',
+  iife: '.global.js',
+  esm: ['.js', '.mjs'],
 };
 
 export function baseOptions(
   dir: string,
-  formats: Array<keyof typeof formatMap>
+  formats: Array<keyof typeof formatMap>,
 ) {
-  const pkg = JSON.parse(
-    fs.readFileSync(new URL("./package.json", dir)).toString()
+  const pkg: PackageJsonLike = JSON.parse(
+    fs.readFileSync(new URL('./package.json', dir)).toString(),
   );
 
+  const entry = 'src/index.ts';
+  const external = getPackageExternal(pkg);
+
   const banner =
-    "/*!\n" +
+    '/*!\n' +
     ` * ${pkg.name}.js v${pkg.version}\n` +
     ` * (c) 2026-${new Date().getFullYear()} ${
-      pkg.author || "chentao.arthur"
+      pkg.author || 'chentao.arthur'
     }\n` +
-    " */";
+    ' */';
 
   const outputConfigs: Array<{ format: string; extname: string }> = [];
 
@@ -36,23 +114,28 @@ export function baseOptions(
     }
   }
 
-  const globalName = pkg.name
-    .replace(/@/g, "")
+  const globalName = (pkg?.name ?? '')
+    .replace(/@/g, '')
     .split(/[\/-]/g)
     .map((l: string) => l[0].toUpperCase() + l.slice(1))
-    .join("");
+    .join('');
 
   return outputConfigs
     .filter(({ extname }) => (argv.watch ? /^\.(c?)js/.test(extname) : true))
     .map(({ format, extname }) => ({
       format,
       globalName,
-      dts: true,
+      entry: [entry],
+      dts: { entry },
       treeshake: true,
       clean: !argv.watch,
       sourcemap: argv.watch,
-      entry: ["src/index.ts"],
-      watch: argv.watch ? "src" : false,
+      watch: argv.watch ? 'src' : false,
+      external,
+      loader: {
+        '.css': 'css',
+      },
+      injectStyle: false,
       banner: {
         js: banner.trim(),
       },
@@ -60,14 +143,19 @@ export function baseOptions(
         js: extname,
       }),
       define: {
-        __TEST__: "false",
+        __TEST__: 'false',
         __VERSION__: `'${pkg.version}'`,
+      },
+      esbuildOptions: (options: Parameters<TsupEsbuildOptions>[0]) => {
+        options.jsx = 'automatic';
+        options.jsxImportSource = 'react';
       },
       esbuildPlugins: [
         replace({
           __DEV__:
             '(typeof process !== "undefined" ? (process.env?.NODE_ENV !== "production") : false)',
         }),
+        tailwindPostcssEsbuildPlugin(),
       ],
     }));
 }

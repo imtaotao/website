@@ -1,7 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 /* eslint-env node */
 module.exports = {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  content: [
+    './app/index.html',
+    './app/src/**/*.{js,ts,jsx,tsx}',
+    './packages/**/*.{js,ts,jsx,tsx}',
+  ],
   theme: {
     colors: {
       blue: '#1fb6ff',

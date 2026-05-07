@@ -1,0 +1,62 @@
+.demoCard__root {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.demoCard__header {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.demoCard__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  margin-top: 4px;
+  background: linear-gradient(135deg, #ff49db, #7e5bef);
+}
+
+.demoCard__title {
+  font-weight: 700;
+}
+
+.demoCard__subtitle {
+  opacity: 0.75;
+  font-size: 12px;
+}
+
+.demoCard__body {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.demoCard__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.demoCard__label {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.demoCard__pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.demoCard__pill--plain {
+  color: #fff;
+  background: #7e5bef;
+}
+
