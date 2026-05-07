@@ -160,7 +160,6 @@ const manager = create({
       for (const key in styles) {
         danmaku.setStyle(key, styles[key]);
       }
-
       danmaku.node.classList.add('className');
     },
   },
@@ -188,7 +187,6 @@ const manager = create({
       for (const key in styles) {
         manager.container.setStyle(key, styles[key]);
       }
-
       manager.container.node.classList.add('className');
     },
   },
@@ -226,7 +224,6 @@ manager.pushFlexibleDanmaku('弹幕内容', {
   direction: 'none',
   position(danmaku) {
     const { middle } = manager.getTrack(2).location;
-
     return {
       x: `50% - ${danmaku.getWidth() / 2}`,
       y: middle - danmaku.getHeight() / 2,
@@ -276,7 +273,6 @@ export function Danmaku({ danmaku }) {
 ```tsx
 import ReactDOM from 'react-dom/client';
 import { create } from 'danmu';
-
 import { Danmaku } from './Danmaku';
 
 const manager = create<string>({
@@ -319,7 +315,6 @@ export function filter({ userIds, keywords }) {
             }
           }
         }
-
         return ref;
       },
     };

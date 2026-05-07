@@ -21,6 +21,10 @@ import {
   BLOG_TAG_QUERY_KEY,
   createBlogTagNavigation,
 } from '#app/lib/blogNavigation';
+import {
+  BlogThemeToggle,
+  useBlogTheme,
+} from '#app/components/blog/BlogThemeToggle';
 
 import '#app/pages/Blog/BlogPage.css';
 
@@ -38,6 +42,7 @@ const getTagIcon = (tag: string) => {
 };
 
 export default function BlogHomePage() {
+  const blogTheme = useBlogTheme();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const articles = getBlogArticles();
@@ -194,7 +199,7 @@ export default function BlogHomePage() {
   };
 
   return (
-    <main className="blog-shell min-h-screen">
+    <main className="blog-shell min-h-screen" data-blog-theme={blogTheme.theme}>
       <header className="blog-page blog-home-header">
         <div>
           <p className="blog-kicker">
@@ -212,6 +217,10 @@ export default function BlogHomePage() {
               <FileTextIcon className="blog-pill-icon" />
               <span className="blog-pill-label">简历</span>
             </Link>
+            <BlogThemeToggle
+              theme={blogTheme.theme}
+              onToggle={blogTheme.toggleTheme}
+            />
             <div className="blog-home-meta">
               <span>
                 {filteredArticles.length} / {articles.length} 篇

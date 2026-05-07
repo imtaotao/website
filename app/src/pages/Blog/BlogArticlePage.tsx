@@ -9,12 +9,17 @@ import {
 } from '#app/lib/blog';
 import { createBlogTagNavigation } from '#app/lib/blogNavigation';
 import { BlogMdx } from '#app/components/blog/Markdown';
+import {
+  BlogThemeToggle,
+  useBlogTheme,
+} from '#app/components/blog/BlogThemeToggle';
 
 import '#app/pages/Blog/BlogPage.css';
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 
 export default function BlogArticlePage() {
+  const blogTheme = useBlogTheme();
   const { slug = '' } = useParams();
   const article = getBlogArticleBySlug(slug, {
     includeHidden: true,
@@ -72,7 +77,10 @@ export default function BlogArticlePage() {
 
   if (!article) {
     return (
-      <main className="blog-shell min-h-screen">
+      <main
+        className="blog-shell min-h-screen"
+        data-blog-theme={blogTheme.theme}
+      >
         <div className="blog-page blog-empty-state">
           <p>文章不存在。</p>
           <Link to="/blog" className="blog-subtle-link">
@@ -84,7 +92,7 @@ export default function BlogArticlePage() {
   }
 
   return (
-    <main className="blog-shell min-h-screen">
+    <main className="blog-shell min-h-screen" data-blog-theme={blogTheme.theme}>
       <article className="blog-article-page">
         <div className="blog-reading-progress" aria-hidden="true">
           <div
@@ -105,9 +113,15 @@ export default function BlogArticlePage() {
 
         <div className="blog-article-frame">
           <div className="blog-article-main">
-            <Link to="/blog" className="blog-subtle-link blog-article-back">
-              返回博客首页
-            </Link>
+            <div className="blog-article-toolbar">
+              <Link to="/blog" className="blog-subtle-link blog-article-back">
+                返回博客首页
+              </Link>
+              <BlogThemeToggle
+                theme={blogTheme.theme}
+                onToggle={blogTheme.toggleTheme}
+              />
+            </div>
 
             <header className="blog-article-header">
               <h1 className="blog-article-title">{article.title}</h1>
