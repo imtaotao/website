@@ -16,7 +16,9 @@ const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 
 export default function BlogArticlePage() {
   const { slug = '' } = useParams();
-  const article = getBlogArticleBySlug(slug);
+  const article = getBlogArticleBySlug(slug, {
+    includeHidden: true,
+  });
 
   const [progress, setProgress] = useState(0);
   const [wordCount, setWordCount] = useState(0);

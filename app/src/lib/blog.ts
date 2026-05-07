@@ -25,13 +25,13 @@ export type BlogArticleView = BlogArticleFrontmatter & {
 };
 
 // @ts-ignore
-const articleSourceModules = import.meta.glob('../blog/*/index.mdx', {
+const articleSourceModules = import.meta.glob('../../../blog/*/index.mdx', {
   eager: true,
 }) as MdxArticleModule;
 
 // @ts-ignore
 const articleAssetModules = import.meta.glob(
-  '../blog/*/image/*.{png,jpg,jpeg,webp,avif,svg}',
+  '../../../blog/*/image/*.{png,jpg,jpeg,webp,avif,svg}',
   {
     eager: true,
     import: 'default',
@@ -95,11 +95,27 @@ const buildBlogArticles = () => {
 };
 
 const BLOG_ARTICLES = buildBlogArticles();
+const HIDDEN_ARTICLE_SLUGS = new Set(['demo']);
 
-export const getBlogArticles = (): Array<BlogArticleView> => BLOG_ARTICLES;
+const isHiddenBlogArticle = (article: BlogArticleView) => {
+  return HIDDEN_ARTICLE_SLUGS.has(article.slug);
+};
 
-export const getBlogArticleBySlug = (slug: string) => {
-  return BLOG_ARTICLES.find((article) => article.slug === slug);
+const PUBLIC_BLOG_ARTICLES = BLOG_ARTICLES.filter(
+  (article) => !isHiddenBlogArticle(article),
+);
+
+export const getBlogArticles = (): Array<BlogArticleView> =>
+  PUBLIC_BLOG_ARTICLES;
+
+export const getBlogArticleBySlug = (
+  slug: string,
+  options?: { includeHidden?: boolean },
+) => {
+  const articles = options?.includeHidden
+    ? BLOG_ARTICLES
+    : PUBLIC_BLOG_ARTICLES;
+  return articles.find((article) => article.slug === slug);
 };
 
 export const getBlogTagSummaries = (): Array<BlogTagSummary> => {
@@ -107,8 +123,9 @@ export const getBlogTagSummaries = (): Array<BlogTagSummary> => {
     .map(([key, tag]) => ({
       key,
       ...tag,
-      count: BLOG_ARTICLES.filter((article) => article.tags.includes(key))
-        .length,
+      count: PUBLIC_BLOG_ARTICLES.filter((article) =>
+        article.tags.includes(key),
+      ).length,
     }))
     .sort((left, right) => {
       if (left.order !== right.order) return left.order - right.order;
@@ -121,7 +138,7 @@ export const getBlogTagByKey = (tag: string) => {
 };
 
 export const getBlogArticlesByTag = (tag: string) => {
-  return BLOG_ARTICLES.filter((article) => article.tags.includes(tag));
+  return PUBLIC_BLOG_ARTICLES.filter((article) => article.tags.includes(tag));
 };
 
 export const resolveBlogAssetUrl = (
