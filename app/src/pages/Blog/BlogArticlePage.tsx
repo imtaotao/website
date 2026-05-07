@@ -42,6 +42,7 @@ export default function BlogArticlePage() {
       .split(/\s+/)
       .filter(Boolean).length;
     const cjkChars = (text.match(/[\u4e00-\u9fff]/g) ?? []).length;
+
     setWordCount(latinWords + cjkChars);
 
     const hash = decodeURIComponent(window.location.hash.replace(/^#/, ''));

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import {
+  ArrowLeftIcon,
   BookmarkFilledIcon,
   CalendarIcon,
   CodeIcon,
@@ -213,6 +214,10 @@ export default function BlogHomePage() {
         </div>
         <div className="blog-home-actions">
           <div className="blog-home-links">
+            <Link to="/" className="blog-pill">
+              <ArrowLeftIcon className="blog-pill-icon" />
+              <span className="blog-pill-label">返回首页</span>
+            </Link>
             <Link to="/resume" className="blog-pill blog-home-resume">
               <FileTextIcon className="blog-pill-icon" />
               <span className="blog-pill-label">简历</span>
