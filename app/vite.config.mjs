@@ -3,13 +3,15 @@ import { dirname, resolve } from 'node:path';
 import { existsSync, readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
 import { parse as parseYaml } from 'yaml';
-import tsconfigPaths from "vite-tsconfig-paths";
+import tsconfigPaths from 'vite-tsconfig-paths';
 import remarkGfm from 'remark-gfm';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import mdx from '@mdx-js/rollup';
-import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -32,7 +34,13 @@ export default defineConfig({
   plugins: [
     mdx({
       providerImportSource: '@mdx-js/react',
-      remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter],
+      rehypePlugins: [rehypeKatex],
+      remarkPlugins: [
+        remarkGfm,
+        remarkMath,
+        remarkFrontmatter,
+        remarkMdxFrontmatter,
+      ],
     }),
     react(),
     tsconfigPaths(),
@@ -45,8 +53,14 @@ export default defineConfig({
     alias: {
       react: resolve(__dirname, 'node_modules/react'),
       '@mdx-js/react': resolve(__dirname, 'node_modules/@mdx-js/react'),
-      'react/jsx-runtime': resolve(__dirname, 'node_modules/react/jsx-runtime.js'),
-      'react/jsx-dev-runtime': resolve(__dirname, 'node_modules/react/jsx-dev-runtime.js'),
+      'react/jsx-runtime': resolve(
+        __dirname,
+        'node_modules/react/jsx-runtime.js',
+      ),
+      'react/jsx-dev-runtime': resolve(
+        __dirname,
+        'node_modules/react/jsx-dev-runtime.js',
+      ),
     },
   },
   build: {

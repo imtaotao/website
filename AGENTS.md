@@ -28,8 +28,19 @@
 - `pnpm preview`
 - `pnpm dev:packages`
 - `pnpm build:packages`
+- `pnpm codex:status`
+- `pnpm codex:blog-check`
+- `pnpm codex:verify`
 - `pnpm format`
 - `pnpm format:md`
+
+## Codex 辅助脚本
+
+脚本统一放在 `scripts/` 目录，优先用 `pnpm` 命令调用，不要直接复制脚本逻辑到临时命令里。
+
+- `pnpm codex:status`：查看当前分支、最近一次 commit 和 `git status --short`，开始改动或提交前优先使用。
+- `pnpm codex:blog-check`：检查根目录 `blog/` 下文章的 frontmatter、slug 唯一性和本地图片资源引用。
+- `pnpm codex:verify`：先运行博客内容检查，再运行 `pnpm build`，适合博客或页面相关改动后的最终验证。
 
 ## 常见修改入口
 

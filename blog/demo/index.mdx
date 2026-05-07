@@ -56,9 +56,28 @@ const createBlogTagNavigation = (tag?: string) => {
 
 Markdown 图片直接写相对路径就行，不需要 `import`。
 
-![博客正文单图示例](./image/cover.jpg "这是一张正文里的单图，点击可以放大")
+![博客正文单图示例](./image/cover.jpg '这是一张正文里的单图，点击可以放大')
 
-## 5. 四宫格示例
+## 5. 数学表达式
+
+行内公式可以直接写在正文里，比如欧拉恒等式 $e^{i\pi} + 1 = 0$，或者二次方程求根公式 $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$。
+
+块级公式适合推导和单独展示：
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi}
+$$
+
+多行公式也可以正常排版：
+
+$$
+\begin{aligned}
+f(x) &= ax^2 + bx + c \\
+f'(x) &= 2ax + b
+\end{aligned}
+$$
+
+## 6. 四宫格示例
 
 <ImageGallery
   columns={2}
@@ -70,7 +89,7 @@ Markdown 图片直接写相对路径就行，不需要 `import`。
   ]}
 />
 
-## 6. 六宫格示例
+## 7. 六宫格示例
 
 <ImageGallery
   columns={3}
@@ -84,7 +103,7 @@ Markdown 图片直接写相对路径就行，不需要 `import`。
   ]}
 />
 
-## 7. 九宫格示例
+## 8. 九宫格示例
 
 <ImageGallery
   columns={3}
@@ -101,10 +120,11 @@ Markdown 图片直接写相对路径就行，不需要 `import`。
   ]}
 />
 
-## 8. 后续约定
+## 9. 后续约定
 
 - 单图优先用 Markdown 原生语法
 - 多图排版用 `ImageGallery`
+- 数学表达式用 `$...$` 写行内公式，用 `$$...$$` 写块级公式
 - `columns={2}` 适合四宫格
 - `columns={3}` 适合六宫格或九宫格
 - `summary` 现在是可选的，不写也能发文

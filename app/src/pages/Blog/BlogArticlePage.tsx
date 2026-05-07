@@ -16,8 +16,6 @@ import {
 
 import '#app/pages/Blog/BlogPage.css';
 
-const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
-
 export default function BlogArticlePage() {
   const blogTheme = useBlogTheme();
   const { slug = '' } = useParams();
@@ -25,34 +23,7 @@ export default function BlogArticlePage() {
     includeHidden: true,
   });
 
-  const [progress, setProgress] = useState(0);
   const [wordCount, setWordCount] = useState(0);
-
-  useEffect(() => {
-    let raf = 0;
-
-    const update = () => {
-      const root = document.documentElement;
-      const max = root.scrollHeight - root.clientHeight;
-      const next = max <= 0 ? 0 : clamp01(root.scrollTop / max);
-      setProgress(next);
-    };
-
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(update);
-    };
-
-    update();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-    };
-  }, []);
 
   useEffect(() => {
     if (!article) return;
@@ -94,13 +65,6 @@ export default function BlogArticlePage() {
   return (
     <main className="blog-shell min-h-screen" data-blog-theme={blogTheme.theme}>
       <article className="blog-article-page">
-        <div className="blog-reading-progress" aria-hidden="true">
-          <div
-            className="blog-reading-progress-bar"
-            style={{ transform: `scaleX(${progress})` }}
-          />
-        </div>
-
         {article.coverUrl ? (
           <div className="blog-article-cover-shell">
             <img
@@ -126,10 +90,14 @@ export default function BlogArticlePage() {
             <header className="blog-article-header">
               <h1 className="blog-article-title">{article.title}</h1>
 
-              <div className="blog-article-meta-row">
+              {article.summary ? (
+                <p className="blog-article-summary">{article.summary}</p>
+              ) : null}
+
+              <div className="blog-article-meta-row" aria-label="文章信息">
                 <span className="blog-meta-item">
                   <CalendarIcon className="blog-meta-icon blog-meta-icon--blue" />
-                  <span>发布于 {formatBlogDate(article.publishedAt)}</span>
+                  <span>{formatBlogDate(article.publishedAt)}</span>
                 </span>
                 {wordCount ? (
                   <span className="blog-meta-item">
@@ -151,9 +119,6 @@ export default function BlogArticlePage() {
                   );
                 })}
               </div>
-              {article.summary ? (
-                <p className="blog-article-summary">{article.summary}</p>
-              ) : null}
             </header>
 
             <section className="blog-article-body">

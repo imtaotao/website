@@ -10,6 +10,7 @@ import {
 import { MDXProvider } from '@mdx-js/react';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import hljs from 'highlight.js';
+import 'katex/dist/katex.min.css';
 import 'highlight.js/styles/monokai-sublime.css';
 
 import { resolveBlogAssetUrl } from '#app/lib/blog';

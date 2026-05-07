@@ -9,8 +9,11 @@
     "preview": "pnpm --filter @website/app run preview",
     "dev:packages": "pnpm --parallel --filter @website-kernel/* run dev",
     "build:packages": "pnpm --parallel --filter @website-kernel/* run build",
+    "codex:status": "node scripts/codexStatus.mjs",
+    "codex:blog-check": "node scripts/checkBlog.mjs",
+    "codex:verify": "node scripts/verify.mjs",
     "format:md": "prettier --write --parser markdown \"AGENTS.md\" \"docs/codex/**/*.(md|mdx)\" \".claude/**/*.(md|mdx)\"",
-    "format": "prettier --write --parser typescript \"(app|packages|scripts)/**/*.(t|j)s?(x)\""
+    "format": "prettier --write --parser typescript \"(app|packages)/**/*.(t|j)s?(x)\" \"scripts/**/*.{js,mjs,ts}\""
   },
   "lint-staged": {
     "*.js": [
