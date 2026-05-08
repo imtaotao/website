@@ -9,7 +9,7 @@ const isBlogTheme = (value: string | null): value is BlogTheme => {
   return value === 'light' || value === 'dark';
 };
 
-const readStoredBlogTheme = (): BlogTheme => {
+const readStoredBlogTheme = () => {
   if (typeof window === 'undefined') return 'light';
 
   const storedTheme = window.localStorage.getItem(BLOG_THEME_STORAGE_KEY);

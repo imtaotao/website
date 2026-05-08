@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../../packages";
 
 @font-face {
   font-family: "FZLanTing";

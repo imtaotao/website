@@ -24,8 +24,8 @@ export {
   createBlogTagNavigation,
   formatBlogDate,
   formatBlogMeta,
-} from '#blog/pages/BlogHomePage/page';
-export { BlogArticlePage } from '#blog/pages/BlogArticlePage/page';
+} from '#blog/pages/BlogHomePage';
+export { BlogArticlePage } from '#blog/pages/BlogArticlePage';
 export type {
   BlogArticleDetail,
   BlogArticleFrontmatter,
@@ -41,11 +41,11 @@ export type { BlogTheme } from '#blog/components/BlogThemeToggle';
 export type {
   BlogHomeArticle,
   BlogHomePageProps,
-} from '#blog/pages/BlogHomePage/page';
+} from '#blog/pages/BlogHomePage';
 export type {
   BlogArticlePageProps,
   BlogArticleView,
-} from '#blog/pages/BlogArticlePage/page';
+} from '#blog/pages/BlogArticlePage';
 
 const ARTICLE_ENTRY_FILENAME = 'index.mdx';
 
@@ -65,7 +65,7 @@ const sortBlogArticles = (items: Array<BlogArticleDetail>) => {
   });
 };
 
-const resolveTagMap = (options?: BlogContentOptions): BlogTagMap => {
+const resolveTagMap = (options?: BlogContentOptions) => {
   return options?.tagMap ?? blogTagMap;
 };
 
@@ -116,7 +116,7 @@ const readArticleFromModule = (sourcePath: string, source: string) => {
 const stripArticleContent = ({
   content: _content,
   ...article
-}: BlogArticleDetail): BlogArticleMeta => {
+}: BlogArticleDetail) => {
   return article;
 };
 

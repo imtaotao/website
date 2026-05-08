@@ -20,9 +20,9 @@ import {
 import {
   createBlogTagNavigation,
   formatBlogDate,
-} from '#blog/pages/BlogHomePage/page';
+} from '#blog/pages/BlogHomePage';
 
-import '../BlogPage.css';
+import '#blog/pages/BlogPage.css';
 
 export type BlogArticleView = BlogArticleFrontmatter & {
   Content: ComponentType<Record<string, unknown>>;

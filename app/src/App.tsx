@@ -6,7 +6,6 @@ import HomePage from '#app/pages/HomePage';
 import ResumePage from '#app/pages/ResumePage';
 import BlogHomePage from '#app/pages/Blog/BlogHomePage';
 import BlogArticlePage from '#app/pages/Blog/BlogArticlePage';
-import KernelDemoPage from '#app/pages/KernelDemoPage';
 
 import '@radix-ui/themes/styles.css';
 import '#app/App.css';
@@ -37,7 +36,6 @@ export function App() {
             <Route path="/blog" element={<BlogHomePage />} />
             <Route path="/blog/:slug" element={<BlogArticlePage />} />
             <Route path="/resume" element={<ResumePage />} />
-            <Route path="/kernel-demo" element={<KernelDemoPage />} />
             <Route path="*" element={null} />
           </Routes>
         </Suspense>

@@ -45,7 +45,7 @@
 
 ## 内容组织
 
-博客文章内容放在 `app/src/content/blog/` 中维护，博客通用逻辑放在 `packages/kernel-blog/` 中维护。
+博客文章内容放在 `app/src/content/blog/` 中维护，博客领域能力放在 `packages/kernel-blog/` 中维护。跨博客、简历、首页等页面都能复用的通用模块和基础组件放在 `packages/kernel-shared/` 中维护。
 
 建议目录草案：
 
@@ -70,6 +70,13 @@ packages/kernel-blog/
       article-schema.ts
       article-types.ts
       tag-helpers.ts
+
+packages/kernel-shared/
+  src/
+    index.ts
+    ui/
+      DemoCard.tsx
+      DemoCard.css
 ```
 
 目录约定：
@@ -80,6 +87,8 @@ packages/kernel-blog/
 - 文章头图优先使用文章目录根部的 `cover.png`、`cover.svg`、`cover.jpg` 或 `cover.jpeg`，无需在 frontmatter 中声明。
 - 正文内使用的本地图片与文章放在同一目录或文章目录内的图片子目录。
 - 目录本身不表达分类含义，分类和聚合依赖 `tags`。
+- 博客专属的 Markdown 渲染、标签、文章列表和详情页组件放在 `kernel-blog`。
+- 不带博客语义的基础卡片、布局单元、通用工具函数等放在 `kernel-shared`，由 `app` 或领域包按需消费。
 
 ## Frontmatter 约定
 
@@ -150,7 +159,7 @@ export const blogTagMap = {
 
 ## `kernel-blog` 职责建议
 
-第一版建议把博客内容层的通用逻辑收敛到 `packages/kernel-blog/`：
+第一版建议把博客内容层的领域逻辑收敛到 `packages/kernel-blog/`：
 
 - 提供 frontmatter 解析与标准化能力
 - 提供标签配置与类型定义
@@ -160,14 +169,15 @@ export const blogTagMap = {
 - 生成文章列表数据
 - 生成按 `slug` 索引的数据
 - 生成按标签聚合的数据
+- 提供博客专属的 Markdown 渲染和页面组件
 
 第一版不建议在 `kernel-blog` 中承担：
 
-- 页面 UI
 - 路由定义
-- 页面级视觉布局
+- 与博客领域无关的基础 UI 组件
+- 可被简历、首页或其他页面复用的通用工具
 
-也就是说，`kernel-blog` 负责博客通用能力，`app/` 负责文章内容组织、页面消费和展示。
+也就是说，`kernel-blog` 负责博客领域能力，`kernel-shared` 负责跨领域通用能力，`app/` 负责文章内容组织、路由编排和应用级展示。
 
 ## 建议导出 API
 

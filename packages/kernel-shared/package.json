@@ -1,11 +1,15 @@
 {
-  "name": "@website-kernel/demo",
+  "name": "@website-kernel/shared",
   "version": "1.0.0",
   "author": "chentao.arthur",
   "scripts": {
     "dev": "tsup --watch",
     "build": "rimraf dist && tsup",
     "typecheck": "tsc --noEmit --skipLibCheck"
+  },
+  "imports": {
+    "#shared/*": "./src/*.js",
+    "#shared/*.css": "./src/*.css"
   },
   "exports": {
     ".": {

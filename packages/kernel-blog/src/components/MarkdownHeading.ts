@@ -40,9 +40,7 @@ export const createHeadingIdFactory = () => {
   };
 };
 
-export const extractMarkdownHeadings = (
-  source: string,
-): Array<MarkdownHeading> => {
+export const extractMarkdownHeadings = (source: string) => {
   const nextId = createHeadingIdFactory();
   const headings: Array<MarkdownHeading> = [];
   const lines = source.split(/\r?\n/);

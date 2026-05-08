@@ -29,7 +29,7 @@ cover: ./image/cover.png
 
 比如下面这样一个 `tag` 函数：
 
-```ts ln
+```ts
 function tag(tagName, attrs, children) {
   return {
     tagName,
@@ -51,7 +51,7 @@ function tag(tagName, attrs, children) {
 
 既然一份 `Virtual DOM` 保存了结构信息，那么从它还原出真实 DOM 也是自然的下一步：
 
-```ts ln
+```ts
 function createElement(vnode) {
   const node = document.createElement(vnode.tagName);
 
@@ -110,7 +110,7 @@ function createElement(vnode) {
 
 下面这段伪代码可以帮助理解整体结构：
 
-```ts ln
+```ts
 function diff(a, b) {
   const patch = { a };
   const index = 0;
@@ -156,7 +156,7 @@ function walk(a, b, patch, index) {
 
 子节点 diff 往往是最容易把人绕进去的部分。简化之后，大概会像这样：
 
-```ts ln
+```ts
 function diffChildren(a, b, patch, apply, index) {
   const aChildren = a.children;
   const orderedSet = reorder(aChildren, b.children);
@@ -199,7 +199,7 @@ function diffChildren(a, b, patch, apply, index) {
 
 最终我们会得到一份 patch 集合，结构大概类似：
 
-```ts ln
+```ts
 patch = {
   0: remove,
   1: [insert, moves],
@@ -213,7 +213,7 @@ patch = {
 
 有了 `patch` 之后，最后一步就是把它执行到真实 DOM 上。
 
-```ts ln
+```ts
 function applyPatch(vpatch, dom) {
   const { type, vnode, patch } = vpatch;
 

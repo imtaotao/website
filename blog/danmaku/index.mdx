@@ -34,7 +34,7 @@ cover: ./image/cover.png
 
 一个最基础的示例大概是这样：
 
-```ts ln
+```ts
 import { create } from 'danmu';
 
 const manager = create();
@@ -57,14 +57,14 @@ manager.push('弹幕内容');
 
 比如轨道间距可以这样设置：
 
-```ts ln
+```ts
 // 这里的 100% 指容器宽度
 manager.setGap('(100% - 10px) / 5');
 ```
 
 ### 只显示顶部 3 条轨道
 
-```ts ln
+```ts
 manager.setTrackHeight('100% / 3');
 
 manager.setArea({
@@ -79,7 +79,7 @@ manager.setArea({
 
 ### 只显示中间 3 条轨道
 
-```ts ln
+```ts
 manager.setTrackHeight('100% / 3');
 
 manager.setArea({
@@ -94,7 +94,7 @@ manager.setArea({
 
 如果需求再进一步，比如只想渲染 `0`、`2`、`4` 这些轨道，就可以结合 `willRender` hook 来做：
 
-```ts ln
+```ts
 manager.setTrackHeight('100% / 6');
 
 manager.setArea({
@@ -125,7 +125,7 @@ manager.use({
 
 ### 给弹幕统一设置样式
 
-```ts ln
+```ts
 import { create } from 'danmu';
 
 const styles = {
@@ -144,7 +144,7 @@ for (const key in styles) {
 
 如果你希望新弹幕在进入时自动附加样式，或者补上 className，可以在 hook 里做：
 
-```ts ln
+```ts
 import { create } from 'danmu';
 
 const styles = {
@@ -172,7 +172,7 @@ manager.asyncEach((danmaku) => {
 
 ### 给容器设置样式
 
-```ts ln
+```ts
 import { create } from 'danmu';
 
 const styles = {
@@ -201,7 +201,7 @@ for (const key in styles) {
 
 ### 固定在顶部
 
-```ts ln
+```ts
 manager.pushFlexibleDanmaku('弹幕内容', {
   duration: 5000,
   direction: 'none',
@@ -216,7 +216,7 @@ manager.pushFlexibleDanmaku('弹幕内容', {
 
 ### 固定在某条轨道中间
 
-```ts ln
+```ts
 manager.pushFlexibleDanmaku('弹幕内容', {
   duration: 5000,
   direction: 'none',
@@ -232,7 +232,7 @@ manager.pushFlexibleDanmaku('弹幕内容', {
 
 ### 固定在左侧
 
-```ts ln
+```ts
 manager.pushFlexibleDanmaku('弹幕内容', {
   duration: 5000,
   direction: 'none',
@@ -255,7 +255,7 @@ manager.pushFlexibleDanmaku('弹幕内容', {
 
 ### 先定义弹幕组件
 
-```tsx ln
+```tsx
 export function Danmaku({ danmaku }) {
   return (
     <div>
@@ -268,7 +268,7 @@ export function Danmaku({ danmaku }) {
 
 ### 再把组件挂到弹幕节点上
 
-```tsx ln
+```tsx
 import ReactDOM from 'react-dom/client';
 import { create } from 'danmu';
 import { Danmaku } from './Danmaku';
@@ -294,7 +294,7 @@ const manager = create<string>({
 
 ### 插件实现
 
-```ts ln
+```ts
 export function filter({ userIds, keywords }) {
   return () => {
     return {
@@ -322,7 +322,7 @@ export function filter({ userIds, keywords }) {
 
 ### 注册插件
 
-```ts ln
+```ts
 import { create } from 'danmu';
 
 const manager = create<{
@@ -342,7 +342,7 @@ manager.use(
 
 下面这些数据里，前两条会被拦掉，后两条会正常渲染：
 
-```ts ln
+```ts
 manager.push({
   userId: 1,
   content: '',

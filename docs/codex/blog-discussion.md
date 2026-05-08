@@ -51,9 +51,11 @@
 
 ### 7. 工程约定
 
-- 通用逻辑可以放到`packages/kernel-blog/` 包承载博客相关通用能力。
+- 博客领域能力放到 `packages/kernel-blog/` 包承载。
+- 跨博客、简历、首页等页面都能复用的通用模块、基础组件和样式能力放到 `packages/kernel-shared/` 包承载。
 - 博客文章内容放到 `app/src/content/blog/` 内维护。
-- `kernel-blog` 负责博客通用能力，不直接承载文章内容目录。
+- `kernel-blog` 负责博客领域能力，不直接承载文章内容目录。
+- `kernel-shared` 不依赖具体业务包，业务包和 `app` 可以按需依赖 `kernel-shared`。
 
 ### 8. 内容目录结构
 
@@ -119,6 +121,7 @@
 - SEO、RSS、sitemap 等静态站配套能力
 - 博客整体视觉语言
 - `kernel-blog` 包的职责边界
+- `kernel-shared` 中基础组件和通用工具的导出粒度
 
 ## 下一步建议
 

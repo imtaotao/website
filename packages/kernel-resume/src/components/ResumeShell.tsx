@@ -19,9 +19,7 @@ type PageSpec = {
   heightPx: number;
 };
 
-const getKeepTogetherRangesCssPx = (
-  root: HTMLElement,
-): KeepTogetherRangePx[] => {
+const getKeepTogetherRangesCssPx = (root: HTMLElement) => {
   const rootRect = root.getBoundingClientRect();
   const nodes = Array.from(
     root.querySelectorAll<HTMLElement>('[data-export-keep-together]'),

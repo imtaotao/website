@@ -83,7 +83,7 @@ const downloadBlob = (blob: Blob, filename: string) => {
   }
 };
 
-const nowDateString = (): string => {
+const nowDateString = () => {
   const d = new Date();
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -91,7 +91,7 @@ const nowDateString = (): string => {
   return `${yyyy}${mm}${dd}`;
 };
 
-const isHiddenForExport = (node: HTMLElement): boolean => {
+const isHiddenForExport = (node: HTMLElement) => {
   return node.dataset.exportHide === 'true';
 };
 
@@ -100,9 +100,8 @@ const nextFrame = async () => {
 };
 
 const waitForFonts = async () => {
-  const anyDoc = document as unknown as { fonts?: { ready: Promise<unknown> } };
   try {
-    await anyDoc.fonts?.ready;
+    await document.fonts?.ready;
   } catch {
     // ignore
   }
@@ -446,9 +445,7 @@ type KeepTogetherRangePx = {
   strict: boolean;
 };
 
-const getKeepTogetherRangesCssPx = (
-  root: HTMLElement,
-): KeepTogetherRangePx[] => {
+const getKeepTogetherRangesCssPx = (root: HTMLElement) => {
   const rootRect = root.getBoundingClientRect();
   const nodes = Array.from(
     root.querySelectorAll<HTMLElement>('[data-export-keep-together]'),
@@ -523,8 +520,8 @@ const chooseSliceHeightPx = (args: {
   return sliceHeight;
 };
 
-const loadImage = async (dataUrl: string): Promise<HTMLImageElement> => {
-  return await new Promise((resolve, reject) => {
+const loadImage = async (dataUrl: string) => {
+  return await new Promise<HTMLImageElement>((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
     img.onerror = reject;
@@ -556,7 +553,7 @@ export async function exportElementToPdf(
       jpegQuality: number;
       attempt: number;
       totalAttempts: number;
-    }): Promise<{ bytes: number; blob: Blob }> => {
+    }) => {
       const { desiredPixelRatio, jpegQuality, attempt, totalAttempts } = args;
 
       const pdf = new jsPDF({
@@ -719,7 +716,7 @@ export async function exportElementToPdf(
     attempt: number;
     totalAttempts: number;
     slices: Array<{ offsetYCssPx: number; sliceHeightCssPx: number }>;
-  }): Promise<{ pdf: jsPDF; bytes: number; blob: Blob }> => {
+  }) => {
     const { desiredPixelRatio, jpegQuality, attempt, totalAttempts, slices } =
       args;
 

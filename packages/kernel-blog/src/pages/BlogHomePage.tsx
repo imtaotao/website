@@ -17,7 +17,7 @@ import {
 } from '#blog/components/BlogThemeToggle';
 import type { BlogArticleMeta, BlogTagSummary } from '#blog/articleTypes';
 
-import '../BlogPage.css';
+import '#blog/pages/BlogPage.css';
 
 export const BLOG_TAG_QUERY_KEY = 'tag';
 
@@ -132,7 +132,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
     return Math.round(60 * compactness);
   };
 
-  const searchSuggestions = useMemo((): Array<SearchSuggestion> => {
+  const searchSuggestions = useMemo(() => {
     if (!normalizedQuery) return [];
 
     const suggestions: Array<SearchSuggestion> = [];

@@ -1,14 +1,11 @@
 import { useCallback, useRef, useState } from 'react';
-import { type ResumeExperience } from '@website-kernel/shared';
 import { CodeIcon, HomeIcon, RocketIcon } from '@radix-ui/react-icons';
 
-import zhenaiIconUrl from '#app/assets/image/zhenai.svg';
-import codemonIconUrl from '#app/assets/image/codemon.svg';
-import tencentIconUrl from '#app/assets/image/tencent.svg';
-import bytedanceIconUrl from '#app/assets/image/bytedance.svg';
-import { copyToClipboard } from '#app/lib/browser';
+import { type ResumeExperience } from '#resume/resumeParser';
+import { copyToClipboard } from '#resume/components/ResumeClipboard';
+import type { ResumeImageAssets } from '#resume/components/ResumeAssets';
 
-const formatRange = (startAt: string, endAt: string): string => {
+const formatRange = (startAt: string, endAt: string) => {
   const end = endAt === 'present' ? '至今' : endAt;
   return `${startAt} — ${end}`;
 };
@@ -39,33 +36,37 @@ type CompanyLogoSpec = {
   iconSrc?: string;
 };
 
-const COMPANY_LOGO_SPEC: Array<CompanyLogoSpec> = [
-  {
-    match: (c) => c.includes('字节'),
-    iconSrc: bytedanceIconUrl,
-    className: 'bg-white',
-  },
-  {
-    match: (c) => c.includes('腾讯'),
-    iconSrc: tencentIconUrl,
-    className: 'bg-white',
-  },
-  {
-    match: (c) => c.includes('珍爱'),
-    iconSrc: zhenaiIconUrl,
-    className: 'bg-white',
-  },
-  {
-    match: (c) => c.includes('编程猫'),
-    iconSrc: codemonIconUrl,
-    className: 'bg-white',
-  },
-  {
-    match: (c) => c.includes('湖南'),
-    label: 'H',
-    className: 'bg-[#0b6f60] text-white',
-  },
-];
+const createCompanyLogoSpec = (assets?: ResumeImageAssets) => {
+  const specs: Array<CompanyLogoSpec> = [
+    {
+      match: (c) => c.includes('字节'),
+      iconSrc: assets?.companyIconUrls?.bytedance,
+      className: 'bg-white',
+    },
+    {
+      match: (c) => c.includes('腾讯'),
+      iconSrc: assets?.companyIconUrls?.tencent,
+      className: 'bg-white',
+    },
+    {
+      match: (c) => c.includes('珍爱'),
+      iconSrc: assets?.companyIconUrls?.zhenai,
+      className: 'bg-white',
+    },
+    {
+      match: (c) => c.includes('编程猫'),
+      iconSrc: assets?.companyIconUrls?.codemon,
+      className: 'bg-white',
+    },
+    {
+      match: (c) => c.includes('湖南'),
+      label: 'H',
+      className: 'bg-[#0b6f60] text-white',
+    },
+  ];
+
+  return specs;
+};
 
 const companyInitial = (company: string) => {
   const s = company.trim();
@@ -76,12 +77,15 @@ const companyInitial = (company: string) => {
   return first;
 };
 
-const CompanyLogo = (props: { company: string }) => {
+const CompanyLogo = (props: {
+  company: string;
+  assets?: ResumeImageAssets;
+}) => {
   const name = props.company;
   const base =
     'inline-flex h-4 w-4 items-center justify-center overflow-hidden rounded-[4px] text-[10px] font-bold leading-none';
 
-  const spec = COMPANY_LOGO_SPEC.find((s) => s.match(name));
+  const spec = createCompanyLogoSpec(props.assets).find((s) => s.match(name));
   if (spec) {
     return (
       <span aria-hidden className={base + ' ' + spec.className} title={name}>
@@ -157,6 +161,7 @@ const collectHighlights = (e: ResumeExperience) => {
 
 export function ResumeExperienceList(props: {
   items: Array<ResumeExperience>;
+  assets?: ResumeImageAssets;
 }) {
   if (!props.items.length) return null;
 
@@ -284,7 +289,7 @@ export function ResumeExperienceList(props: {
               }
             >
               <div className="inline-flex items-center gap-2 text-base font-semibold tracking-tight text-zinc-900">
-                <CompanyLogo company={c.company} />
+                <CompanyLogo company={c.company} assets={props.assets} />
                 <span>{c.company}</span>
                 {copied ? (
                   <span className="ml-1 whitespace-nowrap font-sans text-[10px] font-semibold text-emerald-700">

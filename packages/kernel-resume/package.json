@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit --skipLibCheck"
   },
   "imports": {
-    "#*": "./src/*.js"
+    "#resume/*": "./src/*.js",
+    "#resume/*.css": "./src/*.css"
   },
   "exports": {
     ".": {
@@ -37,6 +38,8 @@
     "*.css"
   ],
   "dependencies": {
+    "@radix-ui/themes": "catalog:",
+    "@radix-ui/react-icons": "catalog:",
     "aidly": "catalog:",
     "jspdf": "^4.2.1",
     "html-to-image": "^1.11.13"
@@ -45,6 +48,7 @@
     "react": "^19.0.0"
   },
   "devDependencies": {
+    "@types/react": "^19.2.14",
     "@vitest/coverage-v8": "catalog:",
     "tsup": "catalog:",
     "rimraf": "catalog:",

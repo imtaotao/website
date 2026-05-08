@@ -122,7 +122,7 @@ export const extractFrontmatter = (source: string, sourcePath: string) => {
 export const normalizeBlogArticleFrontmatter = (
   input: unknown,
   sourcePath: string,
-): BlogArticleFrontmatter => {
+) => {
   if (!isRecord(input)) {
     throw new Error(`Frontmatter must be an object in ${sourcePath}.`);
   }

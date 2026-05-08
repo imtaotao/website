@@ -64,3 +64,5 @@
 - 需要基础 UI 组件时，优先考虑 `Radix UI`
 - 避免引入视觉风格过强的组件库
 - 在稳定基础组件之上自定义页面表现
+- 简历专属组件放在 `packages/kernel-resume/`
+- 跨简历、博客、首页等页面可复用的基础组件放在 `packages/kernel-shared/`

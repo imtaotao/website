@@ -1,5 +1,4 @@
 import { type ReactNode, useCallback, useRef, useState } from 'react';
-import { type ResumeBasics } from '@website-kernel/shared';
 import {
   EnvelopeClosedIcon,
   GitHubLogoIcon,
@@ -8,9 +7,9 @@ import {
   MobileIcon,
   ReaderIcon,
 } from '@radix-ui/react-icons';
-import zhihuIconUrl from '#app/assets/image/zhihu.svg';
-import defaultAvatarUrl from '#app/assets/image/avatar1.jpg';
-import { copyToClipboard } from '#app/lib/browser';
+import { type ResumeBasics } from '#resume/resumeParser';
+import { copyToClipboard } from '#resume/components/ResumeClipboard';
+import type { ResumeImageAssets } from '#resume/components/ResumeAssets';
 
 const iconClassName = 'h-3.5 w-3.5 text-zinc-500';
 const socialIconClassName = 'h-4 w-4 text-zinc-500';
@@ -68,18 +67,18 @@ const Avatar = (props: { name: string; src?: string }) => {
   );
 };
 
-const labelIcon = (label: string) => {
+const labelIcon = (label: string, assets?: ResumeImageAssets) => {
   const key = label.toLowerCase();
 
   if (key.includes('github')) {
     return <GitHubLogoIcon className={socialIconClassName} />;
   }
-  if (key.includes('知乎') || key.includes('zhihu')) {
+  if ((key.includes('知乎') || key.includes('zhihu')) && assets?.zhihuIconUrl) {
     return (
       <img
         alt=""
         aria-hidden
-        src={zhihuIconUrl}
+        src={assets.zhihuIconUrl}
         className={socialIconClassName}
       />
     );
@@ -87,7 +86,10 @@ const labelIcon = (label: string) => {
   return <Link2Icon className={iconClassName} />;
 };
 
-export function ResumeHeader(props: { basics: ResumeBasics }) {
+export function ResumeHeader(props: {
+  basics: ResumeBasics;
+  assets?: ResumeImageAssets;
+}) {
   const { basics } = props;
   const hasContacts = Boolean(
     basics.phone || basics.email || basics.location || basics.school,
@@ -109,7 +111,10 @@ export function ResumeHeader(props: { basics: ResumeBasics }) {
   return (
     <header className="relative mb-6">
       <div className="absolute right-0 top-10 z-0 md:top-0">
-        <Avatar name={basics.name} src={basics.avatar ?? defaultAvatarUrl} />
+        <Avatar
+          name={basics.name}
+          src={basics.avatar ?? props.assets?.defaultAvatarUrl}
+        />
       </div>
 
       <div className="pr-28 md:pr-32">
@@ -136,7 +141,7 @@ export function ResumeHeader(props: { basics: ResumeBasics }) {
                     rel="noreferrer"
                     className="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-950"
                   >
-                    {labelIcon(l.label)}
+                    {labelIcon(l.label, props.assets)}
                     <span>{l.label}</span>
                   </a>
                 ))}

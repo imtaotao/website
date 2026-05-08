@@ -1,17 +1,35 @@
-import { type ResumeModel } from '@website-kernel/shared';
+import {
+  type ResumeImageAssets,
+  type ResumeModel,
+  ResumePageDesktop,
+  ResumePageMobile,
+} from '@website-kernel/resume';
 import { loadResumeModel } from '#app/lib/resume';
 import { useIsMobile } from '#app/lib/browser';
-import { ResumePageMobile } from '#app/components/resume/ResumePageMobile';
-import { ResumePageDesktop } from '#app/components/resume/ResumePageDesktop';
+import zhihuIconUrl from '#app/assets/image/zhihu.svg';
+import defaultAvatarUrl from '#app/assets/image/avatar1.jpg';
+import zhenaiIconUrl from '#app/assets/image/zhenai.svg';
+import codemonIconUrl from '#app/assets/image/codemon.svg';
+import tencentIconUrl from '#app/assets/image/tencent.svg';
+import bytedanceIconUrl from '#app/assets/image/bytedance.svg';
 
-import '#app/pages/ResumePage.css';
+const resumeAssets: ResumeImageAssets = {
+  defaultAvatarUrl,
+  zhihuIconUrl,
+  companyIconUrls: {
+    bytedance: bytedanceIconUrl,
+    tencent: tencentIconUrl,
+    zhenai: zhenaiIconUrl,
+    codemon: codemonIconUrl,
+  },
+};
 
 export default function ResumePage() {
   const model: ResumeModel = loadResumeModel();
   const isMobile = useIsMobile(768);
 
   if (isMobile) {
-    return <ResumePageMobile model={model} />;
+    return <ResumePageMobile model={model} assets={resumeAssets} />;
   }
-  return <ResumePageDesktop model={model} />;
+  return <ResumePageDesktop model={model} assets={resumeAssets} />;
 }

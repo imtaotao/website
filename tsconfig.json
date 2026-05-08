@@ -21,6 +21,7 @@
     "resolveJsonModule": true,
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
+    "rootDir": ".",
     "outDir": "dist",
     "strict": true,
     "skipLibCheck": true,
@@ -37,9 +38,9 @@
       "#app/*": ["./app/src/*"],
 
       // packages
-      "#demo/*": ["./packages/kernel-demo/src/*"],
       "#blog/*": ["./packages/kernel-blog/src/*"],
-      "#resume/*": ["./packages/kernel-resume/src/*"]
+      "#resume/*": ["./packages/kernel-resume/src/*"],
+      "#shared/*": ["./packages/kernel-shared/src/*"]
     }
   }
 }

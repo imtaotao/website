@@ -1,16 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
-import { type ResumeModel, exportElementToPdf } from '@website-kernel/shared';
+import { type ResumeModel } from '#resume/resumeParser';
+import { exportElementToPdf } from '#resume/resumeExport';
+import type { ResumeImageAssets } from '#resume/components/ResumeAssets';
+import { ResumeShell } from '#resume/components/ResumeShell';
+import { ResumeExportBar } from '#resume/components/ResumeExportBar';
+import { ResumeHeader } from '#resume/components/ResumeHeader';
+import { ResumeSection } from '#resume/components/ResumeSection';
+import { ResumeSummary } from '#resume/components/ResumeSummary';
+import { ResumeSkills } from '#resume/components/ResumeSkills';
+import { ResumeExperienceList } from '#resume/components/ResumeExperience';
+import { ResumeOpenSourceProjects } from '#resume/components/ResumeOpenSourceProjects';
 
-import { ResumeShell } from '#app/components/resume/ResumeShell';
-import { ResumeExportBar } from '#app/components/resume/ResumeExportBar';
-import { ResumeHeader } from '#app/components/resume/ResumeHeader';
-import { ResumeSection } from '#app/components/resume/ResumeSection';
-import { ResumeSummary } from '#app/components/resume/ResumeSummary';
-import { ResumeSkills } from '#app/components/resume/ResumeSkills';
-import { ResumeExperienceList } from '#app/components/resume/ResumeExperience';
-import { ResumeOpenSourceProjects } from '#app/components/resume/ResumeOpenSourceProjects';
+import '#resume/pages/ResumePage.css';
 
-export function ResumePageDesktop(props: { model: ResumeModel }) {
+export function ResumePageDesktop(props: {
+  model: ResumeModel;
+  assets?: ResumeImageAssets;
+}) {
   const { model } = props;
   const exportRef = useRef<HTMLDivElement | null>(null);
   const exportTokenRef = useRef(0);
@@ -150,7 +156,7 @@ export function ResumePageDesktop(props: { model: ResumeModel }) {
           </div>
         </div>
       ) : null}
-      <ResumeHeader basics={model.basics} />
+      <ResumeHeader basics={model.basics} assets={props.assets} />
 
       <ResumeSection title="简介" decorated={false}>
         <ResumeSummary summary={model.summary} />
@@ -161,7 +167,7 @@ export function ResumePageDesktop(props: { model: ResumeModel }) {
       </ResumeSection>
 
       <ResumeSection title="经历">
-        <ResumeExperienceList items={model.experiences} />
+        <ResumeExperienceList items={model.experiences} assets={props.assets} />
       </ResumeSection>
 
       {model.openSourceProjects.length ||

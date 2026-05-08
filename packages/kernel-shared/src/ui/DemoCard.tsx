@@ -1,4 +1,4 @@
-import '#demo/ui/DemoCard.css';
+import '#shared/ui/DemoCard.css';
 
 export function DemoCard() {
   return (

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
-import { type ResumeOpenSourceProject } from '@website-kernel/shared';
+import { type ResumeOpenSourceProject } from '#resume/resumeParser';
 
 const pickPrimaryLink = (p: ResumeOpenSourceProject) => {
   const links = p.links ?? [];

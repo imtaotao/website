@@ -9,11 +9,9 @@ import {
   type BlogTagMap,
 } from '#index';
 
-type ArticleSourceModules = Record<string, string>;
-
 const createArticleSourceModules = (
   entries: Array<{ slug: string; source: string }>,
-): ArticleSourceModules => {
+) => {
   return Object.fromEntries(
     entries.map(({ slug, source }) => [
       `/virtual/blog/${slug}/index.mdx`,
