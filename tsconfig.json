@@ -39,7 +39,7 @@
       // packages
       "#demo/*": ["./packages/kernel-demo/src/*"],
       "#blog/*": ["./packages/kernel-blog/src/*"],
-      "#shared/*": ["./packages/kernel-shared/src/*"]
+      "#resume/*": ["./packages/kernel-resume/src/*"]
     }
   }
 }

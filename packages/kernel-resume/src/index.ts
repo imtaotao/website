@@ -1,8 +1,8 @@
 export {
   exportElementToPdf,
   prepareElementForOfflineExport,
-} from '#shared/resumeExport';
-export { normalizeResumeModel } from '#shared/resumeParser';
+} from '#resume/resumeExport';
+export { normalizeResumeModel } from '#resume/resumeParser';
 export type {
   ResumeBasics,
   ResumeExperience,
@@ -13,4 +13,4 @@ export type {
   ResumeSchemaVersion,
   ResumeSkillGroup,
   ResumeSkillItem,
-} from '#shared/resumeParser';
+} from '#resume/resumeParser';

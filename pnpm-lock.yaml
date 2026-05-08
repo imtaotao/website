@@ -92,9 +92,9 @@ importers:
       '@website-kernel/demo':
         specifier: workspace:*
         version: link:../packages/kernel-demo
-      '@website-kernel/shared':
+      '@website-kernel/resume':
         specifier: workspace:*
-        version: link:../packages/kernel-shared
+        version: link:../packages/kernel-resume
       aidly:
         specifier: 'catalog:'
         version: 1.37.0
@@ -177,13 +177,34 @@ importers:
 
   packages/kernel-blog:
     dependencies:
+      '@mdx-js/react':
+        specifier: ^3.1.1
+        version: 3.1.1(@types/react@19.2.14)(react@19.2.5)
+      '@radix-ui/react-icons':
+        specifier: ^1.3.2
+        version: 1.3.2(react@19.2.5)
       aidly:
         specifier: 'catalog:'
         version: 1.37.0
+      highlight.js:
+        specifier: ^11.11.1
+        version: 11.11.1
+      katex:
+        specifier: ^0.16.45
+        version: 0.16.45
+      react:
+        specifier: ^19.0.0
+        version: 19.2.5
+      react-router:
+        specifier: ^7.14.2
+        version: 7.14.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       yaml:
         specifier: 'catalog:'
         version: 2.8.3
     devDependencies:
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
       '@vitest/coverage-v8':
         specifier: 'catalog:'
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.12)(lightningcss@1.32.0))
@@ -219,7 +240,7 @@ importers:
         specifier: 'catalog:'
         version: 6.0.3
 
-  packages/kernel-shared:
+  packages/kernel-resume:
     dependencies:
       aidly:
         specifier: 'catalog:'
@@ -230,6 +251,9 @@ importers:
       jspdf:
         specifier: ^4.2.1
         version: 4.2.1
+      react:
+        specifier: ^19.0.0
+        version: 19.2.5
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 'catalog:'
@@ -3582,10 +3606,6 @@ packages:
   small-queue@1.1.2:
     resolution: {integrity: sha512-K6zQPh7cRjkzv+upcwrOTbR4kU3neY3KZR2F1nc8Fuez8uJyh4BguOUs4KGKHcuzU1LJmK8yfCkMUZbconLe8Q==}
 
-  source-map-js@1.2.0:
-    resolution: {integrity: sha512-itJW8lvSA0TXEphiRoawsCksnlf8SyvmFzIhltqAHluXd88pkCd+cXJVHTDwdCr0IzwptSm035IHQktUu1QUMg==}
-    engines: {node: '>=0.10.0'}
-
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
@@ -6825,7 +6845,7 @@ snapshots:
     dependencies:
       '@babel/parser': 7.29.2
       '@babel/types': 7.29.0
-      source-map-js: 1.2.0
+      source-map-js: 1.2.1
 
   make-dir@4.0.0:
     dependencies:
@@ -7935,8 +7955,6 @@ snapshots:
       is-fullwidth-code-point: 5.0.0
 
   small-queue@1.1.2: {}
-
-  source-map-js@1.2.0: {}
 
   source-map-js@1.2.1: {}
 

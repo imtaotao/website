@@ -15,7 +15,7 @@
     "@tailwindcss/vite": "4.2.4",
     "@website-kernel/blog": "workspace:*",
     "@website-kernel/demo": "workspace:*",
-    "@website-kernel/shared": "workspace:*",
+    "@website-kernel/resume": "workspace:*",
     "aidly": "catalog:",
     "highlight.js": "^11.11.1",
     "katex": "^0.16.45",

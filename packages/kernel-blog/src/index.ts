@@ -13,6 +13,19 @@ import type {
 
 export { blogTagMap };
 export { extractFrontmatter, normalizeBlogArticleFrontmatter };
+export { BlogMdx, extractMarkdownHeadings } from '#blog/components/Markdown';
+export {
+  BlogThemeToggle,
+  useBlogTheme,
+} from '#blog/components/BlogThemeToggle';
+export {
+  BLOG_TAG_QUERY_KEY,
+  BlogHomePage,
+  createBlogTagNavigation,
+  formatBlogDate,
+  formatBlogMeta,
+} from '#blog/pages/BlogHomePage/page';
+export { BlogArticlePage } from '#blog/pages/BlogArticlePage/page';
 export type {
   BlogArticleDetail,
   BlogArticleFrontmatter,
@@ -23,6 +36,16 @@ export type {
   BlogTagMeta,
   BlogTagSummary,
 } from '#blog/articleTypes';
+export type { MarkdownHeading } from '#blog/components/Markdown';
+export type { BlogTheme } from '#blog/components/BlogThemeToggle';
+export type {
+  BlogHomeArticle,
+  BlogHomePageProps,
+} from '#blog/pages/BlogHomePage/page';
+export type {
+  BlogArticlePageProps,
+  BlogArticleView,
+} from '#blog/pages/BlogArticlePage/page';
 
 const ARTICLE_ENTRY_FILENAME = 'index.mdx';
 
@@ -50,7 +73,8 @@ const resolveArticleSourceModules = (options?: BlogContentOptions) => {
   const modules = options?.articleSourceModules;
   if (!modules) {
     throw new Error(
-      'Missing "articleSourceModules". In browser/Vite environment, pass the result of import.meta.glob(".../index.mdx", { query: "?raw", eager: true }).',
+      'Missing "articleSourceModules". In browser/Vite environment, ' +
+        'pass the result of import.meta.glob(".../index.mdx", { query: "?raw", eager: true }).',
     );
   }
   return modules;

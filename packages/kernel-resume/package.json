@@ -1,5 +1,5 @@
 {
-  "name": "@website-kernel/shared",
+  "name": "@website-kernel/resume",
   "version": "1.0.0",
   "author": "chentao.arthur",
   "scripts": {
@@ -40,6 +40,9 @@
     "aidly": "catalog:",
     "jspdf": "^4.2.1",
     "html-to-image": "^1.11.13"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "catalog:",
