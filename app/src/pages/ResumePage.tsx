@@ -7,6 +7,7 @@ import {
 import { useWebsiteTheme } from '@website-kernel/shared';
 import { loadResumeModel } from '#app/lib/resume';
 import { useIsMobile } from '#app/lib/browser';
+import { usePageMeta } from '#app/lib/pageMeta';
 import zhihuIconUrl from '#app/assets/image/zhihu.svg';
 import defaultAvatarUrl from '#app/assets/image/avatar1.jpg';
 import zhenaiIconUrl from '#app/assets/image/zhenai.svg';
@@ -29,6 +30,12 @@ export default function ResumePage() {
   const model: ResumeModel = loadResumeModel();
   const isMobile = useIsMobile(768);
   const { theme } = useWebsiteTheme();
+
+  usePageMeta({
+    title: '简历',
+    description: '陈涛的前端工程师简历，包含工作经历、技能和开源项目。',
+    canonicalPath: '/resume',
+  });
 
   if (isMobile) {
     return (

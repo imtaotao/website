@@ -1,5 +1,5 @@
-import { useEffect, useState, type ComponentProps } from 'react';
 import { MDXProvider } from '@mdx-js/react';
+import { createElement, useEffect, useState, type ComponentProps } from 'react';
 import 'katex/dist/katex.min.css';
 
 import { BlogMdxPre } from '#blog/components/MarkdownCodeBlock';
@@ -25,6 +25,7 @@ export type {
 } from '#blog/components/MarkdownTypes';
 
 export function BlogMdx(props: BlogMdxProps) {
+  type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   const nextHeadingId = createHeadingIdFactory();
   const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(
     null,
@@ -64,26 +65,31 @@ export function BlogMdx(props: BlogMdxProps) {
   const BlogMdxImage = createBlogMdxImage(mediaContext);
   const ImageGallery = createImageGallery(mediaContext);
 
+  const renderHeading = (
+    tag: HeadingTag,
+    className: string,
+    p: ComponentProps<'h1'>,
+  ) => {
+    const text = flattenText(p.children);
+    const id = nextHeadingId(text);
+    const label = text ? `定位到标题：${text}` : '定位到当前标题';
+
+    return createElement(
+      tag,
+      { id, className },
+      <a href={`#${id}`} className="blog-prose-heading-link" aria-label={label}>
+        {p.children}
+      </a>,
+    );
+  };
+
   const components = {
-    h1: (p: ComponentProps<'h1'>) => (
-      <h1 className="blog-prose-h1">{p.children}</h1>
-    ),
-    h2: (p: ComponentProps<'h2'>) => {
-      const id = nextHeadingId(flattenText(p.children));
-      return (
-        <h2 id={id} className="blog-prose-h2">
-          {p.children}
-        </h2>
-      );
-    },
-    h3: (p: ComponentProps<'h3'>) => {
-      const id = nextHeadingId(flattenText(p.children));
-      return (
-        <h3 id={id} className="blog-prose-h3">
-          {p.children}
-        </h3>
-      );
-    },
+    h1: (p: ComponentProps<'h1'>) => renderHeading('h1', 'blog-prose-h1', p),
+    h2: (p: ComponentProps<'h2'>) => renderHeading('h2', 'blog-prose-h2', p),
+    h3: (p: ComponentProps<'h3'>) => renderHeading('h3', 'blog-prose-h3', p),
+    h4: (p: ComponentProps<'h4'>) => renderHeading('h4', 'blog-prose-h4', p),
+    h5: (p: ComponentProps<'h5'>) => renderHeading('h5', 'blog-prose-h5', p),
+    h6: (p: ComponentProps<'h6'>) => renderHeading('h6', 'blog-prose-h6', p),
     p: (p: ComponentProps<'p'>) => {
       if (isMediaOnlyParagraph(p.children)) {
         return <div className="blog-prose-media-block">{p.children}</div>;

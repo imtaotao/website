@@ -2,6 +2,7 @@ import { type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { useWebsiteTheme } from '@website-kernel/shared';
 
+import { usePageMeta } from '#app/lib/pageMeta';
 import '#app/pages/HomePage.css';
 
 type Segment =
@@ -113,6 +114,13 @@ const renderSegments = (segs: Array<Segment>) => {
 
 export default function HomePage() {
   const { theme } = useWebsiteTheme();
+
+  usePageMeta({
+    title: 'chentao.arthur',
+    description:
+      '陈涛的个人网站，记录前端工程、技术文章、个人简历和一些长期兴趣。',
+    canonicalPath: '/',
+  });
 
   return (
     <main className="home-shell min-h-screen" data-home-theme={theme}>

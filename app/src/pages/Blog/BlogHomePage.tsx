@@ -1,9 +1,16 @@
 import { BlogHomePage as KernelBlogHomePage } from '@website-kernel/blog';
 
 import { getBlogArticles, getBlogTagSummaries } from '#app/lib/blog';
+import { usePageMeta } from '#app/lib/pageMeta';
 import avatarUrl from '#app/assets/image/avatar1.jpg';
 
 export default function BlogHomePage() {
+  usePageMeta({
+    title: '博客',
+    description: '陈涛的博客，记录前端工程、技术实践、工具使用和日常思考。',
+    canonicalPath: '/blog',
+  });
+
   return (
     <KernelBlogHomePage
       articles={getBlogArticles()}

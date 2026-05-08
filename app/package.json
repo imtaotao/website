@@ -10,12 +10,12 @@
   },
   "dependencies": {
     "@mdx-js/react": "^3.1.1",
+    "@radix-ui/react-icons": "catalog:",
+    "@radix-ui/themes": "catalog:",
     "@tailwindcss/vite": "4.2.4",
     "@website-kernel/blog": "workspace:*",
-    "@website-kernel/shared": "workspace:*",
     "@website-kernel/resume": "workspace:*",
-    "@radix-ui/themes": "catalog:",
-    "@radix-ui/react-icons": "catalog:",
+    "@website-kernel/shared": "workspace:*",
     "aidly": "catalog:",
     "highlight.js": "^11.11.1",
     "katex": "^0.16.45",
@@ -39,10 +39,10 @@
     "eslint-plugin-react-refresh": "^0.4.6",
     "remark-frontmatter": "^5.0.0",
     "remark-mdx-frontmatter": "^5.2.0",
+    "vite-tsconfig-paths": "^6.1.1",
     "rimraf": "catalog:",
-    "yaml": "catalog:",
     "typescript": "catalog:",
     "vite": "^8.0.2",
-    "vite-tsconfig-paths": "^6.1.1"
+    "yaml": "catalog:"
   }
 }
