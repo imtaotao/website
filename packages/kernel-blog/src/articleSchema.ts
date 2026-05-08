@@ -79,7 +79,7 @@ const normalizeSummary = (value: unknown, sourcePath: string) => {
   return summary;
 };
 
-export const extractFrontmatter = (source: string, sourcePath: string) => {
+export function extractFrontmatter(source: string, sourcePath: string) {
   const normalizedSource = source.replace(/^\uFEFF/, '');
   if (
     !normalizedSource.startsWith(`${FRONTMATTER_BOUNDARY}\n`) &&
@@ -117,12 +117,12 @@ export const extractFrontmatter = (source: string, sourcePath: string) => {
     frontmatter: normalizeBlogArticleFrontmatter(parsed, sourcePath),
     content,
   };
-};
+}
 
-export const normalizeBlogArticleFrontmatter = (
+export function normalizeBlogArticleFrontmatter(
   input: unknown,
   sourcePath: string,
-) => {
+) {
   if (!isRecord(input)) {
     throw new Error(`Frontmatter must be an object in ${sourcePath}.`);
   }
@@ -136,7 +136,7 @@ export const normalizeBlogArticleFrontmatter = (
     summary: normalizeSummary(input.summary, sourcePath),
     cover: normalizeCover(input.cover, sourcePath),
   };
-};
+}
 const parseFrontmatter = (source: string, sourcePath: string) => {
   try {
     return parse(source);

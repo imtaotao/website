@@ -138,20 +138,21 @@ const PUBLIC_BLOG_ARTICLES = BLOG_ARTICLES.filter(
   (article) => !isHiddenBlogArticle(article),
 );
 
-export const getBlogArticles = (): Array<BlogArticleView> =>
-  PUBLIC_BLOG_ARTICLES;
+export function getBlogArticles(): Array<BlogArticleView> {
+  return PUBLIC_BLOG_ARTICLES;
+}
 
-export const getBlogArticleBySlug = (
+export function getBlogArticleBySlug(
   slug: string,
   options?: { includeHidden?: boolean },
-) => {
+) {
   const articles = options?.includeHidden
     ? BLOG_ARTICLES
     : PUBLIC_BLOG_ARTICLES;
   return articles.find((article) => article.slug === slug);
-};
+}
 
-export const getBlogTagSummaries = (): Array<BlogTagSummary> => {
+export function getBlogTagSummaries(): Array<BlogTagSummary> {
   return Object.entries(blogTagMap)
     .map(([key, tag]) => ({
       key,
@@ -165,20 +166,20 @@ export const getBlogTagSummaries = (): Array<BlogTagSummary> => {
       if (left.order !== right.order) return left.order - right.order;
       return left.label.localeCompare(right.label);
     });
-};
+}
 
-export const getBlogTagByKey = (tag: string) => {
+export function getBlogTagByKey(tag: string) {
   return getBlogTagSummaries().find((item) => item.key === tag);
-};
+}
 
-export const getBlogArticlesByTag = (tag: string) => {
+export function getBlogArticlesByTag(tag: string) {
   return PUBLIC_BLOG_ARTICLES.filter((article) => article.tags.includes(tag));
-};
+}
 
-export const resolveBlogAssetUrl = (
+export function resolveBlogAssetUrl(
   articleSourcePath: string,
   assetPath: string,
-) => {
+) {
   const normalizedPath = assetPath.trim();
   if (!normalizedPath) return undefined;
   if (/^(?:https?:)?\/\//.test(normalizedPath)) return normalizedPath;
@@ -189,9 +190,9 @@ export const resolveBlogAssetUrl = (
     articleAssetModules[toArticleAssetKey(articleSourcePath, normalizedPath)] ??
     normalizedPath
   );
-};
+}
 
-export const formatBlogDate = (value: string) => {
+export function formatBlogDate(value: string) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
     return value;
@@ -200,11 +201,11 @@ export const formatBlogDate = (value: string) => {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}.${month}.${day}`;
-};
+}
 
-export const formatBlogMeta = (tags: Array<string>) => {
+export function formatBlogMeta(tags: Array<string>) {
   if (tags.length === 0) {
     return '未分类';
   }
   return tags.join(' / ');
-};
+}

@@ -52,6 +52,7 @@
 
 ## 项目文档
 
+- 站点体验优化记录：`docs/codex/site-experience.md`
 - 简历功能说明：`docs/codex/resume-function.md`
 - 简历界面说明：`docs/codex/resume-ui.md`
 - 本地代码风格：`docs/codex/style.md`

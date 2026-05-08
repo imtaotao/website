@@ -22,7 +22,7 @@ import '#blog/pages/BlogPage.css';
 
 export const BLOG_TAG_QUERY_KEY = 'tag';
 
-export const createBlogTagNavigation = (tag?: string) => {
+export function createBlogTagNavigation(tag?: string) {
   const normalizedTag = tag?.trim();
 
   if (!normalizedTag) {
@@ -37,7 +37,7 @@ export const createBlogTagNavigation = (tag?: string) => {
     pathname: '/blog',
     search: `?${searchParams.toString()}`,
   };
-};
+}
 
 export type BlogHomeArticle = Pick<
   BlogArticleMeta,
@@ -53,7 +53,7 @@ export type BlogHomePageProps = {
   tags: Array<BlogTagSummary>;
 };
 
-export const formatBlogDate = (value: string) => {
+export function formatBlogDate(value: string) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
     return value;
@@ -62,14 +62,14 @@ export const formatBlogDate = (value: string) => {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}.${month}.${day}`;
-};
+}
 
-export const formatBlogMeta = (tags: Array<string>) => {
+export function formatBlogMeta(tags: Array<string>) {
   if (tags.length === 0) {
     return '未分类';
   }
   return tags.join(' / ');
-};
+}
 
 const getTagIcon = (tag: string) => {
   switch (tag) {

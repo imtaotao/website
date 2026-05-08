@@ -4,23 +4,45 @@ import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
 export type BlogTheme = 'light' | 'dark';
 
 const BLOG_THEME_STORAGE_KEY = 'website:blog-theme';
+const BLOG_THEME_CHANGE_EVENT = 'website-theme-change';
+const DEFAULT_BLOG_THEME: BlogTheme = 'dark';
 
 const isBlogTheme = (value: string | null): value is BlogTheme => {
   return value === 'light' || value === 'dark';
 };
 
 const readStoredBlogTheme = () => {
-  if (typeof window === 'undefined') return 'light';
+  if (typeof window === 'undefined') return DEFAULT_BLOG_THEME;
 
   const storedTheme = window.localStorage.getItem(BLOG_THEME_STORAGE_KEY);
-  return isBlogTheme(storedTheme) ? storedTheme : 'light';
+  return isBlogTheme(storedTheme) ? storedTheme : DEFAULT_BLOG_THEME;
 };
 
-export const useBlogTheme = () => {
+export function useBlogTheme() {
   const [theme, setTheme] = useState<BlogTheme>(readStoredBlogTheme);
 
   useEffect(() => {
+    const syncTheme = () => {
+      setTheme(readStoredBlogTheme());
+    };
+
+    window.addEventListener('storage', syncTheme);
+    window.addEventListener(BLOG_THEME_CHANGE_EVENT, syncTheme);
+
+    return () => {
+      window.removeEventListener('storage', syncTheme);
+      window.removeEventListener(BLOG_THEME_CHANGE_EVENT, syncTheme);
+    };
+  }, []);
+
+  useEffect(() => {
     window.localStorage.setItem(BLOG_THEME_STORAGE_KEY, theme);
+    window.dispatchEvent(
+      new CustomEvent<BlogTheme>(BLOG_THEME_CHANGE_EVENT, {
+        detail: theme,
+      }),
+    );
+    window.dispatchEvent(new Event('storage'));
   }, [theme]);
 
   const toggleTheme = () => {
@@ -28,7 +50,7 @@ export const useBlogTheme = () => {
   };
 
   return { theme, toggleTheme };
-};
+}
 
 type BlogThemeToggleProps = {
   theme: BlogTheme;

@@ -13,11 +13,11 @@ const toNodeArray = (children: ReactNode) => {
   });
 };
 
-export const isMediaOnlyParagraph = (children: ReactNode) => {
+export function isMediaOnlyParagraph(children: ReactNode) {
   const nodes = toNodeArray(children);
   if (nodes.length !== 1) return false;
   const node = nodes[0];
   if (!isValidElement(node)) return false;
   if (node.type === 'img') return true;
   return Boolean((node.type as BlogMediaElementType).__blogMediaElement);
-};
+}

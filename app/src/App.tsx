@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { Theme } from '@radix-ui/themes';
+import { useWebsiteTheme } from '@website-kernel/shared';
 
 import HomePage from '#app/pages/HomePage';
 import ResumePage from '#app/pages/ResumePage';
@@ -27,9 +28,11 @@ function AppSuspenseFallback() {
 export function App() {
   // GitHub Pages / 子路径部署时，确保路由与资源路径一致。
   const basename = (window.__APP_BASE__ || '/').replace(/\/$/, '');
+  const { theme } = useWebsiteTheme();
+
   return (
     <BrowserRouter basename={basename || undefined}>
-      <Theme className="app__theme">
+      <Theme className="app__theme" appearance={theme}>
         <Suspense fallback={<AppSuspenseFallback />}>
           <Routes>
             <Route path="/" element={<HomePage />} />

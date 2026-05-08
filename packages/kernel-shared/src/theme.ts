@@ -3,21 +3,22 @@ import { useEffect, useState } from 'react';
 export type WebsiteTheme = 'light' | 'dark';
 
 export const WEBSITE_THEME_STORAGE_KEY = 'website:blog-theme';
+const DEFAULT_WEBSITE_THEME: WebsiteTheme = 'dark';
 
 const WEBSITE_THEME_CHANGE_EVENT = 'website-theme-change';
 
-export const isWebsiteTheme = (value: string | null): value is WebsiteTheme => {
+export function isWebsiteTheme(value: string | null): value is WebsiteTheme {
   return value === 'light' || value === 'dark';
-};
+}
 
-export const readStoredWebsiteTheme = (): WebsiteTheme => {
-  if (typeof window === 'undefined') return 'light';
+export function readStoredWebsiteTheme(): WebsiteTheme {
+  if (typeof window === 'undefined') return DEFAULT_WEBSITE_THEME;
 
   const storedTheme = window.localStorage.getItem(WEBSITE_THEME_STORAGE_KEY);
-  return isWebsiteTheme(storedTheme) ? storedTheme : 'light';
-};
+  return isWebsiteTheme(storedTheme) ? storedTheme : DEFAULT_WEBSITE_THEME;
+}
 
-export const writeStoredWebsiteTheme = (theme: WebsiteTheme) => {
+export function writeStoredWebsiteTheme(theme: WebsiteTheme) {
   if (typeof window === 'undefined') return;
 
   window.localStorage.setItem(WEBSITE_THEME_STORAGE_KEY, theme);
@@ -26,9 +27,9 @@ export const writeStoredWebsiteTheme = (theme: WebsiteTheme) => {
       detail: theme,
     }),
   );
-};
+}
 
-export const useWebsiteTheme = () => {
+export function useWebsiteTheme() {
   const [theme, setThemeState] = useState<WebsiteTheme>(readStoredWebsiteTheme);
 
   useEffect(() => {
@@ -55,4 +56,4 @@ export const useWebsiteTheme = () => {
   };
 
   return { theme, setTheme, toggleTheme };
-};
+}

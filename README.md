@@ -62,3 +62,10 @@ pnpm build:packages
 ## Content Conventions
 
 Blog posts live under `blog/`. Each post keeps its content and local image assets in its own directory. Resume-related implementation follows the documents under `docs/codex/`; reusable logic should live in `packages/kernel-resume/` instead of being mixed into the app entry.
+
+## Codex Notes
+
+- Site experience roadmap: `docs/codex/site-experience.md`
+- Resume behavior: `docs/codex/resume-function.md`
+- Resume UI direction: `docs/codex/resume-ui.md`
+- Local code style: `docs/codex/style.md`

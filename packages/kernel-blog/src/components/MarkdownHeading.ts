@@ -1,6 +1,6 @@
 import type { MarkdownHeading } from '#blog/components/MarkdownTypes';
 
-export const flattenText = (node: unknown): string => {
+export function flattenText(node: unknown): string {
   if (node == null) return '';
   if (typeof node === 'string' || typeof node === 'number') return String(node);
   if (Array.isArray(node)) return node.map(flattenText).join('');
@@ -8,7 +8,7 @@ export const flattenText = (node: unknown): string => {
     return flattenText((node as any).props?.children);
   }
   return '';
-};
+}
 
 const toHeadingSlug = (value: string) => {
   const normalized = value
@@ -29,7 +29,7 @@ const toHeadingSlug = (value: string) => {
     .replace(/^-|-$/g, '');
 };
 
-export const createHeadingIdFactory = () => {
+export function createHeadingIdFactory() {
   const counts = new Map<string, number>();
 
   return (text: string) => {
@@ -38,9 +38,9 @@ export const createHeadingIdFactory = () => {
     counts.set(base, next);
     return next === 1 ? base : `${base}-${next}`;
   };
-};
+}
 
-export const extractMarkdownHeadings = (source: string) => {
+export function extractMarkdownHeadings(source: string) {
   const nextId = createHeadingIdFactory();
   const headings: Array<MarkdownHeading> = [];
   const lines = source.split(/\r?\n/);
@@ -65,4 +65,4 @@ export const extractMarkdownHeadings = (source: string) => {
   }
 
   return headings;
-};
+}

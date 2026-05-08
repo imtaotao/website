@@ -13,7 +13,7 @@ type MarkdownMediaContext = {
   openLightbox: (image: LightboxImage | null) => void;
 };
 
-export const createBlogMdxImage = (context: MarkdownMediaContext) => {
+export function createBlogMdxImage(context: MarkdownMediaContext) {
   function BlogMdxImage(p: ComponentProps<'img'>) {
     const resolvedSrc = p.src
       ? context.resolveAssetUrl(context.articleSourcePath, p.src) ?? p.src
@@ -48,9 +48,9 @@ export const createBlogMdxImage = (context: MarkdownMediaContext) => {
 
   BlogMdxImage.__blogMediaElement = true;
   return BlogMdxImage;
-};
+}
 
-export const createImageGallery = (context: MarkdownMediaContext) => {
+export function createImageGallery(context: MarkdownMediaContext) {
   return function ImageGallery({ images, columns = 2 }: BlogImageGalleryProps) {
     const normalizedImages = images
       .map((item) => (typeof item === 'string' ? { src: item } : { ...item }))
@@ -108,4 +108,4 @@ export const createImageGallery = (context: MarkdownMediaContext) => {
       </div>
     );
   };
-};
+}

@@ -159,27 +159,24 @@ const createBlogContent = (options?: BlogContentOptions) => {
   };
 };
 
-export const getAllArticles = (options?: BlogContentOptions) => {
+export function getAllArticles(options?: BlogContentOptions) {
   return createBlogContent(options).articles.map(stripArticleContent);
-};
+}
 
-export const getArticleBySlug = (
-  slug: string,
-  options?: BlogContentOptions,
-) => {
+export function getArticleBySlug(slug: string, options?: BlogContentOptions) {
   return createBlogContent(options).articleBySlug.get(slug);
-};
+}
 
-export const getAllTags = (options?: BlogContentOptions) => {
+export function getAllTags(options?: BlogContentOptions) {
   return createBlogContent(options).tags;
-};
+}
 
-export const getArticlesByTag = (tag: string, options?: BlogContentOptions) => {
+export function getArticlesByTag(tag: string, options?: BlogContentOptions) {
   return createBlogContent(options)
     .articles.filter((article) => article.tags.includes(tag))
     .map(stripArticleContent);
-};
+}
 
-export const getTagByKey = (tag: string, options?: BlogContentOptions) => {
+export function getTagByKey(tag: string, options?: BlogContentOptions) {
   return createBlogContent(options).tags.find((item) => item.key === tag);
-};
+}
