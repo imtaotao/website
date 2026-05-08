@@ -47,6 +47,7 @@ publishedAt: 2026-04-01
 updatedAt: 2026-04-02
 summary: Older summary
 cover: ./cover.jpg
+coverPosition: center 32%
 ---
 
 # Older post
@@ -79,6 +80,7 @@ summary: Newer summary
     ]);
     expect(articles[0]?.cover).toBeUndefined();
     expect(articles[1]?.cover).toBe('./cover.jpg');
+    expect(articles[1]?.coverPosition).toBe('center 32%');
     expect(tags).toEqual([
       {
         key: 'react',

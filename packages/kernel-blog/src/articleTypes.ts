@@ -21,6 +21,7 @@ export type BlogArticleFrontmatter = {
   updatedAt: string;
   summary?: string;
   cover?: string;
+  coverPosition?: string;
 };
 
 export type BlogArticleMeta = BlogArticleFrontmatter & {

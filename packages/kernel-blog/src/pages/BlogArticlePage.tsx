@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import type { ComponentType } from 'react';
+import { useEffect, useState, type ComponentType } from 'react';
 import { Link, useParams } from 'react-router';
 import {
   ArrowLeftIcon,
@@ -12,7 +11,12 @@ import type {
   BlogArticleFrontmatter,
   BlogTagSummary,
 } from '#blog/articleTypes';
+import {
+  BlogLightbox,
+  createLightboxImage,
+} from '#blog/components/MarkdownLightbox';
 import { BlogMdx } from '#blog/components/Markdown';
+import type { LightboxImage } from '#blog/components/MarkdownTypes';
 import {
   BlogThemeToggle,
   useBlogTheme,
@@ -52,6 +56,28 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   });
 
   const [wordCount, setWordCount] = useState(0);
+  const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(
+    null,
+  );
+
+  useEffect(() => {
+    if (!lightboxImage) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setLightboxImage(null);
+      }
+    };
+
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [lightboxImage]);
 
   useEffect(() => {
     if (!article) return;
@@ -93,14 +119,34 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
 
   return (
     <main className="blog-shell min-h-screen" data-blog-theme={blogTheme.theme}>
-      <article className="blog-article-page">
+      <article
+        className={`blog-article-page${
+          article.coverUrl ? ' blog-article-page--with-cover' : ''
+        }`}
+      >
         {article.coverUrl ? (
           <div className="blog-article-cover-shell">
-            <img
-              src={article.coverUrl}
-              alt={article.title}
-              className="blog-article-cover"
-            />
+            <button
+              type="button"
+              className="blog-article-cover-button"
+              onClick={() =>
+                setLightboxImage(
+                  createLightboxImage(article.coverUrl, article.title),
+                )
+              }
+              aria-label={`放大查看封面图：${article.title}`}
+            >
+              <img
+                src={article.coverUrl}
+                alt={article.title}
+                className="blog-article-cover"
+                style={
+                  article.coverPosition
+                    ? { objectPosition: article.coverPosition }
+                    : undefined
+                }
+              />
+            </button>
           </div>
         ) : null}
 
@@ -169,6 +215,13 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
             <RocketIcon className="blog-back-to-top-icon" />
           </button>
         </div>
+
+        {lightboxImage ? (
+          <BlogLightbox
+            image={lightboxImage}
+            onClose={() => setLightboxImage(null)}
+          />
+        ) : null}
       </article>
     </main>
   );

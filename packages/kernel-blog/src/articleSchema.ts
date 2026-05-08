@@ -53,6 +53,17 @@ const normalizeCover = (value: unknown, sourcePath: string) => {
   return cover;
 };
 
+const normalizeCoverPosition = (value: unknown, sourcePath: string) => {
+  if (value == null) return undefined;
+  const coverPosition = asString(value);
+  if (!coverPosition) {
+    throw new Error(
+      `Field "coverPosition" must be a non-empty string in ${sourcePath}.`,
+    );
+  }
+  return coverPosition;
+};
+
 const assertDateString = (
   value: unknown,
   fieldName: 'publishedAt' | 'updatedAt',
@@ -135,6 +146,7 @@ export function normalizeBlogArticleFrontmatter(
     updatedAt: assertDateString(input.updatedAt, 'updatedAt', sourcePath),
     summary: normalizeSummary(input.summary, sourcePath),
     cover: normalizeCover(input.cover, sourcePath),
+    coverPosition: normalizeCoverPosition(input.coverPosition, sourcePath),
   };
 }
 const parseFrontmatter = (source: string, sourcePath: string) => {
