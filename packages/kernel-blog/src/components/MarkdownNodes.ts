@@ -1,5 +1,9 @@
 import { isValidElement, type ReactNode } from 'react';
 
+type BlogMediaElementType = {
+  __blogMediaElement?: boolean;
+};
+
 const toNodeArray = (children: ReactNode) => {
   const list = Array.isArray(children) ? children : [children];
   return list.filter((item) => {
@@ -14,5 +18,6 @@ export const isMediaOnlyParagraph = (children: ReactNode) => {
   if (nodes.length !== 1) return false;
   const node = nodes[0];
   if (!isValidElement(node)) return false;
-  return node.type === 'img';
+  if (node.type === 'img') return true;
+  return Boolean((node.type as BlogMediaElementType).__blogMediaElement);
 };

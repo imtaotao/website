@@ -9,6 +9,7 @@ export { ResumeHeader } from '#resume/components/ResumeHeader';
 export { ResumeOpenSourceProjects } from '#resume/components/ResumeOpenSourceProjects';
 export { ResumeSection } from '#resume/components/ResumeSection';
 export { ResumeShell } from '#resume/components/ResumeShell';
+export type { ResumeTheme } from '#resume/components/ResumeShell';
 export { ResumeSkills } from '#resume/components/ResumeSkills';
 export { ResumeSummary } from '#resume/components/ResumeSummary';
 export { ResumePageDesktop } from '#resume/pages/ResumePageDesktop';

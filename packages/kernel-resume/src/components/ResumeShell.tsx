@@ -8,6 +8,8 @@ import {
   useState,
 } from 'react';
 
+export type ResumeTheme = 'light' | 'dark';
+
 type KeepTogetherRangePx = {
   topPx: number;
   bottomPx: number;
@@ -113,8 +115,10 @@ export const ResumeShell = forwardRef<
     children: ReactNode;
     topBar?: ReactNode;
     paged?: boolean;
+    theme?: ResumeTheme;
   }
 >(function ResumeShell(props, ref) {
+  const theme = props.theme ?? 'light';
   const paged = props.paged ?? true;
   const A4_RATIO = 297 / 210;
   const PAGE_GAP_PX = 28;
@@ -216,16 +220,7 @@ export const ResumeShell = forwardRef<
   return (
     <div
       className="resume-root min-h-screen text-zinc-900"
-      // 用 inline style 避免 Tailwind 扫描不到复杂的 bg-[...] 导致背景丢失。
-      style={{
-        backgroundColor: '#ffffff',
-        backgroundImage:
-          // white base + very soft blue/purple glows (iOS/Notion-like)
-          'radial-gradient(900px circle at 18% 8%, rgba(191,219,254,0.45) 0%, rgba(255,255,255,0) 62%),' +
-          'radial-gradient(860px circle at 86% 14%, rgba(216,180,254,0.38) 0%, rgba(255,255,255,0) 60%),' +
-          'radial-gradient(820px circle at 52% 108%, rgba(167,243,208,0.22) 0%, rgba(255,255,255,0) 58%),' +
-          'linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(250,250,255,1) 100%)',
-      }}
+      data-resume-theme={theme}
     >
       {props.topBar ? (
         <div

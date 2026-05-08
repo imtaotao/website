@@ -3,7 +3,7 @@
 
 [![build status](https://github.com/imtaotao/website/actions/workflows/deploy.yml/badge.svg?branch=master)](https://github.com/imtaotao/website/actions/workflows/deploy.yml)
 
-A personal, long-term-minded frontend workspace.
+Source code for my personal website, blog, and resume.
 
 [https://imtaotao.me](https://imtaotao.me)
 

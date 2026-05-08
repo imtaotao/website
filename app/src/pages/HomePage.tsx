@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react';
 import { Link } from 'react-router';
+import { useWebsiteTheme } from '@website-kernel/shared';
 
 import '#app/pages/HomePage.css';
 
@@ -111,18 +112,20 @@ const renderSegments = (segs: Array<Segment>) => {
 };
 
 export default function HomePage() {
+  const { theme } = useWebsiteTheme();
+
   return (
-    <main className="min-h-screen bg-white">
+    <main className="home-shell min-h-screen" data-home-theme={theme}>
       {/* 左偏布局：不居中对齐，右侧留白更大 */}
       <div className="home-root w-full px-6 py-14 md:px-14 md:py-24">
         <div className="home-container max-w-185">
           <header className="select-none">
-            <h1 className="home-title-font mt-2 text-5xl font-normal tracking-tight text-zinc-900 md:text-6xl">
+            <h1 className="home-title-font mt-2 text-5xl font-normal tracking-tight md:text-6xl">
               {HOME.name}
             </h1>
           </header>
 
-          <div className="home-body-font mt-8 space-y-6 text-[16px] leading-8 text-zinc-800">
+          <div className="home-body-font mt-8 space-y-6 text-[16px] leading-8">
             {HOME.blocks.map((b, idx) => (
               <p key={idx}>{renderSegments(b.segments)}</p>
             ))}

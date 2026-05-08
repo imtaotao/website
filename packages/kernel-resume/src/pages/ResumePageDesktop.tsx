@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { type ResumeModel } from '#resume/resumeParser';
 import { exportElementToPdf } from '#resume/resumeExport';
 import type { ResumeImageAssets } from '#resume/components/ResumeAssets';
-import { ResumeShell } from '#resume/components/ResumeShell';
+import { type ResumeTheme, ResumeShell } from '#resume/components/ResumeShell';
 import { ResumeExportBar } from '#resume/components/ResumeExportBar';
 import { ResumeHeader } from '#resume/components/ResumeHeader';
 import { ResumeSection } from '#resume/components/ResumeSection';
@@ -16,6 +16,7 @@ import '#resume/pages/ResumePage.css';
 export function ResumePageDesktop(props: {
   model: ResumeModel;
   assets?: ResumeImageAssets;
+  theme?: ResumeTheme;
 }) {
   const { model } = props;
   const exportRef = useRef<HTMLDivElement | null>(null);
@@ -86,6 +87,7 @@ export function ResumePageDesktop(props: {
   return (
     <ResumeShell
       ref={exportRef}
+      theme={props.theme}
       topBar={
         <ResumeExportBar
           onExportPdf={async () => {

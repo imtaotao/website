@@ -1,6 +1,6 @@
 import { type ResumeModel } from '#resume/resumeParser';
 import { type ResumeImageAssets } from '#resume/components/ResumeAssets';
-import { ResumeShell } from '#resume/components/ResumeShell';
+import { type ResumeTheme, ResumeShell } from '#resume/components/ResumeShell';
 import { ResumeExportBar } from '#resume/components/ResumeExportBar';
 import { ResumeHeader } from '#resume/components/ResumeHeader';
 import { ResumeSection } from '#resume/components/ResumeSection';
@@ -14,12 +14,14 @@ import '#resume/pages/ResumePage.css';
 export function ResumePageMobile(props: {
   model: ResumeModel;
   assets?: ResumeImageAssets;
+  theme?: ResumeTheme;
 }) {
   const { model } = props;
 
   return (
     <ResumeShell
       paged={false}
+      theme={props.theme}
       topBar={
         <div className="sticky top-4 z-10">
           <ResumeExportBar

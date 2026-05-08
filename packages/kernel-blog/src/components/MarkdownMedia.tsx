@@ -14,7 +14,7 @@ type MarkdownMediaContext = {
 };
 
 export const createBlogMdxImage = (context: MarkdownMediaContext) => {
-  return function BlogMdxImage(p: ComponentProps<'img'>) {
+  function BlogMdxImage(p: ComponentProps<'img'>) {
     const resolvedSrc = p.src
       ? context.resolveAssetUrl(context.articleSourcePath, p.src) ?? p.src
       : undefined;
@@ -44,7 +44,10 @@ export const createBlogMdxImage = (context: MarkdownMediaContext) => {
         ) : null}
       </figure>
     );
-  };
+  }
+
+  BlogMdxImage.__blogMediaElement = true;
+  return BlogMdxImage;
 };
 
 export const createImageGallery = (context: MarkdownMediaContext) => {

@@ -6,6 +6,7 @@ import {
   CalendarIcon,
   CodeIcon,
   FileTextIcon,
+  GitHubLogoIcon,
   MagnifyingGlassIcon,
   Pencil2Icon,
   ReaderIcon,
@@ -47,6 +48,8 @@ export type BlogHomeArticle = Pick<
 
 export type BlogHomePageProps = {
   articles: Array<BlogHomeArticle>;
+  avatarUrl?: string;
+  githubUrl?: string;
   tags: Array<BlogTagSummary>;
 };
 
@@ -85,7 +88,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
   const blogTheme = useBlogTheme();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { articles, tags } = props;
+  const { articles, avatarUrl, githubUrl, tags } = props;
 
   const [query, setQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -240,15 +243,22 @@ export function BlogHomePage(props: BlogHomePageProps) {
   return (
     <main className="blog-shell min-h-screen" data-blog-theme={blogTheme.theme}>
       <header className="blog-page blog-home-header">
-        <div>
-          <p className="blog-kicker">
-            <ReaderIcon className="blog-inline-icon" />
-            <span>Blog</span>
-          </p>
-          <h1 className="blog-home-title">博客</h1>
-          <p className="blog-home-subtitle">
-            记录一些我的技术分享思考、实践和日常生活。
-          </p>
+        <div className="blog-home-identity">
+          {avatarUrl ? (
+            <div className="blog-home-avatar" aria-hidden="true">
+              <img src={avatarUrl} alt="" className="blog-home-avatar-image" />
+            </div>
+          ) : null}
+          <div>
+            <p className="blog-kicker">
+              <ReaderIcon className="blog-inline-icon" />
+              <span>Blog</span>
+            </p>
+            <h1 className="blog-home-title">博客</h1>
+            <p className="blog-home-subtitle">
+              记录一些我的技术分享思考、实践和日常生活。
+            </p>
+          </div>
         </div>
         <div className="blog-home-actions">
           <div className="blog-home-links">
@@ -260,6 +270,19 @@ export function BlogHomePage(props: BlogHomePageProps) {
               <FileTextIcon className="blog-pill-icon" />
               <span className="blog-pill-label">简历</span>
             </Link>
+            {githubUrl ? (
+              <a
+                className="blog-pill blog-home-github"
+                href={githubUrl}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="GitHub"
+                title="GitHub"
+              >
+                <GitHubLogoIcon className="blog-pill-icon" />
+                <span className="blog-pill-label">GitHub</span>
+              </a>
+            ) : null}
             <BlogThemeToggle
               theme={blogTheme.theme}
               onToggle={blogTheme.toggleTheme}

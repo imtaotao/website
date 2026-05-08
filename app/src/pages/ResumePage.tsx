@@ -4,6 +4,7 @@ import {
   ResumePageDesktop,
   ResumePageMobile,
 } from '@website-kernel/resume';
+import { useWebsiteTheme } from '@website-kernel/shared';
 import { loadResumeModel } from '#app/lib/resume';
 import { useIsMobile } from '#app/lib/browser';
 import zhihuIconUrl from '#app/assets/image/zhihu.svg';
@@ -27,9 +28,14 @@ const resumeAssets: ResumeImageAssets = {
 export default function ResumePage() {
   const model: ResumeModel = loadResumeModel();
   const isMobile = useIsMobile(768);
+  const { theme } = useWebsiteTheme();
 
   if (isMobile) {
-    return <ResumePageMobile model={model} assets={resumeAssets} />;
+    return (
+      <ResumePageMobile model={model} assets={resumeAssets} theme={theme} />
+    );
   }
-  return <ResumePageDesktop model={model} assets={resumeAssets} />;
+  return (
+    <ResumePageDesktop model={model} assets={resumeAssets} theme={theme} />
+  );
 }
