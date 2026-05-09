@@ -4,25 +4,17 @@ slug: module-loader
 tags:
   - frontend
 publishedAt: 2019-06-20
-summary: 以一个浏览器端类 CommonJS 模块加载器为例，记录模块缓存、插件机制、同步加载和执行隔离的设计思路。
+summary: 以一个浏览器端类 CJS 模块加载器为例，记录模块缓存、插件机制、同步加载和执行隔离的设计思路。
 coverPosition: center 30%
 ---
 
-前段时间系统性地看了一遍模块加载相关的内容，顺手写了一个实验性质的实现：[liberty](https://github.com/imtaotao/liberty)。它的目标很明确，就是在浏览器端模拟出一套 **类 CommonJS** 的模块加载体验。当然后续我也做了 [esModule](https://github.com/imtaotao/virtual-es-module) 的 `polyfill`，原理上和这个差不多，这里就不展开了。
+前段时间系统性地看了一遍模块加载相关的内容，顺手写了一个实验性质的实现 [liberty](https://github.com/imtaotao/liberty)。它的目标很明确，就是在浏览器端模拟出一套 **CJS** 的模块加载体验。当然后续我也做了 [esModule](https://github.com/imtaotao/virtual-es-module) 的 `polyfill`，原理上和这个差不多，这里就不展开了。
 
-这篇文章主要记录实现思路，免得以后把这些细节忘掉。
+> 这篇文章主要记录实现思路，免得以后把这些细节忘掉。
 
 ## 我想得到的最小能力集合
 
-如果想模拟 CommonJS，最基本的几样东西不能少：
-
-- `require`
-- `module`
-- `exports`
-- `__filename`
-- `__dirname`
-
-其中最关键的一点是：`require` 返回的模块最好保持同步语义，这样用起来才真正像 CJS。
+如果想模拟 CJS，最基本的几样东西不能少：`require`，`module`，`exports`，`__filename`，`__dirname`。其中最关键的一点是：`require` 返回的模块最好保持同步语义，这样用起来才真正像 CJS。
 
 ## 最初的设计很简单
 
@@ -35,7 +27,7 @@ coverPosition: center 30%
 
 一开始我基本就是按这条线推进的。后面为了处理更多实际问题，细节才越来越多。
 
-## 为什么不是直接插 `script` 标签
+## 为什么不是直接插 script 标签
 
 一个直觉上的问题是：既然浏览器本来就能通过 `script src` 加载脚本，为什么还要先取源码、再自己执行？
 
@@ -51,9 +43,9 @@ coverPosition: center 30%
 
 如果展开一点看，它真正做的事情无非是三段：
 
-- 先判断缓存里有没有结果
-- 没有的话就请求资源
-- 拿到资源后交给插件系统转换，再返回最终模块结果
+1. 先判断缓存里有没有结果
+2. 没有的话就请求资源
+3. 拿到资源后交给插件系统转换，再返回最终模块结果
 
 ## 同步加载和异步加载要统一入口
 
@@ -83,9 +75,9 @@ function importModule(path, parentInfo, config, isAsync) {
 
 这个加载器里实际用了三类缓存：
 
-- `modulesCache`
-- `responseURLModulesCache`
-- `resourceCache`
+1. `modulesCache`
+2. `responseURLModulesCache`
+3. `resourceCache`
 
 前两个缓存的都是模块结果，差别在于 key 不一样。
 
@@ -95,11 +87,11 @@ function importModule(path, parentInfo, config, isAsync) {
 
 为了尽量避免这个问题，路径规范化是第一步，所以实现里会借用一些类似 Node.js `path` 模块的能力：
 
-- `path.normalize`
-- `path.isAbsolute`
-- `path.join`
-- `path.dirname`
-- `path.extname`
+1. `path.normalize`
+2. `path.isAbsolute`
+3. `path.join`
+4. `path.dirname`
+5. `path.extname`
 
 但光有规范化还不够。因为真实请求过程中，URL 还可能经历重定向，所以最终又加了一层 `responseURL` 级别的缓存，尽量用服务端真正返回的资源地址来兜底。
 
@@ -167,9 +159,7 @@ const map = {
 
 ## JavaScript 模块怎么执行
 
-对 `.js` 文件，最终还是要落到“如何执行源码”这一步。
-
-在 Node.js 里，类似能力可以借助 `vm.runInThisContext`：
+对 `.js` 文件，最终还是要落到**如何执行源码**这一步。在 Node.js 里，类似能力可以借助 `vm.runInThisContext`：
 
 ```ts
 const result = vm.runInThisContext(code, {
@@ -180,9 +170,9 @@ const result = vm.runInThisContext(code, {
 
 但浏览器没有这套 API，所以只能在下面几种方案之间选：
 
-- `eval`
-- `new Function`
-- 动态插入 `script`
+1. `eval`
+2. `new Function`
+3. 动态插入 `script`
 
 `eval` 直接排除，成本和可维护性都不理想。`new Function` 比 `eval` 好一些，但我并不想让全部模块都走这种路径。最后采用的是动态创建 `script` 标签同步执行代码，再结合 sourcemap 辅助定位源码。
 
@@ -237,7 +227,7 @@ delete window[windowModuleName];
 
 ## 为什么执行前就要缓存
 
-这点非常关键：缓存不能等执行结束后再写入，而要在执行前先占位。否则一旦出现循环引用，整个行为就和 CommonJS 不一致了。
+这点非常关键：缓存不能等执行结束后再写入，而要在执行前先占位。否则一旦出现循环引用，整个行为就和 CJS 不一致了。
 
 ```ts
 cacheModule.cache(path, registerObject.module);
@@ -267,14 +257,14 @@ Liberty.addPlugin('.json', JSONPlugin);
 
 同样的思路也可以继续延伸到 CSS、Vue 单文件组件等资源格式。核心加载器并不需要理解这些内容，它只负责把资源交给对应插件。
 
-## `resourceCache` 是干什么的
+## resourceCache 是干什么的
 
-理解 `resourceCache`，得先区分“静态资源”和“模块结果”。
+理解 `resourceCache`，得先区分**静态资源**和**模块结果**。
 
-- 静态资源是通过请求拿到的文件内容
-- 模块结果是资源经过插件系统处理之后的产物
+1. 静态资源是通过请求拿到的文件内容
+2. 模块结果是资源经过插件系统处理之后的产物
 
-在 CommonJS 环境里，我们更习惯关注模块缓存；但如果放到浏览器里，为了处理同步语义、依赖预取和性能问题，资源本身也值得缓存。
+在 CJS 环境里，我们更习惯关注模块缓存；但如果放到浏览器里，为了处理同步语义、依赖预取和性能问题，资源本身也值得缓存。
 
 ## 同步加载为什么困难
 
@@ -284,9 +274,9 @@ Liberty.addPlugin('.json', JSONPlugin);
 
 理论上可以，但问题很明显：
 
-- 它会阻塞主线程
-- 模块一多，体验会非常差
-- 同步 XHR 已经被标准废弃
+1. 它会阻塞主线程
+2. 模块一多，体验会非常差
+3. 同步 XHR 已经被标准废弃
 
 ### ESM 给了一个启发
 
@@ -326,9 +316,9 @@ urls.forEach((v) => require('/dev' + v));
 
 它当然还有很多不完善的地方，但至少把几个关键问题都摆到了台面上：
 
-- 怎么统一同步和异步加载
-- 怎么降低重复执行风险
-- 怎么把内容转换能力从核心里抽离出来
-- 怎么在浏览器里模拟接近 CJS 的体验
+> 对我来说，这种实验的价值就在这里。
 
-对我来说，这种实验的价值就在这里。
+1. 怎么统一同步和异步加载
+2. 怎么降低重复执行风险
+3. 怎么把内容转换能力从核心里抽离出来
+4. 怎么在浏览器里模拟接近 CJS 的体验
