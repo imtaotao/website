@@ -28,8 +28,7 @@
   --home-ink-from: rgba(59, 130, 246, 0.2);
   --home-ink-mid: rgba(147, 197, 253, 0.14);
   --home-ink-shadow: rgba(59, 130, 246, 0.12);
-  background-color: var(--home-bg);
-  background-image: var(--home-bg-image);
+  min-height: 100%;
   color: var(--home-text);
 }
 

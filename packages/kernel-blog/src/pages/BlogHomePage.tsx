@@ -111,6 +111,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
     ({
       '--blog-enter-delay': `${delay}ms`,
     } as CSSProperties);
+  const listRenderKey = activeTag || '__all__';
 
   const renderArticleItem = (
     article: BlogHomeArticle,
@@ -149,7 +150,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
     if (article.externalUrl) {
       return (
         <a
-          key={article.slug}
+          key={`${listRenderKey}:${article.slug}`}
           className="blog-index-item blog-index-item--external blog-enter"
           href={article.externalUrl}
           target="_blank"
@@ -163,7 +164,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
 
     return (
       <Link
-        key={article.slug}
+        key={`${listRenderKey}:${article.slug}`}
         to={`/blog/${article.slug}`}
         className="blog-index-item blog-enter"
         style={enterStyle}
@@ -175,7 +176,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
 
   return (
     <main
-      className="blog-shell blog-shell--home min-h-screen"
+      className="blog-shell blog-shell--home"
       data-blog-theme={blogTheme.theme}
     >
       <header
@@ -261,6 +262,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
       </section>
 
       <section
+        key={listRenderKey}
         className="blog-page blog-section blog-index-section"
         style={getEnterStyle(130)}
       >
@@ -271,7 +273,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
         ) : (
           articlesByYear.map(([year, items], groupIndex) => (
             <section
-              key={year}
+              key={`${listRenderKey}:${year}`}
               className="blog-year-block blog-enter"
               data-count={items.length}
               data-year={year}

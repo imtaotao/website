@@ -127,7 +127,7 @@ export default function HomePage() {
   });
 
   return (
-    <main className="home-shell min-h-screen" data-home-theme={theme}>
+    <main className="home-shell" data-home-theme={theme}>
       {/* 左偏布局：不居中对齐，右侧留白更大 */}
       <div className="home-root w-full px-6 py-14 md:px-14 md:py-24">
         <div className="home-container max-w-185">

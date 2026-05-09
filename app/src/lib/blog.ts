@@ -30,6 +30,11 @@ const articleSourceModules = import.meta.glob('../../../blog/*/index.mdx', {
 }) as MdxArticleModule;
 
 // @ts-ignore
+const simpleSourceModules = import.meta.glob('../../../blog/*.mdx', {
+  eager: true,
+}) as MdxArticleModule;
+
+// @ts-ignore
 const articleImageAssetModules = import.meta.glob(
   '../../../blog/*/image/*.{png,jpg,jpeg,webp,avif,svg}',
   {
@@ -93,7 +98,7 @@ const resolveArticleCover = (sourcePath: string, cover?: string) => {
 };
 
 const buildBlogArticles = () => {
-  return Object.entries(articleSourceModules)
+  return Object.entries({ ...articleSourceModules, ...simpleSourceModules })
     .map(([sourcePath, module]) => {
       const frontmatter = normalizeBlogArticleFrontmatter(
         module.frontmatter,

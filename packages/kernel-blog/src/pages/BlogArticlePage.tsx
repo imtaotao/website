@@ -16,10 +16,7 @@ import {
 } from '#blog/components/MarkdownLightbox';
 import { BlogMdx } from '#blog/components/Markdown';
 import type { LightboxImage } from '#blog/components/MarkdownTypes';
-import {
-  BlogThemeToggle,
-  useBlogTheme,
-} from '#blog/components/BlogThemeToggle';
+import { useBlogTheme } from '#blog/components/BlogThemeToggle';
 import { formatBlogDate } from '#blog/pages/BlogHomePage';
 
 import '#blog/pages/BlogPage.css';
@@ -49,6 +46,15 @@ export type BlogArticlePageProps = {
   ) => string | undefined;
 };
 
+const COPY = {
+  articleMissing: '\u6587\u7ae0\u4e0d\u5b58\u5728\u3002',
+  backToBlogHome: '\u8fd4\u56de\u535a\u5ba2\u9996\u9875',
+  enlargeCoverPrefix: '\u653e\u5927\u67e5\u770b\u5c01\u9762\u56fe\uff1a',
+  articleMeta: '\u6587\u7ae0\u4fe1\u606f',
+  articleToc: '\u6587\u7ae0\u76ee\u5f55',
+  backToTop: '\u8fd4\u56de\u9876\u90e8',
+} as const;
+
 export function BlogArticlePage(props: BlogArticlePageProps) {
   const blogTheme = useBlogTheme();
   const { slug = '' } = useParams();
@@ -63,6 +69,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   const articleBodyRef = useRef<HTMLElement | null>(null);
   const [headings, setHeadings] = useState<Array<BlogArticleHeading>>([]);
   const [tocTop, setTocTop] = useState<number | null>(null);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   useEffect(() => {
     if (!lightboxImage) return;
@@ -94,6 +101,23 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   }, [article, slug]);
 
   useEffect(() => {
+    if (!article) return;
+
+    const updateBackToTopVisibility = () => {
+      setShowBackToTop(window.scrollY > 480);
+    };
+
+    updateBackToTopVisibility();
+    window.addEventListener('scroll', updateBackToTopVisibility, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener('scroll', updateBackToTopVisibility);
+    };
+  }, [article, slug]);
+
+  useEffect(() => {
     const articleBody = articleBodyRef.current;
     if (!articleBody) {
       setHeadings([]);
@@ -114,7 +138,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   }, [article, slug]);
 
   useLayoutEffect(() => {
-    if (!article || headings.length === 0) {
+    if (!article) {
       setTocTop(null);
       return;
     }
@@ -124,10 +148,10 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
       if (!titleEl) return;
 
       const rect = titleEl.getBoundingClientRect();
-      const nextTop = Math.round(rect.top + rect.height / 2 + 8);
+      const nextTocTop = Math.round(rect.top + rect.height / 2 + 8);
 
       setTocTop((currentTop) =>
-        currentTop === nextTop ? currentTop : nextTop,
+        currentTop === nextTocTop ? currentTop : nextTocTop,
       );
     };
 
@@ -155,14 +179,11 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
 
   if (!article) {
     return (
-      <main
-        className="blog-shell min-h-screen"
-        data-blog-theme={blogTheme.theme}
-      >
+      <main className="blog-shell" data-blog-theme={blogTheme.theme}>
         <div className="blog-page blog-empty-state">
-          <p>文章不存在。</p>
+          <p>{COPY.articleMissing}</p>
           <Link to="/blog" className="blog-subtle-link">
-            返回博客首页
+            {COPY.backToBlogHome}
           </Link>
         </div>
       </main>
@@ -172,7 +193,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   return (
     <main
       ref={articleRef}
-      className="blog-shell min-h-screen"
+      className="blog-shell"
       data-blog-theme={blogTheme.theme}
     >
       <article
@@ -193,7 +214,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
                   createLightboxImage(article.coverUrl, article.title),
                 )
               }
-              aria-label={`放大查看封面图：${article.title}`}
+              aria-label={`${COPY.enlargeCoverPrefix}${article.title}`}
             >
               <img
                 src={article.coverUrl}
@@ -220,10 +241,15 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
               }
             >
               <h1 ref={titleRef} className="blog-article-title">
-                {article.title}
+                <Link to="/blog" className="blog-article-title-link">
+                  {article.title}
+                </Link>
               </h1>
 
-              <div className="blog-article-meta-row" aria-label="文章信息">
+              <div
+                className="blog-article-meta-row"
+                aria-label={COPY.articleMeta}
+              >
                 <span className="blog-meta-item blog-meta-date">
                   {formatBlogDate(article.publishedAt)}
                 </span>
@@ -250,7 +276,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
           {headings.length ? (
             <aside
               className="blog-article-toc--side"
-              aria-label="文章目录"
+              aria-label={COPY.articleToc}
               style={tocTop != null ? { top: `${tocTop}px` } : undefined}
             >
               <div className="blog-article-toc-trigger" aria-hidden="true">
@@ -276,17 +302,17 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
           ) : null}
         </div>
 
-        <div className="blog-article-actions" aria-label="文章操作">
-          <BlogThemeToggle
-            theme={blogTheme.theme}
-            onToggle={blogTheme.toggleTheme}
-          />
+        <div className="blog-article-actions" aria-label={COPY.backToTop}>
           <button
             type="button"
-            className="blog-article-action blog-back-to-top"
+            className={`blog-article-action blog-back-to-top${
+              showBackToTop ? ' blog-back-to-top--visible' : ''
+            }`}
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            aria-label="返回顶部"
-            title="返回顶部"
+            aria-label={COPY.backToTop}
+            title={COPY.backToTop}
+            aria-hidden={!showBackToTop}
+            tabIndex={showBackToTop ? 0 : -1}
           >
             <ArrowUpIcon className="blog-back-to-top-icon" />
           </button>

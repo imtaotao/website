@@ -260,10 +260,7 @@ export const ResumeShell = forwardRef<
   };
 
   return (
-    <div
-      className="resume-root min-h-screen text-zinc-900"
-      data-resume-theme={theme}
-    >
+    <div className="resume-root text-zinc-900" data-resume-theme={theme}>
       {props.topBar ? (
         <div
           data-export-hide="true"
