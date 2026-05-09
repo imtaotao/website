@@ -87,6 +87,83 @@
   font-weight: 400;
 }
 
+.resume-toolbar {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.resume-toolbar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.resume-toolbar-row {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+}
+
+.resume-toolbar-action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(63, 63, 70, 0.68);
+  font-family: var(--site-font-body, Inter, system-ui, sans-serif);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 220ms ease, opacity 220ms ease;
+}
+
+.resume-toolbar-action:hover {
+  color: rgba(24, 24, 27, 0.92);
+}
+
+.resume-toolbar-action:disabled {
+  opacity: 0.48;
+  cursor: default;
+}
+
+.resume-toolbar-action:focus-visible {
+  outline: 2px solid rgba(147, 197, 253, 0.72);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.resume-toolbar-toggle {
+  align-self: flex-start;
+}
+
+.resume-toolbar-progress {
+  width: 9.75rem;
+}
+
+.resume-toolbar-hint {
+  width: 13rem;
+  color: rgb(113 113 122);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.resume-root[data-resume-theme='dark'] .resume-toolbar-action {
+  color: rgba(244, 244, 245, 0.64);
+}
+
+.resume-root[data-resume-theme='dark'] .resume-toolbar-action:hover {
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.resume-root[data-resume-theme='dark'] .resume-toolbar-hint,
+.resume-root[data-resume-theme='dark'] .resume-toolbar-progress .text-zinc-600 {
+  color: rgba(228, 228, 231, 0.62) !important;
+}
+
 /* 移动端优先使用系统字体：避免加载体积很大的自定义字体资源 */
 @media (max-width: 767px) {
   .resume-root {

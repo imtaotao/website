@@ -4,6 +4,7 @@ import {
   ResumePageDesktop,
   ResumePageMobile,
 } from '@website-kernel/resume';
+import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
 import { useWebsiteTheme } from '@website-kernel/shared';
 import { loadResumeModel } from '#app/lib/resume';
 import { useIsMobile } from '#app/lib/browser';
@@ -29,7 +30,10 @@ const resumeAssets: ResumeImageAssets = {
 export default function ResumePage() {
   const model: ResumeModel = loadResumeModel();
   const isMobile = useIsMobile(768);
-  const { theme } = useWebsiteTheme();
+  const { theme, toggleTheme } = useWebsiteTheme();
+  const isDark = theme === 'dark';
+  const ThemeIcon = isDark ? SunIcon : MoonIcon;
+  const themeToggleLabel = isDark ? '切换到白天模式' : '切换到黑夜模式';
 
   usePageMeta({
     title: '简历',
@@ -43,6 +47,23 @@ export default function ResumePage() {
     );
   }
   return (
-    <ResumePageDesktop model={model} assets={resumeAssets} theme={theme} />
+    <ResumePageDesktop
+      model={model}
+      assets={resumeAssets}
+      theme={theme}
+      topBarExtra={
+        <button
+          type="button"
+          className={`app__themeToggle app__themeToggle--inline resume-toolbar-toggle ${
+            isDark ? 'app__themeToggle--dark' : 'app__themeToggle--light'
+          }`}
+          onClick={toggleTheme}
+          aria-label={themeToggleLabel}
+          title={themeToggleLabel}
+        >
+          <ThemeIcon className="app__themeToggleIcon" />
+        </button>
+      }
+    />
   );
 }

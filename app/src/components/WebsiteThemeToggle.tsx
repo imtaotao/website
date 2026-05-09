@@ -7,8 +7,7 @@ export function WebsiteThemeToggle() {
   const { theme, toggleTheme } = useWebsiteTheme();
 
   if (location.pathname.startsWith('/blog')) return null;
-
-  const isResume = location.pathname.startsWith('/resume');
+  if (location.pathname.startsWith('/resume')) return null;
   const isDark = theme === 'dark';
   const Icon = isDark ? SunIcon : MoonIcon;
   const label = isDark ? '切换到白天模式' : '切换到黑夜模式';
@@ -19,11 +18,7 @@ export function WebsiteThemeToggle() {
   return (
     <button
       type="button"
-      className={
-        isResume
-          ? `app__themeToggle ${toneClass} app__themeToggle--resume`
-          : `app__themeToggle ${toneClass}`
-      }
+      className={`app__themeToggle ${toneClass}`}
       onClick={toggleTheme}
       aria-label={label}
       title={label}

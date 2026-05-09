@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, type CSSProperties } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { OpenInNewWindowIcon } from '@radix-ui/react-icons';
 import {
@@ -107,7 +107,17 @@ export function BlogHomePage(props: BlogHomePageProps) {
     return Array.from(groups.entries());
   }, [filteredArticles]);
 
-  const renderArticleItem = (article: BlogHomeArticle) => {
+  const getEnterStyle = (delay: number): CSSProperties =>
+    ({
+      '--blog-enter-delay': `${delay}ms`,
+    } as CSSProperties);
+
+  const renderArticleItem = (
+    article: BlogHomeArticle,
+    index: number,
+    groupIndex: number,
+  ) => {
+    const enterStyle = getEnterStyle(520 + groupIndex * 140 + index * 96);
     const content = (
       <>
         <h3 className="blog-index-title">
@@ -140,10 +150,11 @@ export function BlogHomePage(props: BlogHomePageProps) {
       return (
         <a
           key={article.slug}
-          className="blog-index-item blog-index-item--external"
+          className="blog-index-item blog-index-item--external blog-enter"
           href={article.externalUrl}
           target="_blank"
           rel="noreferrer"
+          style={enterStyle}
         >
           {content}
         </a>
@@ -154,7 +165,8 @@ export function BlogHomePage(props: BlogHomePageProps) {
       <Link
         key={article.slug}
         to={`/blog/${article.slug}`}
-        className="blog-index-item"
+        className="blog-index-item blog-enter"
+        style={enterStyle}
       >
         {content}
       </Link>
@@ -166,7 +178,10 @@ export function BlogHomePage(props: BlogHomePageProps) {
       className="blog-shell blog-shell--home min-h-screen"
       data-blog-theme={blogTheme.theme}
     >
-      <header className="blog-page blog-home-header">
+      <header
+        className="blog-page blog-home-header blog-enter"
+        style={getEnterStyle(120)}
+      >
         <div className="blog-home-identity">
           {avatarUrl ? (
             <Link
@@ -214,7 +229,11 @@ export function BlogHomePage(props: BlogHomePageProps) {
         </div>
       </header>
 
-      <section className="blog-page blog-section" id="blog-tags">
+      <section
+        className="blog-page blog-section blog-enter"
+        id="blog-tags"
+        style={getEnterStyle(280)}
+      >
         <div className="blog-tags-grid">
           {tags.map((tag) => {
             const isActive = tag.key === activeTag;
@@ -241,22 +260,28 @@ export function BlogHomePage(props: BlogHomePageProps) {
         </div>
       </section>
 
-      <section className="blog-page blog-section blog-index-section">
+      <section
+        className="blog-page blog-section blog-index-section"
+        style={getEnterStyle(130)}
+      >
         {filteredArticles.length === 0 ? (
-          <div className="blog-empty-state" role="status">
+          <div className="blog-empty-state blog-enter" role="status">
             <p>当前标签下还没有文章。</p>
           </div>
         ) : (
-          articlesByYear.map(([year, items]) => (
+          articlesByYear.map(([year, items], groupIndex) => (
             <section
               key={year}
-              className="blog-year-block"
+              className="blog-year-block blog-enter"
               data-count={items.length}
               data-year={year}
               aria-label={`${year} 年文章`}
+              style={getEnterStyle(420 + groupIndex * 112)}
             >
               <div className="blog-index-grid">
-                {items.map((article) => renderArticleItem(article))}
+                {items.map((article, index) =>
+                  renderArticleItem(article, index, groupIndex),
+                )}
               </div>
             </section>
           ))

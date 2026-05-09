@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type CSSProperties, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { useWebsiteTheme } from '@website-kernel/shared';
 
@@ -114,6 +114,10 @@ const renderSegments = (segs: Array<Segment>) => {
 
 export default function HomePage() {
   const { theme } = useWebsiteTheme();
+  const getEnterStyle = (delay: number): CSSProperties =>
+    ({
+      '--app-enter-delay': `${delay}ms`,
+    } as CSSProperties);
 
   usePageMeta({
     title: 'chentao.arthur',
@@ -127,7 +131,7 @@ export default function HomePage() {
       {/* 左偏布局：不居中对齐，右侧留白更大 */}
       <div className="home-root w-full px-6 py-14 md:px-14 md:py-24">
         <div className="home-container max-w-185">
-          <header className="select-none">
+          <header className="select-none app__enter" style={getEnterStyle(120)}>
             <h1 className="home-title-font mt-2 text-4xl font-medium tracking-tight md:text-5xl">
               {HOME.name}
             </h1>
@@ -135,7 +139,13 @@ export default function HomePage() {
 
           <div className="home-body-font mt-8 space-y-6 text-[16px] leading-8">
             {HOME.blocks.map((b, idx) => (
-              <p key={idx}>{renderSegments(b.segments)}</p>
+              <p
+                key={idx}
+                className="app__enter"
+                style={getEnterStyle(340 + idx * 220)}
+              >
+                {renderSegments(b.segments)}
+              </p>
             ))}
           </div>
         </div>

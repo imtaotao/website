@@ -3,6 +3,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  type CSSProperties,
   type ComponentType,
 } from 'react';
 import { Link, useParams } from 'react-router';
@@ -180,7 +181,10 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
         }`}
       >
         {article.coverUrl ? (
-          <div className="blog-article-cover-shell">
+          <div
+            className="blog-article-cover-shell blog-enter"
+            style={{ '--blog-enter-delay': '120ms' } as CSSProperties}
+          >
             <button
               type="button"
               className="blog-article-cover-button"
@@ -207,7 +211,14 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
 
         <div className="blog-article-frame">
           <div className="blog-article-main">
-            <header className="blog-article-header">
+            <header
+              className="blog-article-header blog-enter"
+              style={
+                {
+                  '--blog-enter-delay': article.coverUrl ? '360ms' : '180ms',
+                } as CSSProperties
+              }
+            >
               <h1 ref={titleRef} className="blog-article-title">
                 {article.title}
               </h1>
@@ -219,7 +230,15 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
               </div>
             </header>
 
-            <section ref={articleBodyRef} className="blog-article-body">
+            <section
+              ref={articleBodyRef}
+              className="blog-article-body blog-enter"
+              style={
+                {
+                  '--blog-enter-delay': article.coverUrl ? '560ms' : '320ms',
+                } as CSSProperties
+              }
+            >
               <BlogMdx
                 Content={article.Content}
                 articleSourcePath={article.sourcePath}
@@ -238,11 +257,16 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
                 <ListBulletIcon className="blog-article-toc-trigger-icon" />
               </div>
               <nav className="blog-article-toc blog-article-toc-panel">
-                {headings.map((heading) => (
+                {headings.map((heading, index) => (
                   <a
                     key={heading.id}
                     href={`#${heading.id}`}
                     className={`blog-article-toc-link blog-article-toc-link--h${heading.level}`}
+                    style={
+                      {
+                        '--blog-toc-link-index': index,
+                      } as CSSProperties
+                    }
                   >
                     {heading.text}
                   </a>

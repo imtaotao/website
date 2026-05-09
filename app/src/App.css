@@ -137,6 +137,25 @@ body {
   background: #0f1117;
 }
 
+@keyframes app__fadeRiseIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.app__enter {
+  opacity: 0;
+  animation: app__fadeRiseIn 1720ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--app-enter-delay, 0ms);
+  will-change: opacity, transform;
+}
+
 .app__theme {
   min-height: 100vh;
   margin: 0 !important;
@@ -233,14 +252,20 @@ body {
   height: 16px;
 }
 
-.app__themeToggle--resume {
+.app__themeToggle--inline {
+  position: static;
+  top: auto;
   right: auto;
-  left: 16px;
+  left: auto;
+  z-index: auto;
+  flex: none;
 }
 
-@media (max-width: 767px) {
-  .app__themeToggle--resume {
-    display: none;
+@media (prefers-reduced-motion: reduce) {
+  .app__enter {
+    opacity: 1;
+    animation: none;
+    transform: none;
   }
 }
 

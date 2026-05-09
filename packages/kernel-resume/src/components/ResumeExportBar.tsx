@@ -1,5 +1,3 @@
-import { Button } from '@radix-ui/themes';
-
 export function ResumeExportBar(props: {
   onExportPdf?: () => void;
   exporting?: boolean;
@@ -13,21 +11,20 @@ export function ResumeExportBar(props: {
   const progress = Math.min(100, Math.max(0, props.progress ?? 0));
 
   return (
-    <div data-export-hide="true" className="flex flex-col gap-2">
-      <div className="flex items-center gap-2">
-        <Button
-          size="1"
-          variant="soft"
-          color="gray"
+    <div data-export-hide="true" className="resume-toolbar-group">
+      <div className="resume-toolbar-row">
+        <button
+          type="button"
+          className="resume-toolbar-action"
           disabled={exporting || disabled}
           onClick={props.onExportPdf}
         >
           {exporting ? `导出中 ${Math.round(progress)}%` : '导出 PDF'}
-        </Button>
+        </button>
       </div>
 
       {exporting ? (
-        <div className="w-39">
+        <div className="resume-toolbar-progress">
           {props.progressText ? (
             <div className="mb-1 text-[11px] font-medium text-zinc-600">
               {props.progressText}
@@ -41,9 +38,7 @@ export function ResumeExportBar(props: {
           </div>
         </div>
       ) : disabled && props.disabledText ? (
-        <div className="w-52 text-[11px] font-medium text-zinc-500">
-          {props.disabledText}
-        </div>
+        <div className="resume-toolbar-hint">{props.disabledText}</div>
       ) : null}
     </div>
   );

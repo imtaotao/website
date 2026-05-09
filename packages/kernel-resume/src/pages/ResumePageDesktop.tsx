@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { type ResumeModel } from '#resume/resumeParser';
 import { exportElementToPdf } from '#resume/resumeExport';
 import type { ResumeImageAssets } from '#resume/components/ResumeAssets';
@@ -17,6 +17,7 @@ export function ResumePageDesktop(props: {
   model: ResumeModel;
   assets?: ResumeImageAssets;
   theme?: ResumeTheme;
+  topBarExtra?: ReactNode;
 }) {
   const { model } = props;
   const exportRef = useRef<HTMLDivElement | null>(null);
@@ -114,47 +115,50 @@ export function ResumePageDesktop(props: {
         ref={exportRef}
         theme={props.theme}
         topBar={
-          <ResumeExportBar
-            onExportPdf={async () => {
-              if (!exportRef.current) return;
-              if (!canExportPdf) {
-                window.alert('页面尚未加载完成，暂不可导出 PDF');
-                return;
-              }
-
-              exportTokenRef.current += 1;
-              const token = exportTokenRef.current;
-
-              setExporting(true);
-              setExportProgress(0);
-              setExportProgressText('准备导出…');
-              try {
-                await exportElementToPdf(exportRef.current, {
-                  onProgress: (p) => {
-                    if (exportTokenRef.current !== token) return;
-                    setExportProgress(p.percent);
-                    setExportProgressText(p.message);
-                  },
-                });
-                setTimeout(() => {
-                  if (exportTokenRef.current !== token) return;
-                  setExporting(false);
-                  setExportProgressText('');
-                }, 700);
-              } catch (err) {
-                console.error('[export] export pdf failed', err);
-                window.alert('PDF 导出失败，请稍后重试。');
-                if (exportTokenRef.current === token) {
-                  setExporting(false);
-                  setExportProgressText('');
+          <div className="resume-toolbar">
+            <ResumeExportBar
+              onExportPdf={async () => {
+                if (!exportRef.current) return;
+                if (!canExportPdf) {
+                  window.alert('页面尚未加载完成，暂不可导出 PDF');
+                  return;
                 }
-              }
-            }}
-            exporting={exporting}
-            progress={exportProgress}
-            progressText={exportProgressText}
-            disabled={!canExportPdf}
-          />
+
+                exportTokenRef.current += 1;
+                const token = exportTokenRef.current;
+
+                setExporting(true);
+                setExportProgress(0);
+                setExportProgressText('准备导出…');
+                try {
+                  await exportElementToPdf(exportRef.current, {
+                    onProgress: (p) => {
+                      if (exportTokenRef.current !== token) return;
+                      setExportProgress(p.percent);
+                      setExportProgressText(p.message);
+                    },
+                  });
+                  setTimeout(() => {
+                    if (exportTokenRef.current !== token) return;
+                    setExporting(false);
+                    setExportProgressText('');
+                  }, 700);
+                } catch (err) {
+                  console.error('[export] export pdf failed', err);
+                  window.alert('PDF 导出失败，请稍后重试。');
+                  if (exportTokenRef.current === token) {
+                    setExporting(false);
+                    setExportProgressText('');
+                  }
+                }
+              }}
+              exporting={exporting}
+              progress={exportProgress}
+              progressText={exportProgressText}
+              disabled={!canExportPdf}
+            />
+            {props.topBarExtra}
+          </div>
         }
       >
         <ResumeHeader basics={model.basics} assets={props.assets} />
