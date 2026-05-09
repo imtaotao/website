@@ -162,7 +162,10 @@ export function BlogHomePage(props: BlogHomePageProps) {
   };
 
   return (
-    <main className="blog-shell min-h-screen" data-blog-theme={blogTheme.theme}>
+    <main
+      className="blog-shell blog-shell--home min-h-screen"
+      data-blog-theme={blogTheme.theme}
+    >
       <header className="blog-page blog-home-header">
         <div className="blog-home-identity">
           {avatarUrl ? (

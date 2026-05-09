@@ -127,3 +127,15 @@
     0 0 0 1px rgba(0, 0, 0, 0.03),
     0 12px 28px rgba(59, 130, 246, 0.16);
 }
+
+@media (max-width: 767px) {
+  .home-shell {
+    --home-bg: #ffffff;
+    --home-bg-image: none;
+  }
+
+  .home-shell[data-home-theme='dark'] {
+    --home-bg: #000000;
+    --home-bg-image: none;
+  }
+}

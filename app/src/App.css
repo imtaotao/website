@@ -345,6 +345,18 @@ body {
   text-underline-offset: 4px;
 }
 
+@media (max-width: 767px) {
+  .app__notFound {
+    --not-found-bg: #ffffff;
+    --not-found-bg-image: none;
+  }
+
+  .app__notFound[data-app-theme="dark"] {
+    --not-found-bg: #000000;
+    --not-found-bg-image: none;
+  }
+}
+
 @keyframes app__spin {
   to {
     transform: rotate(360deg);
