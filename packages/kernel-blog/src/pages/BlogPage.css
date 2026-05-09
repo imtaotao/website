@@ -1547,11 +1547,24 @@
 }
 
 .blog-prose-quote {
-  padding: 0.5rem 1rem;
-  color: var(--blog-text-soft);
+  padding: 0.12rem 0 0.12rem 1rem;
+  color: rgba(31, 41, 55, 0.56);
   font-weight: 500;
-  background: var(--blog-quote-bg);
-  border-radius: 8px;
+  border-left: 3px solid var(--blog-line-strong);
+}
+
+.blog-prose-quote,
+.blog-prose-quote .blog-prose-p,
+.blog-prose-quote .blog-prose-ul,
+.blog-prose-quote .blog-prose-ol,
+.blog-prose-quote .blog-prose-li {
+  font-size: 0.94rem;
+  line-height: 1.85;
+}
+
+.blog-shell[data-blog-theme='dark'] .blog-prose-quote {
+  color: rgba(255, 255, 255, 0.5);
+  border-left-color: rgba(255, 255, 255, 0.18);
 }
 
 /* 避免引用内部的段落/列表 margin 叠加导致“下方被顶开” */
