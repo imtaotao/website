@@ -1,7 +1,6 @@
 import { type ResumeModel } from '#resume/resumeParser';
 import { type ResumeImageAssets } from '#resume/components/ResumeAssets';
 import { type ResumeTheme, ResumeShell } from '#resume/components/ResumeShell';
-import { ResumeExportBar } from '#resume/components/ResumeExportBar';
 import { ResumeHeader } from '#resume/components/ResumeHeader';
 import { ResumeSection } from '#resume/components/ResumeSection';
 import { ResumeSummary } from '#resume/components/ResumeSummary';
@@ -19,21 +18,7 @@ export function ResumePageMobile(props: {
   const { model } = props;
 
   return (
-    <ResumeShell
-      paged={false}
-      theme={props.theme}
-      topBar={
-        <div className="sticky top-4 z-10">
-          <ResumeExportBar
-            onExportPdf={async () => {
-              window.alert(
-                '移动端暂不支持导出 PDF，请在电脑端打开此页面导出。',
-              );
-            }}
-          />
-        </div>
-      }
-    >
+    <ResumeShell paged={false} theme={props.theme}>
       <ResumeHeader basics={model.basics} assets={props.assets} />
 
       <ResumeSection title="简介" decorated={false}>

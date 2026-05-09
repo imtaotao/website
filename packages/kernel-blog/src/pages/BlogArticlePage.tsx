@@ -130,7 +130,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
               <h1 className="blog-article-title">{article.title}</h1>
 
               <div className="blog-article-meta-row" aria-label="文章信息">
-                <span className="blog-meta-item">
+                <span className="blog-meta-item blog-meta-date">
                   {formatBlogDate(article.publishedAt)}
                 </span>
               </div>

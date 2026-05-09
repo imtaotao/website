@@ -106,6 +106,18 @@
   --site-font-title: var(--site-font-inter);
 }
 
+::selection {
+  background-color: rgb(223, 223, 223);
+  color: inherit;
+  text-shadow: none;
+}
+
+::-moz-selection {
+  background-color: rgb(223, 223, 223);
+  color: inherit;
+  text-shadow: none;
+}
+
 html,
 body,
 #root {
@@ -224,6 +236,12 @@ body {
 .app__themeToggle--resume {
   right: auto;
   left: 16px;
+}
+
+@media (max-width: 767px) {
+  .app__themeToggle--resume {
+    display: none;
+  }
 }
 
 .app__notFound {

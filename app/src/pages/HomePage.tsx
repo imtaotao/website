@@ -128,7 +128,7 @@ export default function HomePage() {
       <div className="home-root w-full px-6 py-14 md:px-14 md:py-24">
         <div className="home-container max-w-185">
           <header className="select-none">
-            <h1 className="home-title-font mt-2 text-5xl font-normal tracking-tight md:text-6xl">
+            <h1 className="home-title-font mt-2 text-4xl font-medium tracking-tight md:text-5xl">
               {HOME.name}
             </h1>
           </header>

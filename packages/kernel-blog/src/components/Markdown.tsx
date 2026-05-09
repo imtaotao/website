@@ -1,5 +1,11 @@
 import { MDXProvider } from '@mdx-js/react';
-import { createElement, useEffect, useState, type ComponentProps } from 'react';
+import {
+  createElement,
+  useEffect,
+  useState,
+  type ComponentProps,
+  type ReactNode,
+} from 'react';
 import 'katex/dist/katex.min.css';
 
 import { BlogMdxPre } from '#blog/components/MarkdownCodeBlock';
@@ -25,6 +31,11 @@ export type {
 } from '#blog/components/MarkdownTypes';
 
 export function BlogMdx(props: BlogMdxProps) {
+  type ColorTextProps = {
+    color?: string;
+    className?: string;
+    children?: ReactNode;
+  };
   type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   const nextHeadingId = createHeadingIdFactory();
   const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(
@@ -107,6 +118,27 @@ export function BlogMdx(props: BlogMdxProps) {
     ),
     li: (p: ComponentProps<'li'>) => (
       <li className="blog-prose-li">{p.children}</li>
+    ),
+    mark: (p: ComponentProps<'mark'>) => {
+      const { className, children, ...rest } = p;
+      return (
+        <mark
+          className={['blog-prose-mark', className].filter(Boolean).join(' ')}
+          {...rest}
+        >
+          {children}
+        </mark>
+      );
+    },
+    ColorText: ({ color, className, children }: ColorTextProps) => (
+      <span
+        className={['blog-prose-color-text', className]
+          .filter(Boolean)
+          .join(' ')}
+        style={color ? { color } : undefined}
+      >
+        {children}
+      </span>
     ),
     a: (p: ComponentProps<'a'>) => (
       <a href={p.href} className="blog-prose-link">

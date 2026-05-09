@@ -118,6 +118,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
         key: string;
         label: string;
         meta?: string;
+        summary?: string;
         href: string;
         score: number;
       }
@@ -192,6 +193,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
           key: `article:${article.slug}`,
           label: article.title,
           meta: formatBlogMeta(article.tagLabels),
+          summary: article.summary,
           href: `/blog/${article.slug}`,
           score,
         });
@@ -252,6 +254,40 @@ export function BlogHomePage(props: BlogHomePageProps) {
     return tags.find((item) => item.key === activeTag);
   }, [activeTag, tags]);
 
+  const renderHighlightedText = (text: string, searchText: string) => {
+    const value = text.trim();
+    const keyword = searchText.trim();
+    if (!value || !keyword) return value;
+
+    const normalizedValue = value.toLowerCase();
+    const normalizedKeyword = keyword.toLowerCase();
+    const parts = [];
+    let cursor = 0;
+    let index = normalizedValue.indexOf(normalizedKeyword, cursor);
+
+    while (index >= 0) {
+      if (index > cursor) {
+        parts.push(value.slice(cursor, index));
+      }
+
+      const end = index + keyword.length;
+      parts.push(
+        <mark key={`${index}-${end}`} className="blog-search-highlight">
+          {value.slice(index, end)}
+        </mark>,
+      );
+
+      cursor = end;
+      index = normalizedValue.indexOf(normalizedKeyword, cursor);
+    }
+
+    if (cursor < value.length) {
+      parts.push(value.slice(cursor));
+    }
+
+    return parts;
+  };
+
   const applySuggestion = (suggestion: SearchSuggestion) => {
     setActiveSuggestionIndex(-1);
     setIsSearchFocused(false);
@@ -264,6 +300,16 @@ export function BlogHomePage(props: BlogHomePageProps) {
 
     setQuery('');
     navigate(suggestion.href);
+  };
+
+  const clearSearch = () => {
+    setQuery('');
+    setActiveSuggestionIndex(-1);
+  };
+
+  const showAllArticles = () => {
+    clearSearch();
+    navigate(createBlogTagNavigation());
   };
 
   return (
@@ -365,10 +411,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
                 type="button"
                 className="blog-search-clear"
                 onMouseDown={(event) => event.preventDefault()}
-                onClick={() => {
-                  setQuery('');
-                  setActiveSuggestionIndex(-1);
-                }}
+                onClick={clearSearch}
               >
                 清空
               </button>
@@ -401,8 +444,21 @@ export function BlogHomePage(props: BlogHomePageProps) {
                       </span>
                       <span className="blog-search-suggest-main">
                         <span className="blog-search-suggest-label">
-                          {suggestion.label}
+                          {suggestion.kind === 'article'
+                            ? renderHighlightedText(
+                                suggestion.label,
+                                normalizedQuery,
+                              )
+                            : suggestion.label}
                         </span>
+                        {suggestion.kind === 'article' && suggestion.summary ? (
+                          <span className="blog-search-suggest-summary">
+                            {renderHighlightedText(
+                              suggestion.summary,
+                              normalizedQuery,
+                            )}
+                          </span>
+                        ) : null}
                         {suggestion.meta ? (
                           <span className="blog-search-suggest-meta">
                             {suggestion.meta}
@@ -478,42 +534,74 @@ export function BlogHomePage(props: BlogHomePageProps) {
           </span>
         </div>
 
-        {articlesByYear.map(([year, items]) => (
-          <section
-            key={year}
-            className="blog-year-block"
-            data-year={year}
-            aria-label={`${year} 年文章`}
-          >
-            <div className="blog-index-grid">
-              {items.map((article) => (
-                <Link
-                  key={article.slug}
-                  to={`/blog/${article.slug}`}
-                  className="blog-index-item"
-                >
-                  <div className="blog-index-meta">
-                    <span className="blog-index-meta-item">
-                      <CalendarIcon className="blog-inline-icon" />
-                      <time dateTime={article.publishedAt}>
-                        {formatBlogDate(article.publishedAt)}
-                      </time>
-                    </span>
-                    <span className="blog-index-meta-sep">·</span>
-                    <span className="blog-index-meta-item">
-                      <span className="blog-index-tag-dot" aria-hidden="true" />
-                      <span>{formatBlogMeta(article.tagLabels)}</span>
-                    </span>
-                  </div>
-                  <h3 className="blog-index-title">{article.title}</h3>
-                  {article.summary ? (
-                    <p className="blog-index-summary">{article.summary}</p>
-                  ) : null}
-                </Link>
-              ))}
+        {filteredArticles.length === 0 ? (
+          <div className="blog-empty-state" role="status">
+            <p>没有找到匹配的文章。</p>
+            <div className="blog-empty-actions">
+              <button
+                type="button"
+                className="blog-empty-action"
+                onClick={clearSearch}
+              >
+                清空搜索
+              </button>
+              <button
+                type="button"
+                className="blog-empty-action blog-empty-action--primary"
+                onClick={showAllArticles}
+              >
+                查看全部文章
+              </button>
             </div>
-          </section>
-        ))}
+          </div>
+        ) : (
+          articlesByYear.map(([year, items]) => (
+            <section
+              key={year}
+              className="blog-year-block"
+              data-year={year}
+              aria-label={`${year} 年文章`}
+            >
+              <div className="blog-index-grid">
+                {items.map((article) => (
+                  <Link
+                    key={article.slug}
+                    to={`/blog/${article.slug}`}
+                    className="blog-index-item"
+                  >
+                    <div className="blog-index-meta">
+                      <span className="blog-index-meta-item blog-index-date">
+                        <CalendarIcon className="blog-inline-icon" />
+                        <time dateTime={article.publishedAt}>
+                          {formatBlogDate(article.publishedAt)}
+                        </time>
+                      </span>
+                      <span className="blog-index-meta-sep">·</span>
+                      <span className="blog-index-meta-item">
+                        <span
+                          className="blog-index-tag-dot"
+                          aria-hidden="true"
+                        />
+                        <span>{formatBlogMeta(article.tagLabels)}</span>
+                      </span>
+                    </div>
+                    <h3 className="blog-index-title">
+                      {renderHighlightedText(article.title, normalizedQuery)}
+                    </h3>
+                    {article.summary ? (
+                      <p className="blog-index-summary">
+                        {renderHighlightedText(
+                          article.summary,
+                          normalizedQuery,
+                        )}
+                      </p>
+                    ) : null}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ))
+        )}
       </section>
     </main>
   );
