@@ -40,7 +40,6 @@
 ### 5. 时间字段
 
 - 文章需要 `publishedAt`。
-- 文章需要 `updatedAt`。
 - 由于当前没有数据库，这些信息以静态方式维护。
 
 ### 6. 非目标
@@ -65,7 +64,7 @@
 
 ### 9. Frontmatter 最小字段
 
-- 第一版至少包含：`title`、`slug`、`tags`、`publishedAt`、`updatedAt`、`summary`。
+- 第一版至少包含：`title`、`slug`、`tags`、`publishedAt`、`summary`。
 - `slug` 使用手写方式维护，不从文件名自动生成。
 - `cover` 作为文章头图字段可选；默认读取文章目录根部的 `cover.png`、`cover.svg`、`cover.jpg` 或 `cover.jpeg`。
 

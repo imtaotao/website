@@ -4,7 +4,6 @@ slug: demo
 tags:
   - notes
 publishedAt: 2026-04-30
-updatedAt: 2026-04-30
 summary: 这是一篇集中展示博客正文能力的 demo，后续写文章时可以直接对照这里的写法。
 ---
 
@@ -57,7 +56,6 @@ type BlogArticleFrontmatter = {
   slug: string;
   tags: Array<string>;
   publishedAt: string;
-  updatedAt: string;
   summary?: string;
   cover?: string;
 };
@@ -96,33 +94,58 @@ $$
 ## 6. 四宫格示例
 
 <ImageGallery
-  columns={2}
-  images={[
-    { src: './cover.jpg', alt: '四宫格 1' },
-    { src: './cover.jpg', alt: '四宫格 2' },
-    { src: './cover.jpg', alt: '四宫格 3' },
-    { src: './cover.jpg', alt: '四宫格 4' },
-  ]}
+columns={2}
+images={[
+{ src: './cover.jpg', alt: '四宫格 1' },
+{ src: './cover.jpg', alt: '四宫格 2' },
+{ src: './cover.jpg', alt: '四宫格 3' },
+{ src: './cover.jpg', alt: '四宫格 4' },
+]}
 />
 
 ## 7. 六宫格示例
 
 <ImageGallery
-  columns={3}
-  images={[
-    { src: './cover.jpg', alt: '六宫格 1' },
-    { src: './cover.jpg', alt: '六宫格 2' },
-    { src: './cover.jpg', alt: '六宫格 3' },
-    { src: './cover.jpg', alt: '六宫格 4' },
-    { src: './cover.jpg', alt: '六宫格 5' },
-    { src: './cover.jpg', alt: '六宫格 6' },
-  ]}
+columns={3}
+images={[
+{ src: './cover.jpg', alt: '六宫格 1' },
+{ src: './cover.jpg', alt: '六宫格 2' },
+{ src: './cover.jpg', alt: '六宫格 3' },
+{ src: './cover.jpg', alt: '六宫格 4' },
+{ src: './cover.jpg', alt: '六宫格 5' },
+{ src: './cover.jpg', alt: '六宫格 6' },
+]}
 />
 
-## 8. 后续约定
+## 8. 外站音视频卡片
+
+正文里可以用 `MediaEmbed` 放音频或视频入口。页面只展示内嵌式 UI，点击后会跳转到外站点。段落里也可以插入 <MediaLink type="video" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">视频小按钮</MediaLink> 或 <MediaLink type="audio" href="https://open.spotify.com/">音频小按钮</MediaLink>。
+
+<MediaEmbed
+  type="video"
+  href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+  title="一个外站视频示例"
+  provider="YouTube"
+  duration="03:33"
+  poster="./cover.jpg"
+  description="适合放技术分享、演讲录像或产品演示。这里不会直接播放，只作为外部视频的漂亮入口。"
+/>
+
+<MediaEmbed
+  type="audio"
+  href="https://open.spotify.com/"
+  title="一个外站音频示例"
+  provider="Spotify"
+  duration="28:16"
+  description="适合放播客、访谈、音乐或其他音频内容。没有 poster 时会使用音频样式的占位视觉。"
+/>
+
+## 9. 后续约定
 
 - 单图优先用 Markdown 原生语法
 - 多图排版用 `ImageGallery`
+- 外站音视频入口用 `MediaEmbed`
+- 段落内的外站音视频小入口用 `MediaLink`
 - 数学表达式用 `$...$` 写行内公式，用 `$$...$$` 写块级公式
 - `columns={2}` 适合四宫格
 - `columns={3}` 适合六宫格或九宫格

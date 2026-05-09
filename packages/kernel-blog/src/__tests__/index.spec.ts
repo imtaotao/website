@@ -44,7 +44,6 @@ slug: older-post
 tags:
   - react
 publishedAt: 2026-04-01
-updatedAt: 2026-04-02
 summary: Older summary
 cover: ./cover.jpg
 coverPosition: center 32%
@@ -62,7 +61,6 @@ tags:
   - react
   - typescript
 publishedAt: 2026-04-10
-updatedAt: 2026-04-11
 summary: Newer summary
 ---
 
@@ -109,7 +107,6 @@ slug: entry
 tags:
   - react
 publishedAt: 2026-04-10
-updatedAt: 2026-04-10
 summary: Entry summary
 cover: ./cover.png
 ---
@@ -139,7 +136,6 @@ slug: without-summary
 tags:
   - react
 publishedAt: 2026-04-12
-updatedAt: 2026-04-12
 ---
 
 Hello world
@@ -165,7 +161,6 @@ slug: bad-entry
 tags:
   - unknown
 publishedAt: 2026-04-10
-updatedAt: 2026-04-10
 summary: Bad summary
 ---
 

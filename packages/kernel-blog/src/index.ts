@@ -58,9 +58,6 @@ const sortBlogArticles = (items: Array<BlogArticleDetail>) => {
     const byPublishedAt = compareDateDesc(left.publishedAt, right.publishedAt);
     if (byPublishedAt !== 0) return byPublishedAt;
 
-    const byUpdatedAt = compareDateDesc(left.updatedAt, right.updatedAt);
-    if (byUpdatedAt !== 0) return byUpdatedAt;
-
     return left.title.localeCompare(right.title);
   });
 };

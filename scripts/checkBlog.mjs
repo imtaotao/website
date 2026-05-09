@@ -87,7 +87,7 @@ for (const file of articleFiles) {
   const source = readFileSync(file, 'utf8');
   const frontmatter = parseFrontmatter(file, source);
 
-  for (const key of ['title', 'slug', 'publishedAt', 'updatedAt']) {
+  for (const key of ['title', 'slug', 'publishedAt']) {
     if (!frontmatter[key]) {
       addIssue(file, `missing required frontmatter field: ${key}`);
     }
@@ -109,6 +109,13 @@ for (const file of articleFiles) {
 
   if (frontmatter.cover) {
     checkLocalAsset(file, frontmatter.cover);
+  }
+
+  if (
+    frontmatter.externalUrl &&
+    !/^https?:\/\/\S+$/i.test(frontmatter.externalUrl)
+  ) {
+    addIssue(file, `invalid externalUrl: ${frontmatter.externalUrl}`);
   }
 
   for (const match of source.matchAll(/!\[[^\]]*]\(([^)]+)\)/g)) {

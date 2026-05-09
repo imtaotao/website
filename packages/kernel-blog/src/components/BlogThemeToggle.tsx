@@ -4,6 +4,7 @@ import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
 export type BlogTheme = 'light' | 'dark';
 
 const BLOG_THEME_STORAGE_KEY = 'website:blog-theme';
+const BLOG_THEME_PREFERENCE_KEY = 'website:blog-theme-preference';
 const BLOG_THEME_CHANGE_EVENT = 'website-theme-change';
 const DEFAULT_BLOG_THEME: BlogTheme = 'light';
 
@@ -11,11 +12,32 @@ const isBlogTheme = (value: string | null): value is BlogTheme => {
   return value === 'light' || value === 'dark';
 };
 
+const getDefaultBlogTheme = () => {
+  return DEFAULT_BLOG_THEME;
+};
+
+const hasStoredBlogThemePreference = () => {
+  if (typeof window === 'undefined') return false;
+  return window.localStorage.getItem(BLOG_THEME_PREFERENCE_KEY) === 'true';
+};
+
 const readStoredBlogTheme = () => {
-  if (typeof window === 'undefined') return DEFAULT_BLOG_THEME;
+  if (typeof window === 'undefined') return getDefaultBlogTheme();
+  if (!hasStoredBlogThemePreference()) return getDefaultBlogTheme();
 
   const storedTheme = window.localStorage.getItem(BLOG_THEME_STORAGE_KEY);
-  return isBlogTheme(storedTheme) ? storedTheme : DEFAULT_BLOG_THEME;
+  return isBlogTheme(storedTheme) ? storedTheme : getDefaultBlogTheme();
+};
+
+const writeStoredBlogTheme = (theme: BlogTheme) => {
+  window.localStorage.setItem(BLOG_THEME_STORAGE_KEY, theme);
+  window.localStorage.setItem(BLOG_THEME_PREFERENCE_KEY, 'true');
+  window.dispatchEvent(
+    new CustomEvent<BlogTheme>(BLOG_THEME_CHANGE_EVENT, {
+      detail: theme,
+    }),
+  );
+  window.dispatchEvent(new Event('storage'));
 };
 
 export function useBlogTheme() {
@@ -35,18 +57,12 @@ export function useBlogTheme() {
     };
   }, []);
 
-  useEffect(() => {
-    window.localStorage.setItem(BLOG_THEME_STORAGE_KEY, theme);
-    window.dispatchEvent(
-      new CustomEvent<BlogTheme>(BLOG_THEME_CHANGE_EVENT, {
-        detail: theme,
-      }),
-    );
-    window.dispatchEvent(new Event('storage'));
-  }, [theme]);
-
   const toggleTheme = () => {
-    setTheme((currentTheme) => (currentTheme === 'light' ? 'dark' : 'light'));
+    setTheme((currentTheme) => {
+      const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
+      writeStoredBlogTheme(nextTheme);
+      return nextTheme;
+    });
   };
 
   return { theme, toggleTheme };

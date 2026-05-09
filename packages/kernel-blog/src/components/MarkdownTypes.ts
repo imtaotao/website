@@ -1,4 +1,4 @@
-import type { ComponentType } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 
 export type MarkdownHeading = {
   level: 2 | 3;
@@ -23,6 +23,26 @@ export type BlogImageGalleryItem =
 export type BlogImageGalleryProps = {
   images: Array<BlogImageGalleryItem>;
   columns?: 2 | 3 | 4;
+};
+
+export type BlogMediaEmbedKind = 'audio' | 'video';
+
+export type BlogMediaEmbedProps = {
+  href: string;
+  title: string;
+  type?: BlogMediaEmbedKind;
+  description?: string;
+  duration?: string;
+  poster?: string;
+  provider?: string;
+};
+
+export type BlogMediaLinkProps = {
+  href: string;
+  type?: BlogMediaEmbedKind;
+  children?: ReactNode;
+  label?: string;
+  provider?: string;
 };
 
 export type ResolveBlogAssetUrl = (

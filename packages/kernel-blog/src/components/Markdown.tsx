@@ -17,6 +17,8 @@ import { BlogLightbox } from '#blog/components/MarkdownLightbox';
 import {
   createBlogMdxImage,
   createImageGallery,
+  createMediaEmbed,
+  createMediaLink,
 } from '#blog/components/MarkdownMedia';
 import { isMediaOnlyParagraph } from '#blog/components/MarkdownNodes';
 import type {
@@ -114,6 +116,8 @@ export function BlogMdx(props: BlogMdxProps) {
   };
   const BlogMdxImage = createBlogMdxImage(mediaContext);
   const ImageGallery = createImageGallery(mediaContext);
+  const MediaEmbed = createMediaEmbed(mediaContext);
+  const MediaLink = createMediaLink();
 
   const renderHeading = (
     tag: HeadingTag,
@@ -178,6 +182,8 @@ export function BlogMdx(props: BlogMdxProps) {
     ),
     img: BlogMdxImage,
     ImageGallery,
+    MediaEmbed,
+    MediaLink,
     hr: () => <hr className="blog-prose-hr" />,
     pre: BlogMdxPre,
     code: (p: ComponentProps<'code'>) => {

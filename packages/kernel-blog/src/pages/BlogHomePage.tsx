@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
-import { FileTextIcon, GitHubLogoIcon } from '@radix-ui/react-icons';
+import { OpenInNewWindowIcon } from '@radix-ui/react-icons';
 import {
   BlogThemeToggle,
   useBlogTheme,
@@ -30,7 +30,7 @@ export function createBlogTagNavigation(tag?: string) {
 
 export type BlogHomeArticle = Pick<
   BlogArticleMeta,
-  'publishedAt' | 'slug' | 'summary' | 'tags' | 'title'
+  'externalUrl' | 'publishedAt' | 'slug' | 'summary' | 'tags' | 'title'
 > & {
   tagLabels: Array<string>;
 };
@@ -79,7 +79,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
 
   const activeTag = useMemo(() => {
     const value = searchParams.get(BLOG_TAG_QUERY_KEY)?.trim() ?? '';
-    return tags.some((item) => item.key === value) ? value : '';
+    return tags.some((item) => item.key === value) ? value : tags[0]?.key ?? '';
   }, [searchParams, tags]);
 
   const filteredArticles = useMemo(() => {
@@ -106,6 +106,60 @@ export function BlogHomePage(props: BlogHomePageProps) {
     }
     return Array.from(groups.entries());
   }, [filteredArticles]);
+
+  const renderArticleItem = (article: BlogHomeArticle) => {
+    const content = (
+      <>
+        <h3 className="blog-index-title">
+          <span className="blog-index-title-text">{article.title}</span>
+          {article.externalUrl ? (
+            <span
+              className="blog-index-external-icon"
+              title="站外文章"
+              aria-label="站外文章"
+            >
+              <OpenInNewWindowIcon aria-hidden="true" />
+            </span>
+          ) : null}
+          <span className="blog-index-meta">
+            <span className="blog-index-meta-item blog-index-date">
+              <time dateTime={article.publishedAt}>
+                {formatBlogDate(article.publishedAt)}
+              </time>
+            </span>
+            <span className="blog-index-meta-sep">·</span>
+            <span className="blog-index-meta-item">
+              <span>{formatBlogMeta(article.tagLabels)}</span>
+            </span>
+          </span>
+        </h3>
+      </>
+    );
+
+    if (article.externalUrl) {
+      return (
+        <a
+          key={article.slug}
+          className="blog-index-item blog-index-item--external"
+          href={article.externalUrl}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {content}
+        </a>
+      );
+    }
+
+    return (
+      <Link
+        key={article.slug}
+        to={`/blog/${article.slug}`}
+        className="blog-index-item"
+      >
+        {content}
+      </Link>
+    );
+  };
 
   return (
     <main className="blog-shell min-h-screen" data-blog-theme={blogTheme.theme}>
@@ -135,7 +189,6 @@ export function BlogHomePage(props: BlogHomePageProps) {
         <div className="blog-home-actions">
           <div className="blog-home-links">
             <Link to="/resume" className="blog-pill blog-home-resume">
-              <FileTextIcon className="blog-pill-icon" />
               <span className="blog-pill-label">简历</span>
             </Link>
             {githubUrl ? (
@@ -147,7 +200,6 @@ export function BlogHomePage(props: BlogHomePageProps) {
                 aria-label="GitHub"
                 title="GitHub"
               >
-                <GitHubLogoIcon className="blog-pill-icon" />
                 <span className="blog-pill-label">GitHub</span>
               </a>
             ) : null}
@@ -155,14 +207,6 @@ export function BlogHomePage(props: BlogHomePageProps) {
               theme={blogTheme.theme}
               onToggle={blogTheme.toggleTheme}
             />
-            <div className="blog-home-meta">
-              <span>
-                {activeTag
-                  ? `${filteredArticles.length} / ${articles.length}`
-                  : articles.length}{' '}
-                篇
-              </span>
-            </div>
           </div>
         </div>
       </header>
@@ -204,37 +248,12 @@ export function BlogHomePage(props: BlogHomePageProps) {
             <section
               key={year}
               className="blog-year-block"
+              data-count={items.length}
               data-year={year}
               aria-label={`${year} 年文章`}
             >
               <div className="blog-index-grid">
-                {items.map((article) => (
-                  <Link
-                    key={article.slug}
-                    to={`/blog/${article.slug}`}
-                    className="blog-index-item"
-                  >
-                    <div className="blog-index-meta">
-                      <span className="blog-index-meta-item blog-index-date">
-                        <time dateTime={article.publishedAt}>
-                          {formatBlogDate(article.publishedAt)}
-                        </time>
-                      </span>
-                      <span className="blog-index-meta-sep">·</span>
-                      <span className="blog-index-meta-item">
-                        <span
-                          className="blog-index-tag-dot"
-                          aria-hidden="true"
-                        />
-                        <span>{formatBlogMeta(article.tagLabels)}</span>
-                      </span>
-                    </div>
-                    <h3 className="blog-index-title">{article.title}</h3>
-                    {article.summary ? (
-                      <p className="blog-index-summary">{article.summary}</p>
-                    ) : null}
-                  </Link>
-                ))}
+                {items.map((article) => renderArticleItem(article))}
               </div>
             </section>
           ))

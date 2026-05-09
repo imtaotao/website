@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 export type WebsiteTheme = 'light' | 'dark';
 
 export const WEBSITE_THEME_STORAGE_KEY = 'website:blog-theme';
+const WEBSITE_THEME_PREFERENCE_KEY = 'website:blog-theme-preference';
 const DEFAULT_WEBSITE_THEME: WebsiteTheme = 'light';
 
 const WEBSITE_THEME_CHANGE_EVENT = 'website-theme-change';
@@ -11,17 +12,28 @@ export function isWebsiteTheme(value: string | null): value is WebsiteTheme {
   return value === 'light' || value === 'dark';
 }
 
+function getDefaultWebsiteTheme() {
+  return DEFAULT_WEBSITE_THEME;
+}
+
+function hasStoredWebsiteThemePreference() {
+  if (typeof window === 'undefined') return false;
+  return window.localStorage.getItem(WEBSITE_THEME_PREFERENCE_KEY) === 'true';
+}
+
 export function readStoredWebsiteTheme() {
-  if (typeof window === 'undefined') return DEFAULT_WEBSITE_THEME;
+  if (typeof window === 'undefined') return getDefaultWebsiteTheme();
+  if (!hasStoredWebsiteThemePreference()) return getDefaultWebsiteTheme();
 
   const storedTheme = window.localStorage.getItem(WEBSITE_THEME_STORAGE_KEY);
-  return isWebsiteTheme(storedTheme) ? storedTheme : DEFAULT_WEBSITE_THEME;
+  return isWebsiteTheme(storedTheme) ? storedTheme : getDefaultWebsiteTheme();
 }
 
 export function writeStoredWebsiteTheme(theme: WebsiteTheme) {
   if (typeof window === 'undefined') return;
 
   window.localStorage.setItem(WEBSITE_THEME_STORAGE_KEY, theme);
+  window.localStorage.setItem(WEBSITE_THEME_PREFERENCE_KEY, 'true');
   window.dispatchEvent(
     new CustomEvent<WebsiteTheme>(WEBSITE_THEME_CHANGE_EVENT, {
       detail: theme,

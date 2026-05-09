@@ -64,9 +64,32 @@ const normalizeCoverPosition = (value: unknown, sourcePath: string) => {
   return coverPosition;
 };
 
+const normalizeExternalUrl = (value: unknown, sourcePath: string) => {
+  if (value == null) return undefined;
+  const externalUrl = asString(value);
+  if (!externalUrl) {
+    throw new Error(
+      `Field "externalUrl" must be a non-empty string in ${sourcePath}.`,
+    );
+  }
+
+  try {
+    const url = new URL(externalUrl);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      throw new Error('unsupported protocol');
+    }
+  } catch {
+    throw new Error(
+      `Field "externalUrl" must be a valid http(s) URL in ${sourcePath}.`,
+    );
+  }
+
+  return externalUrl;
+};
+
 const assertDateString = (
   value: unknown,
-  fieldName: 'publishedAt' | 'updatedAt',
+  fieldName: 'publishedAt',
   sourcePath: string,
 ) => {
   const text = assertRequiredText(value, fieldName, sourcePath);
@@ -143,10 +166,10 @@ export function normalizeBlogArticleFrontmatter(
     slug: assertRequiredText(input.slug, 'slug', sourcePath),
     tags: normalizeTags(input.tags, sourcePath),
     publishedAt: assertDateString(input.publishedAt, 'publishedAt', sourcePath),
-    updatedAt: assertDateString(input.updatedAt, 'updatedAt', sourcePath),
     summary: normalizeSummary(input.summary, sourcePath),
     cover: normalizeCover(input.cover, sourcePath),
     coverPosition: normalizeCoverPosition(input.coverPosition, sourcePath),
+    externalUrl: normalizeExternalUrl(input.externalUrl, sourcePath),
   };
 }
 const parseFrontmatter = (source: string, sourcePath: string) => {

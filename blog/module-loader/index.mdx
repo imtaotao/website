@@ -4,7 +4,6 @@ slug: module-loader
 tags:
   - frontend
 publishedAt: 2019-06-20
-updatedAt: 2019-06-20
 summary: 以一个浏览器端类 CommonJS 模块加载器为例，记录模块缓存、插件机制、同步加载和执行隔离的设计思路。
 coverPosition: center 30%
 ---
@@ -35,7 +34,6 @@ coverPosition: center 30%
 4. 以 URL 作为唯一标识，保证同一个模块只执行一次
 
 一开始我基本就是按这条线推进的。后面为了处理更多实际问题，细节才越来越多。
-
 
 ## 为什么不是直接插 `script` 标签
 

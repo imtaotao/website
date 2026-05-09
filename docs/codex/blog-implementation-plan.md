@@ -98,7 +98,6 @@ packages/kernel-shared/
 - `slug`
 - `tags`
 - `publishedAt`
-- `updatedAt`
 - `summary`
 
 字段说明：
@@ -107,9 +106,9 @@ packages/kernel-shared/
 - `slug`: 文章唯一标识，用于详情页路由，手写维护。
 - `tags`: 标签稳定值数组，例如 `["react", "typescript"]`。
 - `publishedAt`: 发布时间，静态维护。
-- `updatedAt`: 更新时间，静态维护。
 - `summary`: 列表页和分享场景使用的简短摘要。
 - `cover`: 可选头图资源路径；通常不需要填写，构建时会自动读取文章目录根部的 `cover.*`。
+- `externalUrl`: 可选站外文章链接；填写后博客首页点击该文章会跳转到外站，并在标题后显示外链标识。
 
 frontmatter 示例：
 
@@ -120,7 +119,6 @@ tags:
   - react
   - typescript
 publishedAt: 2026-04-29
-updatedAt: 2026-04-29
 summary: 一篇关于 React 渲染过程与实现细节的记录。
 ```
 
@@ -240,7 +238,7 @@ export const blogTagMap = {
 - `slug` 不为空
 - `slug` 全局唯一
 - `tags` 中的每个值都存在于标签映射
-- `publishedAt`、`updatedAt` 可被解析为合法日期
+- `publishedAt` 可被解析为合法日期
 - `summary` 不为空
 - `title` 不为空
 

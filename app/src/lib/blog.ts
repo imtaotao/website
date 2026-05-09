@@ -120,9 +120,6 @@ const buildBlogArticles = () => {
       );
       if (byPublishedAt !== 0) return byPublishedAt;
 
-      const byUpdatedAt = compareDateDesc(left.updatedAt, right.updatedAt);
-      if (byUpdatedAt !== 0) return byUpdatedAt;
-
       return left.title.localeCompare(right.title);
     });
 };

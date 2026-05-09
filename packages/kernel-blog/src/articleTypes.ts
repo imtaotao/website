@@ -18,10 +18,10 @@ export type BlogArticleFrontmatter = {
   slug: string;
   tags: Array<BlogTagKey>;
   publishedAt: string;
-  updatedAt: string;
   summary?: string;
   cover?: string;
   coverPosition?: string;
+  externalUrl?: string;
 };
 
 export type BlogArticleMeta = BlogArticleFrontmatter & {
