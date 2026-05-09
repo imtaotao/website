@@ -227,7 +227,7 @@ export function ResumeExperienceList(props: {
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-7 md:space-y-8">
       {companies.map((c) =>
         (() => {
           const companyKey = c.company;
@@ -271,7 +271,7 @@ export function ResumeExperienceList(props: {
           return (
             <article
               key={c.company}
-              data-export-keep-together="strict"
+              data-export-keep-together="true"
               role="button"
               tabIndex={0}
               title="点击复制"
@@ -317,7 +317,7 @@ export function ResumeExperienceList(props: {
                   return (
                     <section
                       key={`${c.company}:${d.department ?? '__default'}`}
-                      data-export-keep-together="strict"
+                      data-export-keep-together="true"
                       className="rounded-md px-3 py-2"
                     >
                       {d.department ? (
@@ -351,7 +351,7 @@ export function ResumeExperienceList(props: {
                               key={`${idx}:${e.company}:${e.department ?? ''}:${
                                 e.role
                               }:${e.startAt}:${e.endAt}`}
-                              data-export-keep-together="strict"
+                              data-export-keep-together="true"
                             >
                               {e.role ? (
                                 <div className="text-sm font-semibold text-zinc-900">
@@ -360,7 +360,7 @@ export function ResumeExperienceList(props: {
                               ) : null}
 
                               {items.length ? (
-                                <ul className="resume-work-font mt-3 space-y-2 text-[13px] font-medium leading-6 text-zinc-800 md:mt-2 md:space-y-1.5 md:text-[14px] md:leading-5">
+                                <ul className="resume-work-font mt-3 space-y-2 text-[14px] font-medium leading-6 text-zinc-800 md:mt-2 md:space-y-1.5 md:text-[15px] md:leading-5">
                                   {items.map((it, i) => {
                                     const textClassName = 'text-zinc-800';
 

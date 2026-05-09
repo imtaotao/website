@@ -1,5 +1,4 @@
 import { useEffect, useState, type ComponentProps } from 'react';
-import { CopyIcon } from '@radix-ui/react-icons';
 import hljs from 'highlight.js';
 
 import { copyToClipboard } from '#blog/components/MarkdownClipboard';
@@ -127,7 +126,6 @@ export const BlogMdxPre = (
                 })();
               }}
             >
-              <CopyIcon className="blog-prose-code-copy-icon" />
               <span className="blog-prose-code-copy-label">{copyText}</span>
             </button>
             <span className="blog-prose-code-lang" aria-hidden="true">

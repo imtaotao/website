@@ -86,6 +86,13 @@
    - 当前自定义字体体积较大。
    - 移动端已经优先使用系统字体，后续可继续按页面和字重减少默认加载。
 
+### 字体切换备忘
+
+- 全站字体通过 `data-font` 开关切换，位置在 `app/index.html:2` 的 `<html>` 标签。
+- `data-font="inter"`：使用 Inter 系列字体栈（默认）。
+- `data-font="fz"`：使用方正兰亭（`FZLanTing` / `FZLanTingWork`）。
+- 字体栈与变量定义在 `app/src/App.css:44`（`--site-font-*`、`--site-font-body`、`--site-font-title`）。
+
 ## 实施顺序建议
 
 1. SEO/head、404 页面、全站主题按钮。

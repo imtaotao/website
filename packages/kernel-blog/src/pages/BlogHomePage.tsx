@@ -54,14 +54,25 @@ export type BlogHomePageProps = {
 };
 
 export function formatBlogDate(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}.${month}.${day}`;
+  const isoDateMatch = /^\s*(\d{4})-(\d{2})-(\d{2})\s*$/.exec(value);
+  const date = isoDateMatch
+    ? new Date(
+        Date.UTC(
+          Number(isoDateMatch[1]),
+          Number(isoDateMatch[2]) - 1,
+          Number(isoDateMatch[3]),
+        ),
+      )
+    : new Date(value);
+
+  if (Number.isNaN(date.getTime())) return value;
+
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  }).format(date);
 }
 
 export function formatBlogMeta(tags: Array<string>) {
@@ -220,6 +231,21 @@ export function BlogHomePage(props: BlogHomePageProps) {
       return haystack.includes(normalizedQuery);
     });
   }, [activeTag, articles, normalizedQuery]);
+
+  const articlesByYear = useMemo(() => {
+    const groups = new Map<string, Array<BlogHomeArticle>>();
+    for (const article of filteredArticles) {
+      const candidate = article.publishedAt.slice(0, 4);
+      const year = /^\d{4}$/.test(candidate) ? candidate : '未知';
+      const bucket = groups.get(year);
+      if (bucket) {
+        bucket.push(article);
+      } else {
+        groups.set(year, [article]);
+      }
+    }
+    return Array.from(groups.entries());
+  }, [filteredArticles]);
 
   const activeTagMeta = useMemo(() => {
     if (!activeTag) return undefined;
@@ -452,33 +478,42 @@ export function BlogHomePage(props: BlogHomePageProps) {
           </span>
         </div>
 
-        <div className="blog-index-grid">
-          {filteredArticles.map((article) => (
-            <Link
-              key={article.slug}
-              to={`/blog/${article.slug}`}
-              className="blog-index-item"
-            >
-              <div className="blog-index-meta">
-                <span className="blog-index-meta-item">
-                  <CalendarIcon className="blog-inline-icon" />
-                  <time dateTime={article.publishedAt}>
-                    {formatBlogDate(article.publishedAt)}
-                  </time>
-                </span>
-                <span className="blog-index-meta-sep">·</span>
-                <span className="blog-index-meta-item">
-                  <span className="blog-index-tag-dot" aria-hidden="true" />
-                  <span>{formatBlogMeta(article.tagLabels)}</span>
-                </span>
-              </div>
-              <h3 className="blog-index-title">{article.title}</h3>
-              {article.summary ? (
-                <p className="blog-index-summary">{article.summary}</p>
-              ) : null}
-            </Link>
-          ))}
-        </div>
+        {articlesByYear.map(([year, items]) => (
+          <section
+            key={year}
+            className="blog-year-block"
+            data-year={year}
+            aria-label={`${year} 年文章`}
+          >
+            <div className="blog-index-grid">
+              {items.map((article) => (
+                <Link
+                  key={article.slug}
+                  to={`/blog/${article.slug}`}
+                  className="blog-index-item"
+                >
+                  <div className="blog-index-meta">
+                    <span className="blog-index-meta-item">
+                      <CalendarIcon className="blog-inline-icon" />
+                      <time dateTime={article.publishedAt}>
+                        {formatBlogDate(article.publishedAt)}
+                      </time>
+                    </span>
+                    <span className="blog-index-meta-sep">·</span>
+                    <span className="blog-index-meta-item">
+                      <span className="blog-index-tag-dot" aria-hidden="true" />
+                      <span>{formatBlogMeta(article.tagLabels)}</span>
+                    </span>
+                  </div>
+                  <h3 className="blog-index-title">{article.title}</h3>
+                  {article.summary ? (
+                    <p className="blog-index-summary">{article.summary}</p>
+                  ) : null}
+                </Link>
+              ))}
+            </div>
+          </section>
+        ))}
       </section>
     </main>
   );

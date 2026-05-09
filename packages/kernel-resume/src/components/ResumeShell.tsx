@@ -16,6 +16,22 @@ type KeepTogetherRangePx = {
   strict: boolean;
 };
 
+const getPageBreakTopsCssPx = (root: HTMLElement) => {
+  const rootRect = root.getBoundingClientRect();
+  const nodes = Array.from(
+    root.querySelectorAll<HTMLElement>('[data-export-page-break="before"]'),
+  );
+
+  return nodes
+    .map((node) => {
+      const r = node.getBoundingClientRect();
+      const top = Math.max(0, r.top - rootRect.top);
+      return top;
+    })
+    .filter((x) => Number.isFinite(x) && x > 2)
+    .sort((a, b) => a - b);
+};
+
 type PageSpec = {
   offsetY: number;
   heightPx: number;
@@ -45,10 +61,24 @@ const chooseSliceHeightPx = (args: {
   idealPageHeightPx: number;
   totalHeightPx: number;
   keepTogether: KeepTogetherRangePx[];
+  pageBreaks: number[];
 }) => {
-  const { offsetY, idealPageHeightPx, totalHeightPx, keepTogether } = args;
+  const {
+    offsetY,
+    idealPageHeightPx,
+    totalHeightPx,
+    keepTogether,
+    pageBreaks,
+  } = args;
   const idealCut = offsetY + idealPageHeightPx;
   if (idealCut >= totalHeightPx) return totalHeightPx - offsetY;
+
+  // 手动分页：命中 page-break 时，强制在该元素顶部切页。
+  for (const topPx of pageBreaks) {
+    if (topPx <= offsetY + 4) continue;
+    if (topPx > idealCut + 1) break;
+    return Math.max(1, Math.floor(topPx) - offsetY);
+  }
 
   // strict keep-together：如果某个块本身就超过一页高度，无法整体挪动。
   // 这种情况允许拆分，同时给出提示，便于后续优化内容结构。
@@ -99,13 +129,18 @@ const chooseSliceHeightPx = (args: {
 
   const cutAt = Math.floor(intersect.topPx);
   const sliceHeight = cutAt - offsetY;
-  // 需求：放不下就整体挪到下一页，留白没关系。
-  // 因此 keep-together 命中时，尽量在块顶部切页（即使本页只剩很小空间）。
-  const minSlice = Math.floor(idealPageHeightPx * 0.08);
-  if (sliceHeight < minSlice) {
-    // 极端情况下 slice 太小会生成几乎空白的一页：这里仍允许，但要保证循环能推进。
+
+  const minSlice = intersect.strict
+    ? Math.floor(idealPageHeightPx * 0.1)
+    : Math.floor(idealPageHeightPx * 0.7);
+
+  // 非 strict：太小的话宁愿拆分，也不要生成几乎空白的一页。
+  if (sliceHeight < minSlice && !intersect.strict) return idealPageHeightPx;
+
+  // strict：仍允许留白，但要保证循环能推进。
+  if (sliceHeight < minSlice && intersect.strict)
     return Math.max(1, sliceHeight);
-  }
+
   return sliceHeight;
 };
 
@@ -139,7 +174,7 @@ export const ResumeShell = forwardRef<
   }, []);
 
   const pageInnerClassName = useMemo(() => {
-    return 'h-full w-full px-5 py-6 md:px-8 md:py-7';
+    return 'h-full w-full px-5 pt-6 pb-5 md:px-8 md:pt-7 md:pb-6';
   }, []);
 
   useLayoutEffect(() => {
@@ -167,20 +202,27 @@ export const ResumeShell = forwardRef<
 
       const totalHeightPx = Math.max(1, content.getBoundingClientRect().height);
       const keepTogether = getKeepTogetherRangesCssPx(content);
+      const pageBreaks = getPageBreakTopsCssPx(content);
 
       const offsets: number[] = [];
       const nextPages: PageSpec[] = [];
       let offsetY = 0;
+      // 尾部可能出现“剩余高度极小”的情况（subpixel/取整导致），会生成一页几乎空白的页面。
+      // 这里直接裁掉尾部极小残余，避免出现空白页。
+      const MIN_REMAINING_TO_CREATE_PAGE_PX = 8;
       // 防止极端情况死循环
       const maxPages = 50;
       let guard = 0;
       while (offsetY < totalHeightPx - 0.5 && guard < maxPages) {
+        const remaining = totalHeightPx - offsetY;
+        if (remaining < MIN_REMAINING_TO_CREATE_PAGE_PX) break;
         offsets.push(offsetY);
         const slice = chooseSliceHeightPx({
           offsetY,
           idealPageHeightPx: contentViewportHeightPx,
           totalHeightPx,
           keepTogether,
+          pageBreaks,
         });
         // 关键：本页“可视内容高度”必须等于切片高度。
         // 否则即使我们把块挪到下一页，上一页仍会因为视口更高而露出“半截块”。
@@ -295,8 +337,8 @@ export const ResumeShell = forwardRef<
                       >
                         <div
                           style={{
-                            transform: `translateY(-${p.offsetY}px)`,
-                            transformOrigin: 'top left',
+                            position: 'relative',
+                            top: `-${p.offsetY}px`,
                           }}
                         >
                           {props.children}

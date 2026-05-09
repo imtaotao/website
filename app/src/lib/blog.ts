@@ -186,21 +186,31 @@ export function resolveBlogAssetUrl(
   if (/^(?:data|blob):/.test(normalizedPath)) return normalizedPath;
   if (normalizedPath.startsWith('/')) return normalizedPath;
 
-  return (
-    articleAssetModules[toArticleAssetKey(articleSourcePath, normalizedPath)] ??
-    normalizedPath
-  );
+  return articleAssetModules[
+    toArticleAssetKey(articleSourcePath, normalizedPath)
+  ];
 }
 
 export function formatBlogDate(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}.${month}.${day}`;
+  const isoDateMatch = /^\s*(\d{4})-(\d{2})-(\d{2})\s*$/.exec(value);
+  const date = isoDateMatch
+    ? new Date(
+        Date.UTC(
+          Number(isoDateMatch[1]),
+          Number(isoDateMatch[2]) - 1,
+          Number(isoDateMatch[3]),
+        ),
+      )
+    : new Date(value);
+
+  if (Number.isNaN(date.getTime())) return value;
+
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  }).format(date);
 }
 
 export function formatBlogMeta(tags: Array<string>) {

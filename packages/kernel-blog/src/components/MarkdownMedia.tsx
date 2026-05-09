@@ -16,7 +16,7 @@ type MarkdownMediaContext = {
 export function createBlogMdxImage(context: MarkdownMediaContext) {
   function BlogMdxImage(p: ComponentProps<'img'>) {
     const resolvedSrc = p.src
-      ? context.resolveAssetUrl(context.articleSourcePath, p.src) ?? p.src
+      ? context.resolveAssetUrl(context.articleSourcePath, p.src)
       : undefined;
 
     const image = createLightboxImage(resolvedSrc, p.alt, p.title);

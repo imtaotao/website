@@ -2,6 +2,33 @@
 @source "../../packages";
 
 @font-face {
+  font-family: "Inter";
+  src: url("./assets/fonts/Inter-Regular-9.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("./assets/fonts/Inter-Medium-8.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("./assets/fonts/Inter-SemiBold-10.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 字体精简：暂时只保留 Inter 的常用字重（400/500/600） */
+
+/*
+@font-face {
   font-family: "FZLanTing";
   src: url("./assets/fonts/方正兰亭超细黑简体.ttf") format("truetype");
   font-weight: 200;
@@ -40,14 +67,43 @@
   font-style: normal;
   font-display: swap;
 }
+*/
 
 :root {
   color-scheme: light dark;
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  font-synthesis: none;
+
+  --site-font-inter: Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  --site-font-fz-title: "FZLanTing", ui-serif, "New York", "Times New Roman",
+    Georgia, "Songti SC", "STSong", serif;
+  --site-font-fz-body: "FZLanTingWork", "FZLanTing", ui-sans-serif, system-ui,
+    -apple-system, "SF Pro Text", "Segoe UI", Roboto, "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji";
+
+  /* 默认使用 Inter 系字体，便于对比 */
+  --site-font-body: var(--site-font-inter);
+  --site-font-title: var(--site-font-inter);
+
+  font-family: var(--site-font-body);
+  /* 允许缺少字重时合成粗体，避免 Markdown ** 加粗无效 */
+  font-synthesis: weight;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+:root[data-font='fz'] {
+  --site-font-body: var(--site-font-fz-body);
+  --site-font-title: var(--site-font-fz-title);
+}
+
+:root[data-font='inter'] {
+  --site-font-body: var(--site-font-inter);
+  --site-font-title: var(--site-font-inter);
 }
 
 html,
@@ -237,15 +293,7 @@ body {
 .app__notFoundTitle {
   margin: 0;
   color: var(--not-found-title);
-  font-family:
-    "FZLanTing",
-    ui-serif,
-    "New York",
-    "Times New Roman",
-    Georgia,
-    "Songti SC",
-    "STSong",
-    serif;
+  font-family: var(--site-font-title);
   font-size: clamp(2.4rem, 6vw, 4.4rem);
   font-weight: 200;
   line-height: 1.15;
@@ -255,13 +303,7 @@ body {
 .app__notFoundText {
   max-width: 28rem;
   margin: 22px 0 0;
-  font-family:
-    "FZLanTingWork",
-    "FZLanTing",
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    sans-serif;
+  font-family: var(--site-font-body);
   font-size: 1rem;
   line-height: 1.9;
 }

@@ -41,6 +41,7 @@ export function BlogLightbox(props: BlogLightboxProps) {
           src={props.image.src}
           alt={props.image.alt}
           className="blog-lightbox-image"
+          onClick={props.onClose}
         />
         {props.image.caption ? (
           <figcaption className="blog-lightbox-caption">

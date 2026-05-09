@@ -1,11 +1,7 @@
 import { BlogArticlePage as KernelBlogArticlePage } from '@website-kernel/blog';
 import { useParams } from 'react-router';
 
-import {
-  getBlogArticleBySlug,
-  getBlogTagByKey,
-  resolveBlogAssetUrl,
-} from '#app/lib/blog';
+import { getBlogArticleBySlug, resolveBlogAssetUrl } from '#app/lib/blog';
 import { usePageMeta } from '#app/lib/pageMeta';
 
 export default function BlogArticlePage() {
@@ -23,7 +19,6 @@ export default function BlogArticlePage() {
   return (
     <KernelBlogArticlePage
       getArticleBySlug={getBlogArticleBySlug}
-      getTagByKey={getBlogTagByKey}
       resolveAssetUrl={resolveBlogAssetUrl}
     />
   );

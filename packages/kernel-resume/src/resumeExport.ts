@@ -1,5 +1,5 @@
 import { jsPDF } from 'jspdf';
-import { getFontEmbedCSS, toPng } from 'html-to-image';
+import { toPng } from 'html-to-image';
 
 // 是否启用“体积压缩”策略：
 // - true：使用 JPEG + 多次尝试降低质量/分辨率，尽量把文件控制在 5MB 内
@@ -49,15 +49,6 @@ export type ExportPdfProgress =
 export type ExportPdfOptions = {
   onProgress?: (p: ExportPdfProgress) => void;
 };
-
-type PreparedOfflineExportState = {
-  fontEmbedCSS?: string;
-};
-
-const preparedOfflineExportState = new WeakMap<
-  HTMLElement,
-  PreparedOfflineExportState
->();
 
 const emitProgress = (
   fn: ExportPdfOptions['onProgress'],
@@ -160,6 +151,158 @@ const replaceImageSrc = async (img: HTMLImageElement, dataUrl: string) => {
   });
 };
 
+type ResumeNameOverlayInfo = {
+  text: string;
+  leftCssPx: number;
+  topCssPx: number;
+  widthCssPx: number;
+  heightCssPx: number;
+  fontFamily: string;
+  fontSizeCssPx: number;
+  fontWeight: string;
+  fontStyle: string;
+  lineHeightCssPx: number;
+  letterSpacingCssPx: number;
+  color: string;
+};
+
+const getResumeNameElement = (root: HTMLElement) => {
+  return root.querySelector<HTMLElement>('[data-export-resume-name="true"]');
+};
+
+const measureResumeNameOverlayInfo = (
+  pageOrRoot: HTMLElement,
+): ResumeNameOverlayInfo | null => {
+  const nameEl = getResumeNameElement(pageOrRoot);
+  if (!nameEl) return null;
+
+  const text = (nameEl.textContent || '').trim();
+  if (!text) return null;
+
+  const pageRect = pageOrRoot.getBoundingClientRect();
+  const rect = nameEl.getBoundingClientRect();
+
+  const leftCssPx = Math.max(0, rect.left - pageRect.left);
+  const topCssPx = Math.max(0, rect.top - pageRect.top);
+  const widthCssPx = Math.max(1, rect.width);
+  const heightCssPx = Math.max(1, rect.height);
+
+  const style = window.getComputedStyle(nameEl);
+  const fontFamily = style.fontFamily || 'system-ui';
+  const fontSizeCssPx = Number.parseFloat(style.fontSize || '0') || 16;
+  const fontWeight = style.fontWeight || '600';
+  const fontStyle = style.fontStyle || 'normal';
+  const color = style.color || '#111111';
+  const letterSpacingCssPx = Number.parseFloat(style.letterSpacing || '0') || 0;
+  const lineHeightCssPxRaw = Number.parseFloat(style.lineHeight || '');
+  const lineHeightCssPx =
+    Number.isFinite(lineHeightCssPxRaw) && lineHeightCssPxRaw > 0
+      ? lineHeightCssPxRaw
+      : fontSizeCssPx * 1.2;
+
+  return {
+    text,
+    leftCssPx,
+    topCssPx,
+    widthCssPx,
+    heightCssPx,
+    fontFamily,
+    fontSizeCssPx,
+    fontWeight,
+    fontStyle,
+    lineHeightCssPx,
+    letterSpacingCssPx,
+    color,
+  };
+};
+
+const hideResumeNameForExport = (pageOrRoot: HTMLElement) => {
+  const el = getResumeNameElement(pageOrRoot);
+  if (!el) return () => {};
+
+  const prev = {
+    color: el.style.color,
+    webkitTextFillColor: (
+      el.style as CSSStyleDeclaration & {
+        webkitTextFillColor?: string;
+      }
+    ).webkitTextFillColor,
+    textShadow: el.style.textShadow,
+  };
+
+  el.style.color = 'transparent';
+  (
+    el.style as CSSStyleDeclaration & { webkitTextFillColor?: string }
+  ).webkitTextFillColor = 'transparent';
+  el.style.textShadow = 'none';
+
+  return () => {
+    el.style.color = prev.color;
+    (
+      el.style as CSSStyleDeclaration & { webkitTextFillColor?: string }
+    ).webkitTextFillColor = prev.webkitTextFillColor;
+    el.style.textShadow = prev.textShadow;
+  };
+};
+
+const renderTextToPngDataUrl = (args: {
+  text: string;
+  fontFamily: string;
+  fontSizeCssPx: number;
+  fontWeight: string;
+  fontStyle: string;
+  lineHeightCssPx: number;
+  letterSpacingCssPx: number;
+  color: string;
+  pixelRatio: number;
+  widthCssPx?: number;
+  heightCssPx?: number;
+}) => {
+  const ratio = Math.max(2, args.pixelRatio);
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  ctx.font = `${args.fontStyle} ${args.fontWeight} ${args.fontSizeCssPx}px ${args.fontFamily}`;
+  ctx.textBaseline = 'top';
+
+  const letters = Array.from(args.text);
+  const spacing = args.letterSpacingCssPx;
+  let measuredWidthCssPx = 0;
+  for (let i = 0; i < letters.length; i += 1) {
+    measuredWidthCssPx += ctx.measureText(letters[i]!).width;
+    if (i < letters.length - 1) measuredWidthCssPx += spacing;
+  }
+  measuredWidthCssPx = Math.max(1, Math.ceil(measuredWidthCssPx));
+
+  const widthCssPx = Math.max(
+    1,
+    Math.ceil(args.widthCssPx ?? measuredWidthCssPx),
+  );
+  const heightCssPx = Math.max(
+    1,
+    Math.ceil(args.heightCssPx ?? args.lineHeightCssPx),
+  );
+
+  canvas.width = Math.max(1, Math.ceil(widthCssPx * ratio));
+  canvas.height = Math.max(1, Math.ceil(heightCssPx * ratio));
+
+  ctx.scale(ratio, ratio);
+  ctx.font = `${args.fontStyle} ${args.fontWeight} ${args.fontSizeCssPx}px ${args.fontFamily}`;
+  ctx.textBaseline = 'top';
+  ctx.fillStyle = args.color;
+
+  let x = 0;
+  for (let i = 0; i < letters.length; i += 1) {
+    const ch = letters[i]!;
+    ctx.fillText(ch, x, 0);
+    x += ctx.measureText(ch).width;
+    if (i < letters.length - 1) x += spacing;
+  }
+
+  return canvas.toDataURL('image/png');
+};
+
 export const prepareElementForOfflineExport = async (root: HTMLElement) => {
   await waitForFonts();
   await waitForImages(root);
@@ -182,17 +325,6 @@ export const prepareElementForOfflineExport = async (root: HTMLElement) => {
     img.removeAttribute('sizes');
     await replaceImageSrc(img, dataUrl);
   }
-
-  let fontEmbedCSS: string | undefined;
-  try {
-    fontEmbedCSS = await getFontEmbedCSS(root);
-  } catch {
-    fontEmbedCSS = undefined;
-  }
-
-  preparedOfflineExportState.set(root, {
-    fontEmbedCSS,
-  });
 };
 
 const getExportPixelRatio = () => {
@@ -226,13 +358,11 @@ const prepareForExport = async (root: HTMLElement) => {
 const renderElementToPngDataUrl = async (
   el: HTMLElement,
   pixelRatio: number,
-  fontEmbedCSS?: string,
 ) => {
   return await toPng(el, {
     backgroundColor: '#ffffff',
     pixelRatio,
     cacheBust: false,
-    fontEmbedCSS,
     filter: (node) => {
       if (!(node instanceof HTMLElement)) return true;
       return !isHiddenForExport(node);
@@ -246,18 +376,10 @@ const renderElementSliceToPngDataUrlByWrappingPage = async (args: {
   offsetYCssPx: number;
   sliceHeightCssPx: number;
   pixelRatio: number;
-  fontEmbedCSS?: string;
 }) => {
-  const {
-    el,
-    widthCssPx,
-    offsetYCssPx,
-    sliceHeightCssPx,
-    pixelRatio,
-    fontEmbedCSS,
-  } = args;
+  const { el, widthCssPx, offsetYCssPx, sliceHeightCssPx, pixelRatio } = args;
 
-  // 思路：用一个固定高度（单页）的 wrapper 包住整份内容 clone，并通过 translateY 上移。
+  // 思路：用一个固定高度（单页）的 wrapper 包住整份内容 clone，并通过 top 上移。
   // wrapper 设置 overflow:hidden，确保真正“分页裁切”，避免 foreignObject 路线在某些浏览器出现中间截断。
   const host = document.createElement('div');
   host.setAttribute('data-export-hide', 'true');
@@ -279,8 +401,8 @@ const renderElementSliceToPngDataUrlByWrappingPage = async (args: {
     page.style.background = '#ffffff';
 
     const inner = document.createElement('div');
-    inner.style.transform = `translateY(-${offsetYCssPx}px)`;
-    inner.style.transformOrigin = 'top left';
+    inner.style.position = 'relative';
+    inner.style.top = `-${offsetYCssPx}px`;
     inner.style.width = `${Math.max(1, widthCssPx)}px`;
 
     inner.append(el.cloneNode(true));
@@ -294,7 +416,6 @@ const renderElementSliceToPngDataUrlByWrappingPage = async (args: {
       backgroundColor: '#ffffff',
       pixelRatio,
       cacheBust: false,
-      fontEmbedCSS,
       filter: (node) => {
         if (!(node instanceof HTMLElement)) return true;
         return !isHiddenForExport(node);
@@ -310,9 +431,8 @@ const renderFixedSizeElementToPngDataUrlByWrapping = async (args: {
   widthCssPx: number;
   heightCssPx: number;
   pixelRatio: number;
-  fontEmbedCSS?: string;
 }) => {
-  const { el, widthCssPx, heightCssPx, pixelRatio, fontEmbedCSS } = args;
+  const { el, widthCssPx, heightCssPx, pixelRatio } = args;
 
   // 目的：避免某些浏览器在直接对“页面内元素（可能处于 subpixel x）”截图时出现轻微水平偏移。
   // 通过把元素 clone 到一个固定尺寸、x=0 的 wrapper 中，再进行 toPng，保证对齐稳定。
@@ -351,7 +471,6 @@ const renderFixedSizeElementToPngDataUrlByWrapping = async (args: {
       backgroundColor: '#ffffff',
       pixelRatio,
       cacheBust: false,
-      fontEmbedCSS,
       filter: (node) => {
         if (!(node instanceof HTMLElement)) return true;
         return !isHiddenForExport(node);
@@ -402,15 +521,10 @@ const renderPngWithRetry = async (args: {
 }) => {
   const { el, widthCssPx, heightCssPx } = args;
   const maxAttempts = args.maxAttempts ?? 3;
-  const fontEmbedCSS = preparedOfflineExportState.get(el)?.fontEmbedCSS;
 
   let pixelRatio = args.initialPixelRatio;
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-    const dataUrl = await renderElementToPngDataUrl(
-      el,
-      pixelRatio,
-      fontEmbedCSS,
-    );
+    const dataUrl = await renderElementToPngDataUrl(el, pixelRatio);
     const img = await loadImage(dataUrl);
     const expectedWidthPx = Math.round(widthCssPx * pixelRatio);
     const expectedHeightPx = Math.round(heightCssPx * pixelRatio);
@@ -435,7 +549,7 @@ const renderPngWithRetry = async (args: {
     pixelRatio = next;
   }
 
-  const dataUrl = await renderElementToPngDataUrl(el, pixelRatio, fontEmbedCSS);
+  const dataUrl = await renderElementToPngDataUrl(el, pixelRatio);
   return { dataUrl, pixelRatio };
 };
 
@@ -443,6 +557,22 @@ type KeepTogetherRangePx = {
   topPx: number;
   bottomPx: number;
   strict: boolean;
+};
+
+const getPageBreakTopsCssPx = (root: HTMLElement) => {
+  const rootRect = root.getBoundingClientRect();
+  const nodes = Array.from(
+    root.querySelectorAll<HTMLElement>('[data-export-page-break="before"]'),
+  );
+
+  return nodes
+    .map((node) => {
+      const r = node.getBoundingClientRect();
+      const top = Math.max(0, r.top - rootRect.top);
+      return top;
+    })
+    .filter((x) => Number.isFinite(x) && x > 2)
+    .sort((a, b) => a - b);
 };
 
 const getKeepTogetherRangesCssPx = (root: HTMLElement) => {
@@ -470,10 +600,19 @@ const chooseSliceHeightPx = (args: {
   idealPageHeightPx: number;
   imgHeightPx: number;
   keepTogether: KeepTogetherRangePx[];
+  pageBreaks: number[];
 }) => {
-  const { offsetY, idealPageHeightPx, imgHeightPx, keepTogether } = args;
+  const { offsetY, idealPageHeightPx, imgHeightPx, keepTogether, pageBreaks } =
+    args;
   const idealCut = offsetY + idealPageHeightPx;
   if (idealCut >= imgHeightPx) return imgHeightPx - offsetY;
+
+  // 手动分页：命中 page-break 时，强制在该元素顶部切页。
+  for (const topPx of pageBreaks) {
+    if (topPx <= offsetY + 4) continue;
+    if (topPx > idealCut + 1) break;
+    return Math.max(1, Math.floor(topPx) - offsetY);
+  }
 
   // strict keep-together：如果某个块本身就超过一页高度，无法整体挪动。
   // 这种情况允许拆分，同时给出提示，便于后续优化内容结构。
@@ -514,7 +653,7 @@ const chooseSliceHeightPx = (args: {
   const sliceHeight = cutAt - offsetY;
   const minSlice = intersect.strict
     ? Math.floor(idealPageHeightPx * 0.1)
-    : Math.floor(idealPageHeightPx * 0.35);
+    : Math.floor(idealPageHeightPx * 0.7);
   // 太小的话宁愿拆分，也不要生成几乎空白的一页；但 strict 模式更倾向“整块挪到下一页”。
   if (sliceHeight < minSlice && !intersect.strict) return idealPageHeightPx;
   return sliceHeight;
@@ -533,118 +672,162 @@ export async function exportElementToPdf(
   el: HTMLElement,
   options?: ExportPdfOptions,
 ) {
-  emitProgress(options?.onProgress, {
-    phase: 'prepare',
-    percent: 2,
-    message: '准备导出…',
-  });
-  await prepareElementForOfflineExport(el);
-  await prepareForExport(el);
-  const fontEmbedCSS = preparedOfflineExportState.get(el)?.fontEmbedCSS;
+  const restoreFns: Array<() => void> = [];
+  try {
+    emitProgress(options?.onProgress, {
+      phase: 'prepare',
+      percent: 2,
+      message: '准备导出…',
+    });
 
-  // 如果页面本身已经按 A4 分页渲染（屏幕端分页视图），则按页逐个渲染。
-  // 这样可以避免对超长容器截图时出现“中间截断”。
-  const pagedPages = Array.from(
-    el.querySelectorAll<HTMLElement>('[data-export-page="true"]'),
-  );
-  if (el.dataset.exportPaged === 'true' && pagedPages.length) {
-    const buildPagedPdf = async (args: {
-      desiredPixelRatio: number;
-      jpegQuality: number;
-      attempt: number;
-      totalAttempts: number;
-    }) => {
-      const { desiredPixelRatio, jpegQuality, attempt, totalAttempts } = args;
+    // 修复：部分环境下 html-to-image 会让“顶部姓名”在截图里消失。
+    // 方案：导出时先把姓名设为透明（不影响布局），再用 canvas 单独渲染姓名 PNG，最后叠加到 PDF 第 1 页。
+    const pagedPages = Array.from(
+      el.querySelectorAll<HTMLElement>('[data-export-page="true"]'),
+    );
+    const firstRenderRoot =
+      el.dataset.exportPaged === 'true' && pagedPages.length
+        ? pagedPages[0]!
+        : el;
+    const resumeNameOverlay = measureResumeNameOverlayInfo(firstRenderRoot);
+    restoreFns.push(hideResumeNameForExport(firstRenderRoot));
 
-      const pdf = new jsPDF({
-        orientation: 'p',
-        unit: 'mm',
-        format: 'a4',
-        compress: EXPORT_PDF_ENABLE_COMPRESSION,
-      });
+    await prepareElementForOfflineExport(el);
+    await prepareForExport(el);
 
-      const pageWidthMm = pdf.internal.pageSize.getWidth();
-      const marginMm = PDF_MARGIN_MM;
-      const contentWidthMm = Math.max(1, pageWidthMm - marginMm * 2);
-      const pdfImageCompression = EXPORT_PDF_ENABLE_COMPRESSION
-        ? 'FAST'
-        : 'SLOW';
+    // 如果页面本身已经按 A4 分页渲染（屏幕端分页视图），则按页逐个渲染。
+    // 这样可以避免对超长容器截图时出现“中间截断”。
+    if (el.dataset.exportPaged === 'true' && pagedPages.length) {
+      const buildPagedPdf = async (args: {
+        desiredPixelRatio: number;
+        jpegQuality: number;
+        attempt: number;
+        totalAttempts: number;
+      }) => {
+        const { desiredPixelRatio, jpegQuality, attempt, totalAttempts } = args;
 
-      emitProgress(options?.onProgress, {
-        phase: 'compress',
-        percent: 5,
-        attempt,
-        totalAttempts,
-        message: `生成 PDF（压缩尝试 ${attempt}/${totalAttempts}）…`,
-      });
-
-      const total = Math.max(1, pagedPages.length);
-      for (let pageIndex = 0; pageIndex < pagedPages.length; pageIndex += 1) {
-        const pageEl = pagedPages[pageIndex]!;
-        const r = pageEl.getBoundingClientRect();
-        const widthCssPx = Math.max(1, r.width);
-        const heightCssPx = Math.max(1, r.height);
-        const pixelRatio = clampPixelRatioForSize({
-          desired: desiredPixelRatio,
-          widthCssPx,
-          heightCssPx,
+        const pdf = new jsPDF({
+          orientation: 'p',
+          unit: 'mm',
+          format: 'a4',
+          compress: EXPORT_PDF_ENABLE_COMPRESSION,
         });
 
-        // 5%~92% 用于渲染分页截图（占用时间最多）。
-        const percent = Math.min(92, Math.max(6, 5 + (pageIndex / total) * 87));
+        const pageWidthMm = pdf.internal.pageSize.getWidth();
+        const marginMm = PDF_MARGIN_MM;
+        const contentWidthMm = Math.max(1, pageWidthMm - marginMm * 2);
+        const pdfImageCompression = EXPORT_PDF_ENABLE_COMPRESSION
+          ? 'FAST'
+          : 'SLOW';
+
         emitProgress(options?.onProgress, {
-          phase: 'render',
-          percent,
-          current: pageIndex + 1,
-          total,
-          message: `渲染页面 ${pageIndex + 1}/${total}…`,
+          phase: 'compress',
+          percent: 5,
+          attempt,
+          totalAttempts,
+          message: `生成 PDF（压缩尝试 ${attempt}/${totalAttempts}）…`,
         });
 
-        const pngDataUrl = await renderFixedSizeElementToPngDataUrlByWrapping({
-          el: pageEl,
-          widthCssPx,
-          heightCssPx,
-          pixelRatio,
-          fontEmbedCSS,
+        const total = Math.max(1, pagedPages.length);
+        for (let pageIndex = 0; pageIndex < pagedPages.length; pageIndex += 1) {
+          const pageEl = pagedPages[pageIndex]!;
+          const r = pageEl.getBoundingClientRect();
+          const widthCssPx = Math.max(1, r.width);
+          const heightCssPx = Math.max(1, r.height);
+          const pixelRatio = clampPixelRatioForSize({
+            desired: desiredPixelRatio,
+            widthCssPx,
+            heightCssPx,
+          });
+
+          // 5%~92% 用于渲染分页截图（占用时间最多）。
+          const percent = Math.min(
+            92,
+            Math.max(6, 5 + (pageIndex / total) * 87),
+          );
+          emitProgress(options?.onProgress, {
+            phase: 'render',
+            percent,
+            current: pageIndex + 1,
+            total,
+            message: `渲染页面 ${pageIndex + 1}/${total}…`,
+          });
+
+          const pngDataUrl = await renderFixedSizeElementToPngDataUrlByWrapping(
+            {
+              el: pageEl,
+              widthCssPx,
+              heightCssPx,
+              pixelRatio,
+            },
+          );
+          const dataUrl = EXPORT_PDF_ENABLE_COMPRESSION
+            ? await convertPngDataUrlToJpegDataUrl({
+                pngDataUrl,
+                jpegQuality,
+              })
+            : pngDataUrl;
+
+          const pageHeightMm = (heightCssPx / widthCssPx) * contentWidthMm;
+          if (pageIndex > 0) pdf.addPage();
+          pdf.addImage(
+            dataUrl,
+            PDF_IMAGE_FORMAT,
+            marginMm,
+            marginMm,
+            contentWidthMm,
+            pageHeightMm,
+            undefined,
+            pdfImageCompression,
+          );
+
+          if (pageIndex === 0 && resumeNameOverlay) {
+            const mmPerCssPx = contentWidthMm / widthCssPx;
+            const overlayPng = renderTextToPngDataUrl({
+              text: resumeNameOverlay.text,
+              fontFamily: resumeNameOverlay.fontFamily,
+              fontSizeCssPx: resumeNameOverlay.fontSizeCssPx,
+              fontWeight: resumeNameOverlay.fontWeight,
+              fontStyle: resumeNameOverlay.fontStyle,
+              lineHeightCssPx: resumeNameOverlay.lineHeightCssPx,
+              letterSpacingCssPx: resumeNameOverlay.letterSpacingCssPx,
+              color: resumeNameOverlay.color,
+              pixelRatio,
+              widthCssPx: resumeNameOverlay.widthCssPx,
+              heightCssPx: resumeNameOverlay.heightCssPx,
+            });
+            if (overlayPng) {
+              pdf.addImage(
+                overlayPng,
+                'PNG',
+                marginMm + resumeNameOverlay.leftCssPx * mmPerCssPx,
+                marginMm + resumeNameOverlay.topCssPx * mmPerCssPx,
+                Math.max(1, resumeNameOverlay.widthCssPx * mmPerCssPx),
+                Math.max(1, resumeNameOverlay.heightCssPx * mmPerCssPx),
+              );
+            }
+          }
+        }
+
+        emitProgress(options?.onProgress, {
+          phase: 'compress',
+          percent: 94,
+          attempt,
+          totalAttempts,
+          message: '生成文件…',
         });
-        const dataUrl = EXPORT_PDF_ENABLE_COMPRESSION
-          ? await convertPngDataUrlToJpegDataUrl({
-              pngDataUrl,
-              jpegQuality,
-            })
-          : pngDataUrl;
 
-        const pageHeightMm = (heightCssPx / widthCssPx) * contentWidthMm;
-        if (pageIndex > 0) pdf.addPage();
-        pdf.addImage(
-          dataUrl,
-          PDF_IMAGE_FORMAT,
-          marginMm,
-          marginMm,
-          contentWidthMm,
-          pageHeightMm,
-          undefined,
-          pdfImageCompression,
-        );
-      }
+        const arrayBuffer = pdf.output('arraybuffer') as ArrayBuffer;
+        const bytes = arrayBuffer.byteLength;
+        const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
+        return { bytes, blob };
+      };
 
-      emitProgress(options?.onProgress, {
-        phase: 'compress',
-        percent: 94,
-        attempt,
-        totalAttempts,
-        message: '生成文件…',
-      });
-
-      const arrayBuffer = pdf.output('arraybuffer') as ArrayBuffer;
-      const bytes = arrayBuffer.byteLength;
-      const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
-      return { bytes, blob };
-    };
-
-    const baseDesiredRatio = EXPORT_PDF_ENABLE_COMPRESSION ? 2 : 4;
-    const attempts: Array<{ desiredPixelRatio: number; jpegQuality: number }> =
-      EXPORT_PDF_ENABLE_COMPRESSION
+      const baseDesiredRatio = EXPORT_PDF_ENABLE_COMPRESSION ? 2 : 4;
+      const attempts: Array<{
+        desiredPixelRatio: number;
+        jpegQuality: number;
+      }> = EXPORT_PDF_ENABLE_COMPRESSION
         ? [
             {
               desiredPixelRatio: baseDesiredRatio,
@@ -659,16 +842,355 @@ export async function exportElementToPdf(
           ]
         : [{ desiredPixelRatio: baseDesiredRatio, jpegQuality: 1 }];
 
+      let last: { bytes: number; blob: Blob } | null = null;
+      for (let i = 0; i < attempts.length; i += 1) {
+        const { desiredPixelRatio, jpegQuality } = attempts[i]!;
+        const attempt = i + 1;
+        const totalAttempts = attempts.length;
+        const { bytes, blob } = await buildPagedPdf({
+          desiredPixelRatio,
+          jpegQuality,
+          attempt,
+          totalAttempts,
+        });
+        last = { bytes, blob };
+
+        if (!EXPORT_PDF_ENABLE_COMPRESSION || bytes <= PDF_MAX_BYTES) {
+          emitProgress(options?.onProgress, {
+            phase: 'done',
+            percent: 100,
+            message: '导出完成',
+          });
+          downloadBlob(blob, `chentao-${nowDateString()}.pdf`);
+          return;
+        }
+
+        console.warn(
+          `[export] pdf size ${(bytes / 1024 / 1024).toFixed(2)}MB > 5MB, ` +
+            `retry with desiredPixelRatio=${desiredPixelRatio.toFixed(2)}, ` +
+            `jpegQuality=${jpegQuality.toFixed(2)}`,
+        );
+      }
+
+      if (last) {
+        console.warn(
+          `[export] pdf still > 5MB after retries: ` +
+            `${(last.bytes / 1024 / 1024).toFixed(2)}MB`,
+        );
+        downloadBlob(last.blob, `chentao-${nowDateString()}.pdf`);
+        emitProgress(options?.onProgress, {
+          phase: 'done',
+          percent: 100,
+          message: '导出完成（已尽可能压缩）',
+        });
+      }
+      return;
+    }
+
+    // 不要把整页内容一次性转成超长 PNG：会触发 canvas 上限导致“中间截断”。
+    // 这里按 A4 比例切页，然后每页单独截图。
+    const rootRect = el.getBoundingClientRect();
+    const rootWidthCssPx = Math.max(1, rootRect.width);
+    const totalHeightCssPx = Math.max(1, rootRect.height);
+
+    const buildPdf = async (args: {
+      desiredPixelRatio: number;
+      jpegQuality: number;
+      attempt: number;
+      totalAttempts: number;
+      slices: Array<{ offsetYCssPx: number; sliceHeightCssPx: number }>;
+    }) => {
+      const { desiredPixelRatio, jpegQuality, attempt, totalAttempts, slices } =
+        args;
+
+      const pdf = new jsPDF({
+        orientation: 'p',
+        unit: 'mm',
+        format: 'a4',
+        // 尽可能压缩内部对象流。
+        compress: EXPORT_PDF_ENABLE_COMPRESSION,
+      });
+
+      const pageWidthMm = pdf.internal.pageSize.getWidth();
+      const marginMm = PDF_MARGIN_MM;
+      const contentWidthMm = Math.max(1, pageWidthMm - marginMm * 2);
+
+      const pdfImageCompression = EXPORT_PDF_ENABLE_COMPRESSION
+        ? 'FAST'
+        : 'SLOW';
+
+      emitProgress(options?.onProgress, {
+        phase: 'compress',
+        percent: 5,
+        attempt,
+        totalAttempts,
+        message: `生成 PDF（压缩尝试 ${attempt}/${totalAttempts}）…`,
+      });
+
+      const fullPixelRatio = clampPixelRatioForSize({
+        desired: desiredPixelRatio,
+        widthCssPx: rootWidthCssPx,
+        heightCssPx: totalHeightCssPx,
+      });
+
+      // 默认“按页渲染”（每页高度更小），清晰度更好。
+      // 如果遇到极端浏览器兼容问题（如分片渲染为空白），会自动回退到“整页渲染 + 裁剪”。
+      const shouldPreferPerSlice = true;
+
+      // 默认路径：整页渲染一张大图，再按页裁剪。
+      // 备注：历史上“临时 host/clone”分片截图可能在部分浏览器出现全白，这里保留整页裁剪作为兜底。
+      let fullPngDataUrl: string | null = null;
+      let fullImg: HTMLImageElement | null = null;
+      let pxPerCssPx = 0;
+
+      const renderSliceFromFull = async (sliceArgs: {
+        offsetYCssPx: number;
+        sliceHeightCssPx: number;
+      }) => {
+        if (!fullPngDataUrl || !fullImg) {
+          throw new Error('full_image_not_ready');
+        }
+        const { offsetYCssPx, sliceHeightCssPx } = sliceArgs;
+
+        const sx = 0;
+        const sy = Math.max(0, Math.round(offsetYCssPx * pxPerCssPx));
+        const sw = fullImg.naturalWidth;
+        const sh = Math.max(1, Math.round(sliceHeightCssPx * pxPerCssPx));
+
+        const canvas = document.createElement('canvas');
+        canvas.width = sw;
+        canvas.height = Math.min(sh, Math.max(1, fullImg.naturalHeight - sy));
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return fullPngDataUrl;
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(
+          fullImg,
+          sx,
+          sy,
+          sw,
+          canvas.height,
+          0,
+          0,
+          sw,
+          canvas.height,
+        );
+
+        if (EXPORT_PDF_ENABLE_COMPRESSION) {
+          return canvas.toDataURL('image/jpeg', jpegQuality);
+        }
+        return canvas.toDataURL('image/png');
+      };
+
+      const total = Math.max(1, slices.length);
+      for (let pageIndex = 0; pageIndex < slices.length; pageIndex += 1) {
+        const s = slices[pageIndex]!;
+
+        // 5%~92% 用于渲染分页截图（占用时间最多）。
+        const percent = Math.min(92, Math.max(6, 5 + (pageIndex / total) * 87));
+        emitProgress(options?.onProgress, {
+          phase: 'render',
+          percent,
+          current: pageIndex + 1,
+          total,
+          message: `渲染页面 ${pageIndex + 1}/${total}…`,
+        });
+
+        let sliceDataUrl: string;
+        if (shouldPreferPerSlice) {
+          try {
+            const slicePixelRatio = clampPixelRatioForSize({
+              desired: desiredPixelRatio,
+              widthCssPx: rootWidthCssPx,
+              heightCssPx: s.sliceHeightCssPx,
+            });
+            const slicePng = await renderElementSliceToPngDataUrlByWrappingPage(
+              {
+                el,
+                widthCssPx: rootWidthCssPx,
+                offsetYCssPx: s.offsetYCssPx,
+                sliceHeightCssPx: s.sliceHeightCssPx,
+                pixelRatio: slicePixelRatio,
+              },
+            );
+            sliceDataUrl = EXPORT_PDF_ENABLE_COMPRESSION
+              ? await convertPngDataUrlToJpegDataUrl({
+                  pngDataUrl: slicePng,
+                  jpegQuality,
+                })
+              : slicePng;
+          } catch (err) {
+            console.warn(
+              '[export] per-slice render failed, fallback to full render/crop',
+              err,
+            );
+
+            // fallback：整页渲染 + 裁剪
+            if (!fullPngDataUrl || !fullImg) {
+              const rendered = await renderPngWithRetry({
+                el,
+                widthCssPx: rootWidthCssPx,
+                heightCssPx: totalHeightCssPx,
+                initialPixelRatio: fullPixelRatio,
+              });
+              fullPngDataUrl = rendered.dataUrl;
+              fullImg = await loadImage(fullPngDataUrl);
+              pxPerCssPx = fullImg.naturalWidth / Math.max(1, rootWidthCssPx);
+            }
+
+            sliceDataUrl = await renderSliceFromFull({
+              offsetYCssPx: s.offsetYCssPx,
+              sliceHeightCssPx: s.sliceHeightCssPx,
+            });
+          }
+        } else {
+          sliceDataUrl = await renderSliceFromFull({
+            offsetYCssPx: s.offsetYCssPx,
+            sliceHeightCssPx: s.sliceHeightCssPx,
+          });
+        }
+
+        // 按“DOM 真实尺寸”计算页面高度，避免由于 PNG 像素取整导致的页间缝隙/缺行。
+        const sliceHeightMm =
+          (s.sliceHeightCssPx / rootWidthCssPx) * contentWidthMm;
+
+        if (pageIndex > 0) pdf.addPage();
+        pdf.addImage(
+          sliceDataUrl,
+          PDF_IMAGE_FORMAT,
+          marginMm,
+          marginMm,
+          contentWidthMm,
+          sliceHeightMm,
+          undefined,
+          pdfImageCompression,
+        );
+
+        if (pageIndex === 0 && resumeNameOverlay) {
+          const mmPerCssPx = contentWidthMm / rootWidthCssPx;
+          const overlayPng = renderTextToPngDataUrl({
+            text: resumeNameOverlay.text,
+            fontFamily: resumeNameOverlay.fontFamily,
+            fontSizeCssPx: resumeNameOverlay.fontSizeCssPx,
+            fontWeight: resumeNameOverlay.fontWeight,
+            fontStyle: resumeNameOverlay.fontStyle,
+            lineHeightCssPx: resumeNameOverlay.lineHeightCssPx,
+            letterSpacingCssPx: resumeNameOverlay.letterSpacingCssPx,
+            color: resumeNameOverlay.color,
+            pixelRatio: desiredPixelRatio,
+            widthCssPx: resumeNameOverlay.widthCssPx,
+            heightCssPx: resumeNameOverlay.heightCssPx,
+          });
+          if (overlayPng) {
+            pdf.addImage(
+              overlayPng,
+              'PNG',
+              marginMm + resumeNameOverlay.leftCssPx * mmPerCssPx,
+              marginMm + resumeNameOverlay.topCssPx * mmPerCssPx,
+              Math.max(1, resumeNameOverlay.widthCssPx * mmPerCssPx),
+              Math.max(1, resumeNameOverlay.heightCssPx * mmPerCssPx),
+            );
+          }
+        }
+      }
+
+      emitProgress(options?.onProgress, {
+        phase: 'compress',
+        percent: 94,
+        attempt,
+        totalAttempts,
+        message: '生成文件…',
+      });
+
+      const arrayBuffer = pdf.output('arraybuffer') as ArrayBuffer;
+      const bytes = arrayBuffer.byteLength;
+      const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
+      return { pdf, bytes, blob };
+    };
+
+    // 经验：2x 在部分屏幕/字体下会偏糊；不压缩时提高到更高像素比以换取清晰度。
+    // 最终仍会被 clampPixelRatioForSize 限制，避免超过 canvas 上限。
+    const baseDesiredRatio = EXPORT_PDF_ENABLE_COMPRESSION
+      ? Math.min(2, getExportPixelRatio())
+      : Math.min(5, Math.max(4, getExportPixelRatio()));
+    const attempts: Array<{ desiredPixelRatio: number; jpegQuality: number }> =
+      EXPORT_PDF_ENABLE_COMPRESSION
+        ? [
+            // 先保证清晰度，再逐步降质量/分辨率，确保体积 <= 5MB。
+            {
+              desiredPixelRatio: baseDesiredRatio,
+              jpegQuality: PDF_JPEG_QUALITY,
+            },
+            { desiredPixelRatio: baseDesiredRatio, jpegQuality: 0.72 },
+            {
+              desiredPixelRatio: Math.min(baseDesiredRatio, 1.5),
+              jpegQuality: 0.68,
+            },
+            {
+              desiredPixelRatio: Math.min(baseDesiredRatio, 1.25),
+              jpegQuality: 0.62,
+            },
+            { desiredPixelRatio: 1, jpegQuality: 0.58 },
+          ]
+        : [
+            // 不压缩：单次生成（不做体积限制、也不降质重试）。
+            { desiredPixelRatio: baseDesiredRatio, jpegQuality: 1 },
+          ];
+
+    // 预先计算分页切片（这样进度条能确定总页数，也避免不同压缩尝试之间页数变化）。
+    const keepTogether = getKeepTogetherRangesCssPx(el);
+    const pageBreaks = getPageBreakTopsCssPx(el);
+    const slices: Array<{ offsetYCssPx: number; sliceHeightCssPx: number }> =
+      [];
+    {
+      // 用第 1 次尝试的比例来确定分页高度（只影响“每页容纳多少内容”的尺度）。
+      const pageWidthMm = 210;
+      const pageHeightMm = 297;
+      const marginMm = PDF_MARGIN_MM;
+      const contentWidthMm = Math.max(1, pageWidthMm - marginMm * 2);
+      const contentHeightMm = Math.max(1, pageHeightMm - marginMm * 2);
+      const idealPageHeightCssPx =
+        (contentHeightMm / contentWidthMm) * rootWidthCssPx;
+
+      let offsetY = 0;
+      // 尾部可能出现“剩余高度极小”的情况（subpixel/取整导致），会生成几乎空白的尾页。
+      // 这里直接裁掉尾部极小残余，避免导出空白页。
+      const MIN_REMAINING_TO_CREATE_PAGE_PX = 8;
+      while (offsetY < totalHeightCssPx - 0.5) {
+        const remaining = totalHeightCssPx - offsetY;
+        if (remaining < MIN_REMAINING_TO_CREATE_PAGE_PX) break;
+        const idealSliceHeightCssPx = Math.min(
+          idealPageHeightCssPx,
+          totalHeightCssPx - offsetY,
+        );
+        const sliceHeightCssPx = Math.min(
+          idealSliceHeightCssPx,
+          chooseSliceHeightPx({
+            offsetY,
+            idealPageHeightPx: idealPageHeightCssPx,
+            imgHeightPx: totalHeightCssPx,
+            keepTogether,
+            pageBreaks,
+          }),
+        );
+        if (sliceHeightCssPx <= 0.5) break;
+        slices.push({ offsetYCssPx: offsetY, sliceHeightCssPx });
+        offsetY += sliceHeightCssPx;
+      }
+    }
+
     let last: { bytes: number; blob: Blob } | null = null;
     for (let i = 0; i < attempts.length; i += 1) {
       const { desiredPixelRatio, jpegQuality } = attempts[i]!;
       const attempt = i + 1;
       const totalAttempts = attempts.length;
-      const { bytes, blob } = await buildPagedPdf({
+      const { bytes, blob } = await buildPdf({
         desiredPixelRatio,
         jpegQuality,
         attempt,
         totalAttempts,
+        slices,
       });
       last = { bytes, blob };
 
@@ -689,6 +1211,7 @@ export async function exportElementToPdf(
       );
     }
 
+    // 兜底：仍然下载最后一次（已经尽可能压缩），同时在控制台提示。
     if (last) {
       console.warn(
         `[export] pdf still > 5MB after retries: ` +
@@ -701,306 +1224,16 @@ export async function exportElementToPdf(
         message: '导出完成（已尽可能压缩）',
       });
     }
+
     return;
-  }
-
-  // 不要把整页内容一次性转成超长 PNG：会触发 canvas 上限导致“中间截断”。
-  // 这里按 A4 比例切页，然后每页单独截图。
-  const rootRect = el.getBoundingClientRect();
-  const rootWidthCssPx = Math.max(1, rootRect.width);
-  const totalHeightCssPx = Math.max(1, rootRect.height);
-
-  const buildPdf = async (args: {
-    desiredPixelRatio: number;
-    jpegQuality: number;
-    attempt: number;
-    totalAttempts: number;
-    slices: Array<{ offsetYCssPx: number; sliceHeightCssPx: number }>;
-  }) => {
-    const { desiredPixelRatio, jpegQuality, attempt, totalAttempts, slices } =
-      args;
-
-    const pdf = new jsPDF({
-      orientation: 'p',
-      unit: 'mm',
-      format: 'a4',
-      // 尽可能压缩内部对象流。
-      compress: EXPORT_PDF_ENABLE_COMPRESSION,
-    });
-
-    const pageWidthMm = pdf.internal.pageSize.getWidth();
-    const marginMm = PDF_MARGIN_MM;
-    const contentWidthMm = Math.max(1, pageWidthMm - marginMm * 2);
-
-    const pdfImageCompression = EXPORT_PDF_ENABLE_COMPRESSION ? 'FAST' : 'SLOW';
-
-    emitProgress(options?.onProgress, {
-      phase: 'compress',
-      percent: 5,
-      attempt,
-      totalAttempts,
-      message: `生成 PDF（压缩尝试 ${attempt}/${totalAttempts}）…`,
-    });
-
-    const fullPixelRatio = clampPixelRatioForSize({
-      desired: desiredPixelRatio,
-      widthCssPx: rootWidthCssPx,
-      heightCssPx: totalHeightCssPx,
-    });
-
-    // 默认“按页渲染”（每页高度更小），清晰度更好。
-    // 如果遇到极端浏览器兼容问题（如分片渲染为空白），会自动回退到“整页渲染 + 裁剪”。
-    const shouldPreferPerSlice = true;
-
-    // 默认路径：整页渲染一张大图，再按页裁剪。
-    // 备注：历史上“临时 host/clone”分片截图可能在部分浏览器出现全白，这里保留整页裁剪作为兜底。
-    let fullPngDataUrl: string | null = null;
-    let fullImg: HTMLImageElement | null = null;
-    let pxPerCssPx = 0;
-
-    const renderSliceFromFull = async (sliceArgs: {
-      offsetYCssPx: number;
-      sliceHeightCssPx: number;
-    }) => {
-      if (!fullPngDataUrl || !fullImg) {
-        throw new Error('full_image_not_ready');
+  } finally {
+    // 恢复页面样式
+    for (const restore of restoreFns) {
+      try {
+        restore();
+      } catch {
+        // ignore
       }
-      const { offsetYCssPx, sliceHeightCssPx } = sliceArgs;
-
-      const sx = 0;
-      const sy = Math.max(0, Math.round(offsetYCssPx * pxPerCssPx));
-      const sw = fullImg.naturalWidth;
-      const sh = Math.max(1, Math.round(sliceHeightCssPx * pxPerCssPx));
-
-      const canvas = document.createElement('canvas');
-      canvas.width = sw;
-      canvas.height = Math.min(sh, Math.max(1, fullImg.naturalHeight - sy));
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return fullPngDataUrl;
-
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(
-        fullImg,
-        sx,
-        sy,
-        sw,
-        canvas.height,
-        0,
-        0,
-        sw,
-        canvas.height,
-      );
-
-      if (EXPORT_PDF_ENABLE_COMPRESSION) {
-        return canvas.toDataURL('image/jpeg', jpegQuality);
-      }
-      return canvas.toDataURL('image/png');
-    };
-
-    const total = Math.max(1, slices.length);
-    for (let pageIndex = 0; pageIndex < slices.length; pageIndex += 1) {
-      const s = slices[pageIndex]!;
-
-      // 5%~92% 用于渲染分页截图（占用时间最多）。
-      const percent = Math.min(92, Math.max(6, 5 + (pageIndex / total) * 87));
-      emitProgress(options?.onProgress, {
-        phase: 'render',
-        percent,
-        current: pageIndex + 1,
-        total,
-        message: `渲染页面 ${pageIndex + 1}/${total}…`,
-      });
-
-      let sliceDataUrl: string;
-      if (shouldPreferPerSlice) {
-        try {
-          const slicePixelRatio = clampPixelRatioForSize({
-            desired: desiredPixelRatio,
-            widthCssPx: rootWidthCssPx,
-            heightCssPx: s.sliceHeightCssPx,
-          });
-          const slicePng = await renderElementSliceToPngDataUrlByWrappingPage({
-            el,
-            widthCssPx: rootWidthCssPx,
-            offsetYCssPx: s.offsetYCssPx,
-            sliceHeightCssPx: s.sliceHeightCssPx,
-            pixelRatio: slicePixelRatio,
-            fontEmbedCSS,
-          });
-          sliceDataUrl = EXPORT_PDF_ENABLE_COMPRESSION
-            ? await convertPngDataUrlToJpegDataUrl({
-                pngDataUrl: slicePng,
-                jpegQuality,
-              })
-            : slicePng;
-        } catch (err) {
-          console.warn(
-            '[export] per-slice render failed, fallback to full render/crop',
-            err,
-          );
-
-          // fallback：整页渲染 + 裁剪
-          if (!fullPngDataUrl || !fullImg) {
-            const rendered = await renderPngWithRetry({
-              el,
-              widthCssPx: rootWidthCssPx,
-              heightCssPx: totalHeightCssPx,
-              initialPixelRatio: fullPixelRatio,
-            });
-            fullPngDataUrl = rendered.dataUrl;
-            fullImg = await loadImage(fullPngDataUrl);
-            pxPerCssPx = fullImg.naturalWidth / Math.max(1, rootWidthCssPx);
-          }
-
-          sliceDataUrl = await renderSliceFromFull({
-            offsetYCssPx: s.offsetYCssPx,
-            sliceHeightCssPx: s.sliceHeightCssPx,
-          });
-        }
-      } else {
-        sliceDataUrl = await renderSliceFromFull({
-          offsetYCssPx: s.offsetYCssPx,
-          sliceHeightCssPx: s.sliceHeightCssPx,
-        });
-      }
-
-      // 按“DOM 真实尺寸”计算页面高度，避免由于 PNG 像素取整导致的页间缝隙/缺行。
-      const sliceHeightMm =
-        (s.sliceHeightCssPx / rootWidthCssPx) * contentWidthMm;
-
-      if (pageIndex > 0) pdf.addPage();
-      pdf.addImage(
-        sliceDataUrl,
-        PDF_IMAGE_FORMAT,
-        marginMm,
-        marginMm,
-        contentWidthMm,
-        sliceHeightMm,
-        undefined,
-        pdfImageCompression,
-      );
     }
-
-    emitProgress(options?.onProgress, {
-      phase: 'compress',
-      percent: 94,
-      attempt,
-      totalAttempts,
-      message: '生成文件…',
-    });
-
-    const arrayBuffer = pdf.output('arraybuffer') as ArrayBuffer;
-    const bytes = arrayBuffer.byteLength;
-    const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
-    return { pdf, bytes, blob };
-  };
-
-  // 经验：2x 在部分屏幕/字体下会偏糊；不压缩时提高到更高像素比以换取清晰度。
-  // 最终仍会被 clampPixelRatioForSize 限制，避免超过 canvas 上限。
-  const baseDesiredRatio = EXPORT_PDF_ENABLE_COMPRESSION
-    ? Math.min(2, getExportPixelRatio())
-    : Math.min(5, Math.max(4, getExportPixelRatio()));
-  const attempts: Array<{ desiredPixelRatio: number; jpegQuality: number }> =
-    EXPORT_PDF_ENABLE_COMPRESSION
-      ? [
-          // 先保证清晰度，再逐步降质量/分辨率，确保体积 <= 5MB。
-          {
-            desiredPixelRatio: baseDesiredRatio,
-            jpegQuality: PDF_JPEG_QUALITY,
-          },
-          { desiredPixelRatio: baseDesiredRatio, jpegQuality: 0.72 },
-          {
-            desiredPixelRatio: Math.min(baseDesiredRatio, 1.5),
-            jpegQuality: 0.68,
-          },
-          {
-            desiredPixelRatio: Math.min(baseDesiredRatio, 1.25),
-            jpegQuality: 0.62,
-          },
-          { desiredPixelRatio: 1, jpegQuality: 0.58 },
-        ]
-      : [
-          // 不压缩：单次生成（不做体积限制、也不降质重试）。
-          { desiredPixelRatio: baseDesiredRatio, jpegQuality: 1 },
-        ];
-
-  // 预先计算分页切片（这样进度条能确定总页数，也避免不同压缩尝试之间页数变化）。
-  const keepTogether = getKeepTogetherRangesCssPx(el);
-  const slices: Array<{ offsetYCssPx: number; sliceHeightCssPx: number }> = [];
-  {
-    // 用第 1 次尝试的比例来确定分页高度（只影响“每页容纳多少内容”的尺度）。
-    const pageWidthMm = 210;
-    const pageHeightMm = 297;
-    const marginMm = PDF_MARGIN_MM;
-    const contentWidthMm = Math.max(1, pageWidthMm - marginMm * 2);
-    const contentHeightMm = Math.max(1, pageHeightMm - marginMm * 2);
-    const idealPageHeightCssPx =
-      (contentHeightMm / contentWidthMm) * rootWidthCssPx;
-
-    let offsetY = 0;
-    while (offsetY < totalHeightCssPx - 0.5) {
-      const idealSliceHeightCssPx = Math.min(
-        idealPageHeightCssPx,
-        totalHeightCssPx - offsetY,
-      );
-      const sliceHeightCssPx = Math.min(
-        idealSliceHeightCssPx,
-        chooseSliceHeightPx({
-          offsetY,
-          idealPageHeightPx: idealPageHeightCssPx,
-          imgHeightPx: totalHeightCssPx,
-          keepTogether,
-        }),
-      );
-      if (sliceHeightCssPx <= 0.5) break;
-      slices.push({ offsetYCssPx: offsetY, sliceHeightCssPx });
-      offsetY += sliceHeightCssPx;
-    }
-  }
-
-  let last: { bytes: number; blob: Blob } | null = null;
-  for (let i = 0; i < attempts.length; i += 1) {
-    const { desiredPixelRatio, jpegQuality } = attempts[i]!;
-    const attempt = i + 1;
-    const totalAttempts = attempts.length;
-    const { bytes, blob } = await buildPdf({
-      desiredPixelRatio,
-      jpegQuality,
-      attempt,
-      totalAttempts,
-      slices,
-    });
-    last = { bytes, blob };
-
-    if (!EXPORT_PDF_ENABLE_COMPRESSION || bytes <= PDF_MAX_BYTES) {
-      emitProgress(options?.onProgress, {
-        phase: 'done',
-        percent: 100,
-        message: '导出完成',
-      });
-      downloadBlob(blob, `chentao-${nowDateString()}.pdf`);
-      return;
-    }
-
-    console.warn(
-      `[export] pdf size ${(bytes / 1024 / 1024).toFixed(2)}MB > 5MB, ` +
-        `retry with desiredPixelRatio=${desiredPixelRatio.toFixed(2)}, ` +
-        `jpegQuality=${jpegQuality.toFixed(2)}`,
-    );
-  }
-
-  // 兜底：仍然下载最后一次（已经尽可能压缩），同时在控制台提示。
-  if (last) {
-    console.warn(
-      `[export] pdf still > 5MB after retries: ` +
-        `${(last.bytes / 1024 / 1024).toFixed(2)}MB`,
-    );
-    downloadBlob(last.blob, `chentao-${nowDateString()}.pdf`);
-    emitProgress(options?.onProgress, {
-      phase: 'done',
-      percent: 100,
-      message: '导出完成（已尽可能压缩）',
-    });
   }
 }

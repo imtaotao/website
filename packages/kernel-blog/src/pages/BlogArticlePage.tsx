@@ -1,16 +1,8 @@
 import { useEffect, useState, type ComponentType } from 'react';
 import { Link, useParams } from 'react-router';
-import {
-  ArrowLeftIcon,
-  CalendarIcon,
-  FileTextIcon,
-  RocketIcon,
-} from '@radix-ui/react-icons';
+import { ArrowLeftIcon, RocketIcon } from '@radix-ui/react-icons';
 
-import type {
-  BlogArticleFrontmatter,
-  BlogTagSummary,
-} from '#blog/articleTypes';
+import type { BlogArticleFrontmatter } from '#blog/articleTypes';
 import {
   BlogLightbox,
   createLightboxImage,
@@ -21,10 +13,7 @@ import {
   BlogThemeToggle,
   useBlogTheme,
 } from '#blog/components/BlogThemeToggle';
-import {
-  createBlogTagNavigation,
-  formatBlogDate,
-} from '#blog/pages/BlogHomePage';
+import { formatBlogDate } from '#blog/pages/BlogHomePage';
 
 import '#blog/pages/BlogPage.css';
 
@@ -41,7 +30,6 @@ export type BlogArticlePageProps = {
     slug: string,
     options?: { includeHidden?: boolean },
   ) => BlogArticleView | undefined;
-  getTagByKey: (tag: string) => BlogTagSummary | undefined;
   resolveAssetUrl: (
     articleSourcePath: string,
     assetPath: string,
@@ -54,8 +42,6 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   const article = props.getArticleBySlug(slug, {
     includeHidden: true,
   });
-
-  const [wordCount, setWordCount] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(
     null,
   );
@@ -81,18 +67,6 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
 
   useEffect(() => {
     if (!article) return;
-
-    const root = document.querySelector('.blog-article-body');
-    if (!root) return;
-
-    const text = (root.textContent ?? '').trim();
-    const latinWords = text
-      .replace(/[\u4e00-\u9fff]/g, ' ')
-      .split(/\s+/)
-      .filter(Boolean).length;
-    const cjkChars = (text.match(/[\u4e00-\u9fff]/g) ?? []).length;
-
-    setWordCount(latinWords + cjkChars);
 
     const hash = decodeURIComponent(window.location.hash.replace(/^#/, ''));
     if (!hash) return;
@@ -157,28 +131,8 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
 
               <div className="blog-article-meta-row" aria-label="文章信息">
                 <span className="blog-meta-item">
-                  <CalendarIcon className="blog-meta-icon blog-meta-icon--blue" />
-                  <span>{formatBlogDate(article.publishedAt)}</span>
+                  {formatBlogDate(article.publishedAt)}
                 </span>
-                {wordCount ? (
-                  <span className="blog-meta-item">
-                    <FileTextIcon className="blog-meta-icon blog-meta-icon--amber" />
-                    <span>{wordCount} 字</span>
-                  </span>
-                ) : null}
-                {article.tags.map((tag) => {
-                  const tagMeta = props.getTagByKey(tag);
-
-                  return (
-                    <Link
-                      key={tag}
-                      to={createBlogTagNavigation(tag)}
-                      className="blog-tag-chip"
-                    >
-                      {tagMeta?.label ?? tag}
-                    </Link>
-                  );
-                })}
               </div>
             </header>
 

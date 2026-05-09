@@ -202,7 +202,7 @@ export function ResumeOpenSourceProjects(props: {
             <p
               key={idx}
               className={
-                'text-[13px] font-medium leading-6 text-zinc-700' +
+                'text-[14px] font-medium leading-6 text-zinc-700 md:text-[15px]' +
                 (idx === 0 ? '' : ' mt-2')
               }
             >
@@ -213,7 +213,7 @@ export function ResumeOpenSourceProjects(props: {
       ) : null}
 
       <div
-        data-export-keep-together="strict"
+        data-export-keep-together="true"
         className="overflow-hidden rounded-[3px] border border-zinc-200/70 bg-zinc-50/60"
       >
         <ul className="divide-y divide-zinc-200/70 px-4 py-3">

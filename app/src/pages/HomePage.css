@@ -72,17 +72,14 @@
 
 /* 字体：标题尝试使用方正兰亭（超细），正文保持系统字体可读性 */
 .home-title-font {
-  font-family: "FZLanTing", ui-serif, "New York", "Times New Roman", Georgia,
-    "Songti SC", "STSong", serif;
+  font-family: var(--site-font-title);
   font-weight: 200;
   letter-spacing: -0.02em;
   color: var(--home-title);
 }
 
 .home-body-font {
-  font-family: "FZLanTingWork", "FZLanTing", ui-sans-serif, system-ui,
-    -apple-system, "SF Pro Text", "Segoe UI", Roboto, "PingFang SC",
-    "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+  font-family: var(--site-font-body);
   font-weight: 400;
 }
 

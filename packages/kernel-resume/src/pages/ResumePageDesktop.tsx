@@ -85,58 +85,9 @@ export function ResumePageDesktop(props: {
   const canExportPdf = pageAssetsReady && !remoteDataLoading && !exporting;
 
   return (
-    <ResumeShell
-      ref={exportRef}
-      theme={props.theme}
-      topBar={
-        <ResumeExportBar
-          onExportPdf={async () => {
-            if (!exportRef.current) return;
-            if (!canExportPdf) {
-              window.alert('页面尚未加载完成，暂不可导出 PDF');
-              return;
-            }
-
-            exportTokenRef.current += 1;
-            const token = exportTokenRef.current;
-
-            setExporting(true);
-            setExportProgress(0);
-            setExportProgressText('准备导出…');
-            try {
-              await exportElementToPdf(exportRef.current, {
-                onProgress: (p) => {
-                  if (exportTokenRef.current !== token) return;
-                  setExportProgress(p.percent);
-                  setExportProgressText(p.message);
-                },
-              });
-              setTimeout(() => {
-                if (exportTokenRef.current !== token) return;
-                setExporting(false);
-                setExportProgressText('');
-              }, 700);
-            } catch (err) {
-              console.error('[export] export pdf failed', err);
-              window.alert('PDF 导出失败，请稍后重试。');
-              if (exportTokenRef.current === token) {
-                setExporting(false);
-                setExportProgressText('');
-              }
-            }
-          }}
-          exporting={exporting}
-          progress={exportProgress}
-          progressText={exportProgressText}
-          disabled={!canExportPdf}
-        />
-      }
-    >
+    <>
       {exporting ? (
-        <div
-          data-export-hide="true"
-          className="fixed inset-0 z-9999 flex items-center justify-center bg-white/60 backdrop-blur-sm"
-        >
+        <div className="fixed inset-0 z-9999 flex items-center justify-center bg-white/60 backdrop-blur-sm">
           <div className="w-70 rounded-xl border border-zinc-200 bg-white px-4 py-3 shadow-lg">
             <div className="text-sm font-semibold text-zinc-900">
               正在导出 PDF
@@ -158,30 +109,82 @@ export function ResumePageDesktop(props: {
           </div>
         </div>
       ) : null}
-      <ResumeHeader basics={model.basics} assets={props.assets} />
 
-      <ResumeSection title="简介" decorated={false}>
-        <ResumeSummary summary={model.summary} />
-      </ResumeSection>
+      <ResumeShell
+        ref={exportRef}
+        theme={props.theme}
+        topBar={
+          <ResumeExportBar
+            onExportPdf={async () => {
+              if (!exportRef.current) return;
+              if (!canExportPdf) {
+                window.alert('页面尚未加载完成，暂不可导出 PDF');
+                return;
+              }
 
-      <ResumeSection title="技能">
-        <ResumeSkills groups={model.skills} />
-      </ResumeSection>
+              exportTokenRef.current += 1;
+              const token = exportTokenRef.current;
 
-      <ResumeSection title="经历">
-        <ResumeExperienceList items={model.experiences} assets={props.assets} />
-      </ResumeSection>
+              setExporting(true);
+              setExportProgress(0);
+              setExportProgressText('准备导出…');
+              try {
+                await exportElementToPdf(exportRef.current, {
+                  onProgress: (p) => {
+                    if (exportTokenRef.current !== token) return;
+                    setExportProgress(p.percent);
+                    setExportProgressText(p.message);
+                  },
+                });
+                setTimeout(() => {
+                  if (exportTokenRef.current !== token) return;
+                  setExporting(false);
+                  setExportProgressText('');
+                }, 700);
+              } catch (err) {
+                console.error('[export] export pdf failed', err);
+                window.alert('PDF 导出失败，请稍后重试。');
+                if (exportTokenRef.current === token) {
+                  setExporting(false);
+                  setExportProgressText('');
+                }
+              }
+            }}
+            exporting={exporting}
+            progress={exportProgress}
+            progressText={exportProgressText}
+            disabled={!canExportPdf}
+          />
+        }
+      >
+        <ResumeHeader basics={model.basics} assets={props.assets} />
 
-      {model.openSourceProjects.length ||
-      model.openSourceProjectsIntro.length ? (
-        <ResumeSection title="开源项目">
-          <ResumeOpenSourceProjects
-            intro={model.openSourceProjectsIntro}
-            items={model.openSourceProjects}
-            onRemoteDataLoadingChange={setRemoteDataLoading}
+        <ResumeSection title="简介" decorated={false}>
+          <ResumeSummary summary={model.summary} />
+        </ResumeSection>
+
+        <ResumeSection title="技能">
+          <ResumeSkills groups={model.skills} />
+        </ResumeSection>
+
+        <ResumeSection title="经历">
+          <ResumeExperienceList
+            items={model.experiences}
+            assets={props.assets}
           />
         </ResumeSection>
-      ) : null}
-    </ResumeShell>
+
+        {model.openSourceProjects.length ||
+        model.openSourceProjectsIntro.length ? (
+          <ResumeSection title="开源项目" pageBreakBefore>
+            <ResumeOpenSourceProjects
+              intro={model.openSourceProjectsIntro}
+              items={model.openSourceProjects}
+              onRemoteDataLoadingChange={setRemoteDataLoading}
+            />
+          </ResumeSection>
+        ) : null}
+      </ResumeShell>
+    </>
   );
 }
