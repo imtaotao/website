@@ -21,6 +21,7 @@ import {
   createMediaLink,
 } from '#blog/components/MarkdownMedia';
 import { isMediaOnlyParagraph } from '#blog/components/MarkdownNodes';
+import { BlogMdxPoem } from '#blog/components/MarkdownPoem';
 import type {
   BlogMdxProps,
   LightboxImage,
@@ -184,6 +185,7 @@ export function BlogMdx(props: BlogMdxProps) {
     ImageGallery,
     MediaEmbed,
     MediaLink,
+    Poem: BlogMdxPoem,
     hr: () => <hr className="blog-prose-hr" />,
     pre: BlogMdxPre,
     code: (p: ComponentProps<'code'>) => {

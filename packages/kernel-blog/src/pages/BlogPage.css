@@ -2288,6 +2288,113 @@
   background: var(--blog-line);
 }
 
+.blog-poem {
+  margin: 1.8rem 0;
+  padding: 1.4rem 1.5rem;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.035);
+}
+
+.blog-shell[data-blog-theme='dark'] .blog-poem {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.blog-poem-header {
+  margin-bottom: 1.1rem;
+  text-align: center;
+}
+
+.blog-poem-byline {
+  margin: 0.42rem 0 0;
+  color: var(--blog-text-faint);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.blog-poem-title {
+  margin: 0;
+  color: var(--blog-text-strong);
+  font-family: var(--blog-title-font);
+  font-size: 1.28rem;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.blog-poem-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.blog-poem-preface {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  align-items: center;
+  max-width: 28rem;
+  margin: 0 auto 1.15rem;
+  padding-bottom: 0.95rem;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.blog-poem-preface-line {
+  margin: 0;
+  color: var(--blog-text-soft);
+  font-size: 0.8rem;
+  line-height: 1.72;
+  text-align: center;
+}
+
+.blog-shell[data-blog-theme='dark'] .blog-poem-preface {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.blog-poem-stanza {
+  display: flex;
+  flex-direction: column;
+  gap: 0.36rem;
+  align-items: center;
+}
+
+.blog-poem-line {
+  margin: 0;
+  color: var(--blog-text);
+  font-family: var(--blog-title-font);
+  font-size: 0.94rem;
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  .blog-poem {
+    margin: 1.5rem 0;
+    padding: 1.15rem 1.05rem;
+    border-radius: 12px;
+  }
+
+  .blog-poem-title {
+    font-size: 1.16rem;
+  }
+
+  .blog-poem-byline {
+    font-size: 0.74rem;
+  }
+
+  .blog-poem-preface-line {
+    font-size: 0.76rem;
+    line-height: 1.68;
+  }
+
+  .blog-poem-line {
+    font-size: 0.92rem;
+    line-height: 1.84;
+  }
+}
+
 .blog-article-actions {
   position: fixed;
   right: 24px;
