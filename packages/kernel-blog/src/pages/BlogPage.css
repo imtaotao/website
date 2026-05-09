@@ -44,6 +44,14 @@
   --blog-line-strong: rgba(15, 23, 42, 0.18);
   --blog-accent: #2563eb;
   --blog-accent-soft: rgba(37, 99, 235, 0.12);
+  --blog-color-gray: #6b7280;
+  --blog-color-blue: #3d67b9;
+  --blog-color-green: #2f8767;
+  --blog-color-cyan: #2d8798;
+  --blog-color-orange: #c36a2f;
+  --blog-color-red: #b64b55;
+  --blog-color-purple: #7850bc;
+  --blog-color-pink: #ba4d7c;
   --blog-highlight-bg: rgba(250, 204, 21, 0.32);
   --blog-highlight-text: #713f12;
   --blog-accent-2: #059669;
@@ -135,6 +143,14 @@
   --blog-line-strong: rgba(255, 255, 255, 0.18);
   --blog-accent: #7dd3fc;
   --blog-accent-soft: rgba(125, 211, 252, 0.16);
+  --blog-color-gray: #9ca3af;
+  --blog-color-blue: #87bcdd;
+  --blog-color-green: #8bcea3;
+  --blog-color-cyan: #7bccd8;
+  --blog-color-orange: #e0ad79;
+  --blog-color-red: #de9ea1;
+  --blog-color-purple: #b7a9e0;
+  --blog-color-pink: #dda1bf;
   --blog-highlight-bg: rgba(250, 204, 21, 0.2);
   --blog-highlight-text: #fde68a;
   --blog-accent-2: #86efac;
@@ -1647,6 +1663,10 @@
 
 .blog-shell[data-blog-theme='dark'] .blog-prose-inline-code {
   background: #151515;
+}
+
+.blog-prose-color-text .blog-prose-inline-code {
+  color: inherit;
 }
 
 .blog-prose-pre {

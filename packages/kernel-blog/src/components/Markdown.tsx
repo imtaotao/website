@@ -31,8 +31,21 @@ export type {
 } from '#blog/components/MarkdownTypes';
 
 export function BlogMdx(props: BlogMdxProps) {
+  const presetColors = [
+    'gray',
+    'blue',
+    'green',
+    'cyan',
+    'orange',
+    'red',
+    'purple',
+    'pink',
+  ] as const;
+  type PresetColor = (typeof presetColors)[number];
   type ColorTextProps = {
     color?: string;
+    preset?: PresetColor;
+    c?: PresetColor;
     className?: string;
     children?: ReactNode;
   };
@@ -67,6 +80,32 @@ export function BlogMdx(props: BlogMdxProps) {
   };
 
   const closeLightbox = () => setLightboxImage(null);
+  const isPresetColor = (value?: string): value is PresetColor =>
+    presetColors.includes(value as PresetColor);
+  const renderColorText = ({
+    color,
+    preset,
+    c,
+    className,
+    children,
+  }: ColorTextProps) => {
+    const resolvedPreset =
+      c ?? preset ?? (isPresetColor(color) ? color : undefined);
+    const resolvedColor = resolvedPreset
+      ? `var(--blog-color-${resolvedPreset})`
+      : color;
+
+    return (
+      <span
+        className={['blog-prose-color-text', className]
+          .filter(Boolean)
+          .join(' ')}
+        style={resolvedColor ? { color: resolvedColor } : undefined}
+      >
+        {children}
+      </span>
+    );
+  };
 
   const mediaContext = {
     articleSourcePath: props.articleSourcePath,
@@ -130,16 +169,8 @@ export function BlogMdx(props: BlogMdxProps) {
         </mark>
       );
     },
-    ColorText: ({ color, className, children }: ColorTextProps) => (
-      <span
-        className={['blog-prose-color-text', className]
-          .filter(Boolean)
-          .join(' ')}
-        style={color ? { color } : undefined}
-      >
-        {children}
-      </span>
-    ),
+    ColorText: renderColorText,
+    Color: renderColorText,
     a: (p: ComponentProps<'a'>) => (
       <a href={p.href} className="blog-prose-link">
         {p.children}

@@ -18,7 +18,20 @@ This is an English paragraph for typography testing. The quick brown fox jumps o
 
 ### 1.1 颜色示例
 
-这是一段 <ColorText color="#111827">可指定颜色值的文字</ColorText>，也可以换成 <ColorText color="#6C7280">另一种颜色</ColorText> 来看对比。
+推荐用更短的写法 <Color c="green">`这是一段绿色文字`</Color>，正文里直接用预设颜色名就行。
+
+目前内置了 8 个预设颜色：
+
+- <Color c="gray">gray</Color>
+- <Color c="blue">blue</Color>
+- <Color c="green">green</Color>
+- <Color c="cyan">cyan</Color>
+- <Color c="orange">orange</Color>
+- <Color c="red">red</Color>
+- <Color c="purple">purple</Color>
+- <Color c="pink">pink</Color>
+
+如果偶尔需要临时颜色值，依然可以继续写 <Color color="#8b38aa">自定义颜色</Color>，但更推荐优先用预设色。
 
 > 如果内容系统写起来不顺手，页面再漂亮也很难持续更新。
 
@@ -106,24 +119,7 @@ $$
   ]}
 />
 
-## 8. 九宫格示例
-
-<ImageGallery
-  columns={3}
-  images={[
-    { src: './cover.jpg', alt: '九宫格 1' },
-    { src: './cover.jpg', alt: '九宫格 2' },
-    { src: './cover.jpg', alt: '九宫格 3' },
-    { src: './cover.jpg', alt: '九宫格 4' },
-    { src: './cover.jpg', alt: '九宫格 5' },
-    { src: './cover.jpg', alt: '九宫格 6' },
-    { src: './cover.jpg', alt: '九宫格 7' },
-    { src: './cover.jpg', alt: '九宫格 8' },
-    { src: './cover.jpg', alt: '九宫格 9' },
-  ]}
-/>
-
-## 9. 后续约定
+## 8. 后续约定
 
 - 单图优先用 Markdown 原生语法
 - 多图排版用 `ImageGallery`
