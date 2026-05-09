@@ -162,10 +162,16 @@ export function BlogHomePage(props: BlogHomePageProps) {
       );
     }
 
+    const articleUrl = activeTag
+      ? `/blog/${article.slug}?${new URLSearchParams({
+          [BLOG_TAG_QUERY_KEY]: activeTag,
+        }).toString()}`
+      : `/blog/${article.slug}`;
+
     return (
       <Link
         key={`${listRenderKey}:${article.slug}`}
-        to={`/blog/${article.slug}`}
+        to={articleUrl}
         className="blog-index-item blog-enter"
         style={enterStyle}
       >

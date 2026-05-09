@@ -1,0 +1,629 @@
+---
+title: 一次关于 AI 的讨论记录
+slug: think-260105
+tags:
+  - ai
+publishedAt: 2026-01-05
+---
+
+以下内容由 AI 基于对话记录整理生成。
+
+<SummaryCards
+items={[
+{
+title: '总结一',
+content: [
+'目前主流大模型还不具备真正意义上的持续学习能力，社区和学界都在探索，但还没有成熟方案。',
+'强化学习在大模型上的应用也存在效率和速度问题，尤其在大量上下文场景里更容易遇到瓶颈。',
+'现阶段很多 AI 应用还是依赖知识库、上下文切片、子代理、提示词工程这些手段去模拟持续学习的效果。',
+'Transformer 暴露出的长文本和推理效率瓶颈越来越明显，未来如果想让 AI 更像人，可能还需要新的计算、学习和存储结构。',
+],
+},
+{
+title: '总结二',
+content: [
+'这场讨论里很多判断是成立的，但也有一些地方可以补充得更乐观一点。',
+'持续学习虽然很难，但围绕增量学习、记忆机制、LoRA、Adapter 等方向其实一直有进展。',
+'知识库和 context 切片并不只是权宜之计，在很多真实业务里依然非常有效，而且完全可以和长期记忆方案结合。',
+'MoE、Multi-Agent 以及一些潜在的新架构，未来仍然可能成为突破口，所以工程实践和理论创新未必是对立的。',
+],
+},
+]}
+/>
+
+## 对话内容
+
+<ChatThread
+title="和朋友的一段聊天记录"
+collapsible
+messages={[
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:41',
+content: '话说现在的模型有不有可能出现持续学习，强化学习的思路',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:41',
+content: '强化学习一直有啊',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:41',
+content: '而不是预设上下文，和预训练的方式',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:41',
+content: '这样有长久的记忆和 context',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:41',
+content: '持续学习还没有，很多人想做',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:41',
+content: '也不需要知识库了',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:42',
+content: '持续学习现在没有很好的思路',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:42',
+content: '但很多人在做',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:42',
+content: '强化学习一直有的',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:42',
+content: '已经做的不错了',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:42',
+content: '现在搞什么知识库，subAgent，都是为了把 context 切片',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:42',
+content: '怎么说',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:42',
+content: '还是要持续学习',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:43',
+content: '这个现在社区有什么思路吗',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:43',
+content: '很多啊',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:44',
+content: '有啥比较值得看的吗',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:44',
+content: 'deepseek 就可以看',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:44',
+content: 'deepseek r1 就可以看',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:46',
+content: '俺不是很懂这个，强化学习和持续学习，虽然是方向，但其实都不咋地',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:46',
+content: '太慢了',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:46',
+content: '现在支持强化学习的新模型，都比之前的版本慢一个数量级',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:46',
+content: '俺不喜欢这个方向',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:47',
+content: '因为强化学习，需要记忆很多上下文，把一个短文本的问题，强行变成了长文本问题，而长文本就触碰到了算法的瓶颈',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:47',
+content: '俺其实不喜欢这个方向',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:47',
+content: '俺喜欢轻量方案',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:48',
+content: '在轻量的小模型，增加推理或者 moe',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:48',
+content: '就足够了',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:53',
+content: '对于大模型厂商，他们可以迭代到强化学习和持续学习',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:53',
+content: '是的',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:53',
+content: '这是大模型的进化路线',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:53',
+content: '能不能有一种思路，可以将记忆分为短期和长期记忆',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:54',
+content: '能分的',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:54',
+content: '但都不咋地',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:54',
+content: '这样需要存储的上下文会短很多',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:54',
+content: '我个人觉得目前所有的方案效果都不好',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:54',
+content: '长期记忆只记关键，有决定性的信息。',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:54',
+content: '但是如何是关键和决定性这个很难定义，感觉',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:55',
+content: '俺也不是很懂这个',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:55',
+content: '我们组的人现在搞 ai 应用，skills + subAgent 做事情，然后通过嵌入代码工程，浏览器插件获取更多的上下午喂给 AI',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:56',
+content: '可以啊',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:56',
+content: '但是这样我就是感觉通过工程手动尽可能的做到持续学习，强化学习的思路',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:56',
+content: '感觉坑很多',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:57',
+content: '不喜欢这个思路',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 20:57',
+content: '真的',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:57',
+content: '然后提示词分为很多种类，从通用 -> 定制',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:58',
+content: '每个仓库有定制的提示词',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:58',
+content: '我觉得也是上面那种持续学习的一种变种。。。',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 20:58',
+content: '因为模型不支持这种能力，只能变通了',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:00',
+content: '预设上下文 + 预训练的方式真的很傻逼，我感觉',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:00',
+content: '这咋能得到很强的 AI 模型',
+},
+{
+align: 'left',
+avatar: 'idea',
+name: 'wssadgf 21:01',
+content: '我最近想做个 AiLauncher',
+},
+{
+align: 'left',
+avatar: 'idea',
+name: 'wssadgf 21:01',
+content: '还一点思路都没有[衰]',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:01',
+content: '干嘛的',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:01',
+content: '控制电脑？',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:02',
+content: '现在 99%的 agent 不都是这样',
+},
+{
+align: 'left',
+avatar: 'idea',
+name: 'wssadgf 21:02',
+content: '就是把 Ai 放到手机桌面',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:04',
+content: '所以感觉效果都不行呀，世界是一直变化的',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:04',
+content: '你只能预设的话，总有不对的时候',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:04',
+content: '俺也不懂这个',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:04',
+content: '俺现在做的不是文本方向',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:04',
+content: '是视觉多模态方向',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:04',
+content: '上下文工程各种变通，把 agent 切小切细，把 context 也各种切小，然后满足动态的变化，就很僵硬',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:05',
+content: 'moe 和 mutible agent 就是这样的',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:05',
+content: '目前就是发展到这个阶段',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:06',
+content: '比如我们找一个垂域的场景，然后通过工程手段做这些事情，就没法对外推广，局限在很小场景，而且这个场景不能变化太多，否则就失效了',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:06',
+content: 'agent 现在都是工程级别的',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:07',
+content: '得倒逼现实的人和规则，来配合这种 AI 工程架构',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:07',
+content: '也很蛋疼',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:07',
+content: 'MoE 这种也是这种思路，他们共享上下文也不是很方便吧',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:08',
+content: 'moe 是针对模型的，multi agent 则是针对 agent',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:08',
+content: '好吧',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:08',
+content: '其实都挺僵硬',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:09',
+content: '但是瑕不掩瑜，我觉得大模型进化到 moe 这个级别就足够了',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:09',
+content: '也就是 2024 年差不多',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:09',
+content: '之后的进化俺就不喜欢了',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:09',
+content: 'transform 架构只解决了一个小部分场景，就是如何稳定的输出一段结果，这离 agi 差好远啊',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:09',
+content: '因为太慢了',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:10',
+content: '俺不是很懂文本方向::>\_<::之后有时间搞吧',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:11',
+content: '感觉还是需要一套计算更快的架构 + 持续化学习的机制 + 更小/更多维度的存储结构，可能才能像人一样',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:13',
+content: '是的，但不太可能会有',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:13',
+content: '为什么',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:14',
+content: '因为 transformer 不会有替代',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:14',
+content: '我觉得是不是会出现一套和 transformer 平级的架构',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:14',
+content: 'transformer 本身瓶颈就比较明显',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:14',
+content: '不可能',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:14',
+content: 'transformer 只是他的子集',
+},
+{
+align: 'left',
+avatar: '👦',
+name: '基佬 21:14',
+content: '你这种想法就是痴人说梦',
+},
+{
+align: 'left',
+avatar: 'moon',
+name: '基佬 21:14',
+content: '为什么呢',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:14',
+content: '[捂脸]',
+},
+{
+align: 'left',
+avatar: 'moon',
+name: '基佬 21:15',
+content: '想要复杂化 transformer，增强 transformer，就是死路一条',
+},
+{
+align: 'left',
+avatar: 'moon',
+name: '基佬 21:15',
+content: '因为你会发现，越牛逼的东西，一定是足够简单的',
+},
+{
+align: 'left',
+avatar: 'moon',
+name: '基佬 21:15',
+content: '这个世界上很难出现一个和 transformer 一样简单，而又强大的东西了',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:16',
+content: '不是基于 transformer 继续搞',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:16',
+content: '而是另外一套',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:17',
+content: '我觉得肯定会有的，毕竟自然能演化出人脑这种东西，那肯定是有路子的走过去的',
+},
+{
+align: 'right',
+avatar: 'user',
+name: '和声伴奏 21:18',
+content: '不然现在的 AI，真的太鸡肋了',
+},
+{
+align: 'left',
+avatar: 'moon',
+name: '基佬 21:18',
+content: '那也不是子集啊',
+},
+{
+align: 'left',
+avatar: 'moon',
+name: '基佬 21:19',
+content: '唉现在看他们搞的哪些概念，都不现实',
+},
+]}
+/>

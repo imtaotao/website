@@ -1,12 +1,13 @@
 import {
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type CSSProperties,
   type ComponentType,
 } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, useParams, useSearchParams } from 'react-router';
 import { ListBulletIcon, ArrowUpIcon } from '@radix-ui/react-icons';
 
 import type { BlogArticleFrontmatter } from '#blog/articleTypes';
@@ -17,7 +18,11 @@ import {
 import { BlogMdx } from '#blog/components/Markdown';
 import type { LightboxImage } from '#blog/components/MarkdownTypes';
 import { useBlogTheme } from '#blog/components/BlogThemeToggle';
-import { formatBlogDate } from '#blog/pages/BlogHomePage';
+import {
+  BLOG_TAG_QUERY_KEY,
+  createBlogTagNavigation,
+  formatBlogDate,
+} from '#blog/pages/BlogHomePage';
 
 import '#blog/pages/BlogPage.css';
 
@@ -58,6 +63,7 @@ const COPY = {
 export function BlogArticlePage(props: BlogArticlePageProps) {
   const blogTheme = useBlogTheme();
   const { slug = '' } = useParams();
+  const [searchParams] = useSearchParams();
   const article = props.getArticleBySlug(slug, {
     includeHidden: true,
   });
@@ -70,6 +76,11 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   const [headings, setHeadings] = useState<Array<BlogArticleHeading>>([]);
   const [tocTop, setTocTop] = useState<number | null>(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const activeTag = useMemo(() => {
+    const value = searchParams.get(BLOG_TAG_QUERY_KEY)?.trim() ?? '';
+    if (!value || !article) return '';
+    return article.tags.includes(value) ? value : '';
+  }, [article, searchParams]);
 
   useEffect(() => {
     if (!lightboxImage) return;
@@ -241,7 +252,10 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
               }
             >
               <h1 ref={titleRef} className="blog-article-title">
-                <Link to="/blog" className="blog-article-title-link">
+                <Link
+                  to={createBlogTagNavigation(activeTag)}
+                  className="blog-article-title-link"
+                >
                   {article.title}
                 </Link>
               </h1>

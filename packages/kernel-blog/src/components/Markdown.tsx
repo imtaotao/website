@@ -21,7 +21,10 @@ import {
   createMediaLink,
 } from '#blog/components/MarkdownMedia';
 import { isMediaOnlyParagraph } from '#blog/components/MarkdownNodes';
+import { BlogMdxChatThread } from '#blog/components/MarkdownChat';
+import { BlogMdxDetailsBlock } from '#blog/components/MarkdownDetailsBlock';
 import { BlogMdxPoem } from '#blog/components/MarkdownPoem';
+import { BlogMdxSummaryCards } from '#blog/components/MarkdownSummaryCards';
 import type {
   BlogMdxProps,
   LightboxImage,
@@ -185,7 +188,10 @@ export function BlogMdx(props: BlogMdxProps) {
     ImageGallery,
     MediaEmbed,
     MediaLink,
+    ChatThread: BlogMdxChatThread,
+    DetailsBlock: BlogMdxDetailsBlock,
     Poem: BlogMdxPoem,
+    SummaryCards: BlogMdxSummaryCards,
     hr: () => <hr className="blog-prose-hr" />,
     pre: BlogMdxPre,
     code: (p: ComponentProps<'code'>) => {
