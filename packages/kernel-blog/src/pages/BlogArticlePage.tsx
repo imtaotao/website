@@ -1,6 +1,6 @@
-import { useEffect, useState, type ComponentType } from 'react';
+import { useEffect, useRef, useState, type ComponentType } from 'react';
 import { Link, useParams } from 'react-router';
-import { ArrowLeftIcon, RocketIcon } from '@radix-ui/react-icons';
+import { ListBulletIcon, ArrowUpIcon } from '@radix-ui/react-icons';
 
 import type { BlogArticleFrontmatter } from '#blog/articleTypes';
 import {
@@ -16,6 +16,12 @@ import {
 import { formatBlogDate } from '#blog/pages/BlogHomePage';
 
 import '#blog/pages/BlogPage.css';
+
+type BlogArticleHeading = {
+  id: string;
+  level: 2 | 3;
+  text: string;
+};
 
 export type BlogArticleView = BlogArticleFrontmatter & {
   Content: ComponentType<Record<string, unknown>>;
@@ -45,6 +51,8 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(
     null,
   );
+  const articleBodyRef = useRef<HTMLElement | null>(null);
+  const [headings, setHeadings] = useState<Array<BlogArticleHeading>>([]);
 
   useEffect(() => {
     if (!lightboxImage) return;
@@ -73,6 +81,26 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
     const target = document.getElementById(hash);
     if (!target) return;
     target.scrollIntoView({ block: 'start' });
+  }, [article, slug]);
+
+  useEffect(() => {
+    const articleBody = articleBodyRef.current;
+    if (!articleBody) {
+      setHeadings([]);
+      return;
+    }
+
+    const nextHeadings = Array.from(
+      articleBody.querySelectorAll<HTMLHeadingElement>('h2[id]'),
+    )
+      .map((heading) => ({
+        id: heading.id,
+        level: 2 as const,
+        text: heading.textContent?.trim() ?? '',
+      }))
+      .filter((heading) => heading.id && heading.text);
+
+    setHeadings(nextHeadings);
   }, [article, slug]);
 
   if (!article) {
@@ -136,7 +164,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
               </div>
             </header>
 
-            <section className="blog-article-body">
+            <section ref={articleBodyRef} className="blog-article-body">
               <BlogMdx
                 Content={article.Content}
                 articleSourcePath={article.sourcePath}
@@ -144,17 +172,28 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
               />
             </section>
           </div>
+
+          {headings.length ? (
+            <aside className="blog-article-toc--side" aria-label="文章目录">
+              <div className="blog-article-toc-trigger" aria-hidden="true">
+                <ListBulletIcon className="blog-article-toc-trigger-icon" />
+              </div>
+              <nav className="blog-article-toc blog-article-toc-panel">
+                {headings.map((heading) => (
+                  <a
+                    key={heading.id}
+                    href={`#${heading.id}`}
+                    className={`blog-article-toc-link blog-article-toc-link--h${heading.level}`}
+                  >
+                    {heading.text}
+                  </a>
+                ))}
+              </nav>
+            </aside>
+          ) : null}
         </div>
 
         <div className="blog-article-actions" aria-label="文章操作">
-          <Link
-            to="/blog"
-            className="blog-article-action blog-article-back"
-            aria-label="返回博客首页"
-            title="返回博客首页"
-          >
-            <ArrowLeftIcon className="blog-article-action-icon" />
-          </Link>
           <BlogThemeToggle
             theme={blogTheme.theme}
             onToggle={blogTheme.toggleTheme}
@@ -166,7 +205,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
             aria-label="返回顶部"
             title="返回顶部"
           >
-            <RocketIcon className="blog-back-to-top-icon" />
+            <ArrowUpIcon className="blog-back-to-top-icon" />
           </button>
         </div>
 

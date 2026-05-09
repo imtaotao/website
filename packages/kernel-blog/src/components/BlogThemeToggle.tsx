@@ -58,11 +58,9 @@ export function useBlogTheme() {
   }, []);
 
   const toggleTheme = () => {
-    setTheme((currentTheme) => {
-      const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
-      writeStoredBlogTheme(nextTheme);
-      return nextTheme;
-    });
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(nextTheme);
+    writeStoredBlogTheme(nextTheme);
   };
 
   return { theme, toggleTheme };
