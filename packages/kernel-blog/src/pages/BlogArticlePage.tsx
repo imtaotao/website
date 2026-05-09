@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type ComponentType } from 'react';
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ComponentType,
+} from 'react';
 import { Link, useParams } from 'react-router';
 import { ListBulletIcon, ArrowUpIcon } from '@radix-ui/react-icons';
 
@@ -51,8 +57,11 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(
     null,
   );
+  const articleRef = useRef<HTMLElement | null>(null);
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
   const articleBodyRef = useRef<HTMLElement | null>(null);
   const [headings, setHeadings] = useState<Array<BlogArticleHeading>>([]);
+  const [tocTop, setTocTop] = useState<number | null>(null);
 
   useEffect(() => {
     if (!lightboxImage) return;
@@ -103,6 +112,46 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
     setHeadings(nextHeadings);
   }, [article, slug]);
 
+  useLayoutEffect(() => {
+    if (!article || headings.length === 0) {
+      setTocTop(null);
+      return;
+    }
+
+    const updateTocTop = () => {
+      const titleEl = titleRef.current;
+      if (!titleEl) return;
+
+      const rect = titleEl.getBoundingClientRect();
+      const nextTop = Math.round(rect.top + rect.height / 2 + 8);
+
+      setTocTop((currentTop) =>
+        currentTop === nextTop ? currentTop : nextTop,
+      );
+    };
+
+    let raf = 0;
+    const schedule = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(updateTocTop);
+    };
+
+    updateTocTop();
+
+    const ro = new ResizeObserver(schedule);
+    if (articleRef.current) {
+      ro.observe(articleRef.current);
+    }
+
+    window.addEventListener('resize', schedule);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      window.removeEventListener('resize', schedule);
+    };
+  }, [article, headings.length, slug]);
+
   if (!article) {
     return (
       <main
@@ -120,7 +169,11 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   }
 
   return (
-    <main className="blog-shell min-h-screen" data-blog-theme={blogTheme.theme}>
+    <main
+      ref={articleRef}
+      className="blog-shell min-h-screen"
+      data-blog-theme={blogTheme.theme}
+    >
       <article
         className={`blog-article-page${
           article.coverUrl ? ' blog-article-page--with-cover' : ''
@@ -155,7 +208,9 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
         <div className="blog-article-frame">
           <div className="blog-article-main">
             <header className="blog-article-header">
-              <h1 className="blog-article-title">{article.title}</h1>
+              <h1 ref={titleRef} className="blog-article-title">
+                {article.title}
+              </h1>
 
               <div className="blog-article-meta-row" aria-label="文章信息">
                 <span className="blog-meta-item blog-meta-date">
@@ -174,7 +229,11 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
           </div>
 
           {headings.length ? (
-            <aside className="blog-article-toc--side" aria-label="文章目录">
+            <aside
+              className="blog-article-toc--side"
+              aria-label="文章目录"
+              style={tocTop != null ? { top: `${tocTop}px` } : undefined}
+            >
               <div className="blog-article-toc-trigger" aria-hidden="true">
                 <ListBulletIcon className="blog-article-toc-trigger-icon" />
               </div>

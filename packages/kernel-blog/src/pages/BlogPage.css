@@ -1026,14 +1026,14 @@
 
 .blog-article-toc-panel {
   position: absolute;
-  top: 50%;
+  top: 8px;
   left: 0;
   width: min(14rem, calc(100vw - 48px));
   max-height: none;
   overflow: visible;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-40%) translateX(8px);
+  transform: translateX(8px);
   transition:
     opacity 180ms ease,
     transform 180ms ease;
@@ -1050,7 +1050,7 @@
 .blog-article-toc--side:focus-within .blog-article-toc-panel {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(-40%);
+  transform: translateX(8px);
 }
 
 .blog-article-toc-link {
