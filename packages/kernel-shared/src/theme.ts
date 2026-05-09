@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 export type WebsiteTheme = 'light' | 'dark';
 
 export const WEBSITE_THEME_STORAGE_KEY = 'website:blog-theme';
-const DEFAULT_WEBSITE_THEME: WebsiteTheme = 'dark';
+const DEFAULT_WEBSITE_THEME: WebsiteTheme = 'light';
 
 const WEBSITE_THEME_CHANGE_EVENT = 'website-theme-change';
 
@@ -11,7 +11,7 @@ export function isWebsiteTheme(value: string | null): value is WebsiteTheme {
   return value === 'light' || value === 'dark';
 }
 
-export function readStoredWebsiteTheme(): WebsiteTheme {
+export function readStoredWebsiteTheme() {
   if (typeof window === 'undefined') return DEFAULT_WEBSITE_THEME;
 
   const storedTheme = window.localStorage.getItem(WEBSITE_THEME_STORAGE_KEY);

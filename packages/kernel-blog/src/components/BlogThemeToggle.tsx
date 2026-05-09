@@ -5,7 +5,7 @@ export type BlogTheme = 'light' | 'dark';
 
 const BLOG_THEME_STORAGE_KEY = 'website:blog-theme';
 const BLOG_THEME_CHANGE_EVENT = 'website-theme-change';
-const DEFAULT_BLOG_THEME: BlogTheme = 'dark';
+const DEFAULT_BLOG_THEME: BlogTheme = 'light';
 
 const isBlogTheme = (value: string | null): value is BlogTheme => {
   return value === 'light' || value === 'dark';
