@@ -1,11 +1,5 @@
 import { MDXProvider } from '@mdx-js/react';
-import {
-  createElement,
-  useEffect,
-  useState,
-  type ComponentProps,
-  type ReactNode,
-} from 'react';
+import { createElement, type ComponentProps, type ReactNode } from 'react';
 import 'katex/dist/katex.min.css';
 
 import { BlogMdxPre } from '#blog/components/MarkdownCodeBlock';
@@ -13,7 +7,6 @@ import {
   createHeadingIdFactory,
   flattenText,
 } from '#blog/components/MarkdownHeading';
-import { BlogLightbox } from '#blog/components/MarkdownLightbox';
 import {
   createBlogMdxImage,
   createImageGallery,
@@ -57,35 +50,10 @@ export function BlogMdx(props: BlogMdxProps) {
   };
   type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   const nextHeadingId = createHeadingIdFactory();
-  const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(
-    null,
-  );
-
-  useEffect(() => {
-    if (!lightboxImage) return;
-
-    const previousOverflow = document.body.style.overflow;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setLightboxImage(null);
-      }
-    };
-
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', onKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener('keydown', onKeyDown);
-    };
-  }, [lightboxImage]);
-
   const openLightbox = (image: LightboxImage | null) => {
     if (!image) return;
-    setLightboxImage(image);
+    props.openLightbox?.(image);
   };
-
-  const closeLightbox = () => setLightboxImage(null);
   const isPresetColor = (value?: string): value is PresetColor =>
     presetColors.includes(value as PresetColor);
   const renderColorText = ({
@@ -202,14 +170,8 @@ export function BlogMdx(props: BlogMdxProps) {
   };
 
   return (
-    <>
-      <MDXProvider components={components}>
-        <props.Content />
-      </MDXProvider>
-
-      {lightboxImage ? (
-        <BlogLightbox image={lightboxImage} onClose={closeLightbox} />
-      ) : null}
-    </>
+    <MDXProvider components={components}>
+      <props.Content />
+    </MDXProvider>
   );
 }

@@ -28,6 +28,7 @@
 - 路径更清晰时，优先使用 `tsconfig.json` 里的别名。
 - package 内部导入优先使用对应的 `#` 别名，例如 `#shared/*`、`#resume/*`、`#blog/*`。
 - 需要时使用 `pnpm format` 或 `pnpm format:md` 做格式整理。
+- 博客或 MDX 中文正文里的强调，前后如果紧贴中文、全角标点、链接或内联语法，优先使用 `<strong>...</strong>`，不要依赖 `**...**`。
 
 ## 命名
 

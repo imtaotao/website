@@ -283,6 +283,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
                 Content={article.Content}
                 articleSourcePath={article.sourcePath}
                 resolveAssetUrl={props.resolveAssetUrl}
+                openLightbox={setLightboxImage}
               />
             </section>
           </div>

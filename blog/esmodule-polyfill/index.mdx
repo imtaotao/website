@@ -1,0 +1,571 @@
+---
+title: esmodule polyfill
+slug: esmodule-polyfill
+tags:
+  - frontend
+publishedAt: 2022-02-07
+summary: 深度解析 esmodule
+---
+
+我们来说说如何手动实现一个 esmodule polyfill。整体流程可以概括为：<Color c="blue">parse 源码</Color>、<Color c="cyan">分析 `import/export` 信息</Color>、<Color c="orange">做错误检测、处理模块冲突并</Color>、<Color c="red">编译代码</Color>、<Color c="purple">注入运行时环境的 api</Color>，最后再 <Color c="green">执行代码</Color>。这样就可以把它转换成一个运行时的加载系统。
+
+> 仓库地址：https://github.com/imtaotao/virtual-es-module
+
+![架构图](./image/1.png '架构图')
+
+## 内存占位
+
+什么是 esm 变量的内存占位？看下面的几段代码。
+
+```js
+// a.js
+export let n = 1;
+setTimeout(() => (n = 2));
+
+// b.js
+import { n } from './a.js';
+console.log(n); // 1
+setTimeout(() => console.log(n)); // 2
+```
+
+也就是说，<strong>n 这个变量不是值拷贝的，他随着内存的变化而变化。</strong>在语法上你可以想象成，a.js 和 b.js 实际上是处于同一个 js 脚本中，那么可以假象成下面的样子
+
+```js
+let n = 1;
+setTimeout(() => (n = 2));
+
+console.log(n); // 1
+setTimeout(() => console.log(n)); // 2
+```
+
+在浏览器实现的原生 esm 中，这块是 js 引擎控制的。假如我们要做 polyfill，应该如何处理这种问题？
+
+<strong>解决的办法其实很简单。</strong>在运行时，我们没法监控变量的更改。但是在 js 中，对对象中的某一个属性值进行更改，实际上也是对内存进行修改。
+<strong>所以我们可以利用这个特性，来模拟 esm 的这个内存占位的特性。</strong>例如最上面的代码就可以编译成下面这样。
+
+```js
+// a.js
+const obj = { n: 1 };
+setTimeout(() => (obj.n = 2));
+module.exports = obj;
+
+// b.js
+const obj = require('./a.js');
+console.log(obj.n); // 1
+setTimeout(() => console.log(obj.n)); // 2
+```
+
+## 循环引用
+
+循环引用就是模块引用链之间出现了闭环，<strong>对于循环引用的处理，esm 和 cjs 的处理还不一样。</strong>cjs 的处理原则为，能获取到什么就是什么。
+
+```js
+// cjs 的行为
+
+// a.js
+require('./b');
+console.log(require('./a').a); // undefined
+exports.a = 1;
+console.log(require('./a').a); // 1
+
+// b.js
+const m = require('./a');
+console.log(m.a); // undefined
+setTimeout(() => {
+  console.log(m.a); // 1
+});
+```
+
+<strong>esm 的处理是完全不一样的</strong>，如果获取一个变量，而此时，这个变量还没有初始化时，则会报错。
+
+```js
+// a.js
+import './b.js';
+export const n = 1;
+
+// b.js
+import { n } './a.js';
+// console.log(n); // throw error
+setTimeout(() => console.log(n)); // 1
+```
+
+换一个角度想，和最开始的那个例子一样，将这两个模块的代码融合进同一个脚本中，应该是什么样子的？
+
+```js
+// 按照执行顺序来说应当是这样
+(function a() {
+  'use strict';
+  // b.js
+  console.log(n); // throw error
+  setTimeout(() => console.log(n)); // 1
+
+  // a.js
+  const n = 1;
+})();
+```
+
+<strong>综合 cjs 和 esm 对循环引用不同的处理行为，我们没法直接将 esm 编译成 cjs</strong> (不只这一个原因)。那在运行时有什么办法处理这种异常呢？
+
+分析上面的 esm 例子，我们看融合进同一个脚本中的代码，其实已经和循环引用时的行为一致了，原因是当我们用到 n 时，是从内存中取的值。但是在模块系统的 polyfill 中。<strong>我们没法拿到另外一个模块中的变量，所以只能做一层桥接。</strong>还好 es5.1 中就有了访问器属性，于是我们编译成下面这样就能解决了。
+
+```js
+// a.js
+exportModule({
+  // module 变量是不可更改的，不需要 setter, 只需要 getter 就行了
+  get n() {
+    return n;
+  },
+});
+importModule('./b.js');
+const n = 1;
+
+// b.js
+const module = importModule('./a.js');
+// console.log(module.n); // throw error
+setTimeout(() => console.log(module.n)); // 1
+```
+
+## 语法的转换
+
+上面介绍了一些转换的难点以及解决方案，这一章节就着重讲是怎么转换的，源码如何编译成什么样子才能满足。
+我们使用 acorn 做源码的 parse，得到一颗 ast，然后基于这个棵树，做了以下几个步骤：
+
+1. 遍历 ast，得到 scope 信息，得到变量的 binding。
+2. 遍历 ast，分析每个模块导入导出的信息，并递归分析子模块的导出信息。
+3. 替换 reference 字符，将 import，export 编译成自定义的运行时模块系统。
+
+## import
+
+1. 分析 import 语法，得到其中的信息
+
+```js
+import { a, b as bb }, c from './a.js';
+
+// 分析出 import 的信息
+{
+  moduleId: './a.js',
+  imports: [
+      {
+          name: 'a',
+          isDefault: false,
+          isNamespace: false,
+          alias: null,
+      },
+      {
+          name: 'b',
+          isDefault: false,
+          isNamespace: false,
+          alias: 'bb',
+      },
+      {
+          name: 'c',
+          isDefault: true,
+          isNamespace: false,
+          alias: null,
+      },
+  ],
+}
+```
+
+2. 分析 scope，将用到 esm 的变量替换成自定义的语法（上面分析过）
+
+```js
+// 源码
+import { a, b as bb }, c from './a.js';
+
+const obj = {
+  [a]: 1 + bb,
+  [c]: 2,
+}
+
+// 根据上面分析出来的信息编译成下面的代码
+const _m0_ = importModule('./a.js');
+
+const obj = {
+  [_m0_.a]: 1 + _m0_.b,
+  [_m0.default]: 2,
+}
+```
+
+## export
+
+`export` 的语法比 `import` 更多，我们对每种情况单独分析，单独的编译。
+
+### 收集 export information
+
+```js
+const a = 'tao'
+export const b = 1;
+export {
+  a
+}
+
+// 分析收集的信息
+[
+  { name: 'a', refNode: ... },
+  { name: 'b', refNode: ... },
+]
+```
+
+### 默认导出
+
+```js
+export default 1;
+
+// 编译为
+__EXPORT__({
+  default: () => __EXPORT_DEFAULT__,
+});
+var __EXPORT_DEFAULT__ = 1;
+```
+
+### 导出单个特性
+
+```js
+export const a = 1,
+  b = 2;
+export function fn() {}
+export class cls {}
+
+// 编译为
+__EXPORT__({
+  a: () => a,
+  b: () => b,
+  fn: () => fn,
+  cls: () => cls,
+});
+const a = 1,
+  b = 2;
+function fn() {}
+class cls {}
+```
+
+### 导出列表
+
+```js
+const a = 1,
+  b = 2;
+
+export { a, b };
+
+// 编译为
+__EXPORT__({
+  a: () => a,
+  b: () => b,
+});
+const a = 1,
+  b = 2;
+```
+
+### 解构导出并重命名
+
+```js
+const obj = {
+  name1: 'n1',
+  name2: 'n2',
+};
+export const { name1, name2: bar } = obj;
+
+// 编译为
+__EXPORT__({
+  name1: () => name1,
+  bar: () => bar,
+});
+const obj = {
+  name1: 'n1',
+  name2: 'n2',
+};
+const { name1, name2: bar } = obj;
+```
+
+### 重命名导出
+
+```js
+const a = 1,
+  b = 2,
+  c = 3;
+export { a as aa, b as bb, c as default };
+
+// 编译为（假如有俩 default，在 parse 阶段就会报错）
+__EXPORT__({
+  aa: () => a,
+  bb: () => b,
+  default: () => c,
+});
+const a = 1,
+  b = 2,
+  c = 3;
+```
+
+### 导出模块集合
+
+```js
+export * from './a.js'; // a 模块 export const a = 1, b = 2;
+
+// 编译为（收集信息在前，编译在后，此时已经能拿到所有子模块的导出信息）
+const _m0_ = importModule('./a.js');
+__EXPORT__({
+  a: () => _m0_.a,
+  b: () => _m0_.b,
+});
+```
+
+导出模块集合还有其他多种语法，编译的情况和上述的几种有类似的地方，在此就不重复叙述了，<strong>唯一需要注意的是，如果导出的命名空间有冲突，则按照一下的规则进行去重。</strong>
+
+```js
+// a.js
+export n = 1;
+export * from './b.js'; // 此时，模块 a 中导出的 n 为自身模块的 n, b 模块中的 n 被丢弃了
+
+// b.js
+export n = 2;
+
+// c.js
+export * from './a.js'；
+export * from './b.js'；
+// c 模块的导出将丢弃 a 模块和 b 模块中的 n，因为有冲突，无法判断需要导出哪个模块的 n。
+```
+
+## import()
+
+动态的 import 比较简单，直接替换为运行时的 import 方法就行
+
+```js
+import('./a.js').then(...)
+
+// 编译为
+__IMPORT__('./a.js').then(...)
+
+import.meta
+import.meta 也是替换为运行时注入的对象。
+console.log(import.meta.url);
+
+// 编译为
+console.log(__IMPORT__.meta.url);
+```
+
+## 静态检测和去重
+
+<strong>由于我们能够分析出一个模块以及其所有的子模块的信息，</strong>那么就可以检测出 a 模块有没有导出 n 这个变量。如果没有导出，在 b 模块中却用到了，则需要报错，提醒用户。
+
+```js
+// a.js
+export const n = 1;
+
+// b.js
+import { nn } from './a.js'; // throw error
+```
+
+## 作用域分析
+
+还记得上面对变量引用的替换，这一步实现需要对作用域进行分析。例如下面的例子。
+
+```js
+import { a } from './a.js';
+
+console.log(a);
+function fn() {
+  const a = 2;
+  console.log(a);
+}
+
+// 应当编译为
+const _m0_ = importModule('./a.js');
+
+console.log(_m0_.a);
+function fn() {
+  const a = 2;
+  console.log(a); //此处的 a 不能被替换，他不是用的 esm 导入的变量
+}
+```
+
+对于作用域分析，要提前遍历一遍 ast，将作用域相关的信息收集起来。整个分析收集是一个非常复杂的过程，涉及到很多具体的场景具体的处理，感兴趣的处理可以看这，这套实现的灵感来自 babel，但是简化很多不必要的代码。具体的步骤分为以下几步：
+<strong>这里只能分析静态的作用域，</strong>通过 eval 执行的代码是没法分析的。
+
+> 这里只能分析静态的作用域，通过 `eval`, `new Function` 执行的代码是没有办法分析的。
+
+1. 找到 scope 节点，并创建 scope
+2. 找到变量声明（var,let,const,module,hoisted,param,local,export），并在当前所在的 scope 中创建 binding。
+3. 找到 reference 节点，并在当前的 scope 中找寻 binding，如果存在，则代表使用了变量，记录下来。
+
+## acorn 对 ast 的遍历机制
+
+estree 的结构，不同的节点的属性是不完全一样的，所以这套 ast 规范没有一套通用的递归遍历规律。对于不同的结构来说，需要手动枚举出来。<strong>acorn 内部已经将这套枚举独立出来了，我们只需要使用即可。</strong>需要注意的是，这套遍历机制和 babel 等库还是不一样的，两套实现是不能完全兼容的。
+
+## 特殊的 scope 案例
+
+1. 函数声明
+
+![函数作用域](./image/3.png '函数作用域')
+
+```js
+// fn 是一个独立的 scope，在 es5 中就有了
+const f = function fn() {
+  console.log(fn);
+};
+
+console.log(fn); // fn is not defined
+```
+
+2. pattern
+   pattern 作用与函数声明的场景是差不多的，也是多了一层作用域。
+
+```js
+function a(
+  n = 1,
+  fn = () => {
+    console.log(n);
+  },
+) {
+  fn();
+}
+```
+
+## binding 的寻找
+
+binding 的寻找注册，针对不同的类型要做不同搞定处理，例如 var 声明的变量就不能放到 block 的作用域中，而需要放到 function 作用域中。
+
+```js
+getBinding(name) {
+  let scope = this;
+  let previousNode;
+
+  do {
+    const binding = scope.bindings[name];
+    if (binding) {
+      if (
+        isPattern(previousNode) &&
+        binding.kind !== 'param' &&
+        binding.kind !== 'local'
+      ) {
+        // 这里不做任何事情
+        // 如果是 pattern 中作用域中引用了自身没定义的变量，不能在函数体内寻找
+        // 他是独立的作用域，并不是父子关系，这里只是为了性能合并在了一起，所以需要继续往外找。
+        // 但是有两种情况特殊
+        //  1. param 是参数，可以被函数体内访问
+        //  2. local 是函数自身的声明，这个一层的作用域也是可以被函数体内访问的
+      } else {
+        return binding;
+      }
+    } else if (
+      !binding &&
+      name === 'arguments' && // arguments 是不可见的函数内部参数声明
+      isFunction(scope.node) &&
+      isArrowFunctionExpression(scope.node)
+    ) {
+      break;
+    }
+    previousNode = scope.node;
+  } while ((scope = scope.parent));
+}
+```
+
+当遇到一个 reference 节点的时候，如果这个节点使用了 scope 中的变量，则将这个 reference 收集起来到 scope binding 之中。
+
+```js
+reference(name: string, node: Identifier) {
+  const binding = this.getBinding(name);
+  if (binding) {
+    binding.references.add(node);
+  }
+}
+```
+
+下面这段代码，分析收集起来的作用域结果如下图所示：
+
+```js
+export const name = 'm1';
+export const a = [1];
+export const b = [2];
+export default [3];
+
+console.log(a);
+```
+
+![ast](./image/2.png 'ast')
+
+从上面的步骤可以看到，<strong>作用域的分析只能分析静态的代码，动态的作用域是无能为力的。</strong>所以就能知道为啥 with 会导致严重的性能问题。动态的作用域严重的干扰了分析优化，只有到真正运行代码的那一刻才能知道作用域具体的样子。<strong>但是幸运的是，esm 是严格模式的代码，不允许 with 的存在，那么这个问题就迎刃而解了。</strong>
+
+> babel 要做的事情可不止 esm，大家在用他分析出来的是 scope 时，要小心使用，可能是不全的导致有 bug 出现
+
+这套实现和 babel，webpack 实现的思路是差不多的， eval 这种动态执行的代码，其代码是动态的，没有办法静态分析，所以是没有办法解决的。
+
+## esm 与 cjs 的 interop
+
+说一说 interop 机制。现在的打包工具一般会将 esm 转换为 cjs 模块系统，但是<strong>他们最大区别在于，默认导出是不一样的。</strong>cjs 导出的是 module.exports，而 esm 导出的是 module.default。
+
+```js
+// cjs
+module.exports = 1
+
+// esm
+{
+  default: 1
+}
+一般的转换规则如下面的代码
+const __importDefault = function (module) {
+  return (module && module.__esModule) ? module : { "default": module };
+};
+```
+
+都是 esm 情况下的伪代码：
+
+```js
+// a.js
+export default 1;
+// 编译为
+Object.defineProperty(exports, '__esModule', { value: true });
+exports.default = 1;
+
+// b.js
+import m from './a.js';
+console.log(m); // 1
+// 编译为
+const m = __importDefault(require('./b.js'));
+console.log(m.default); // 1
+```
+
+与 cjs 交互的伪代码
+
+```js
+// a.js 源码
+module.exports = 1;
+
+// b.js
+import m from './a.js';
+console.log(m); // 1
+// 编译为
+const m = __importDefault(require('./b.js') /* 1 */); // { default: 1 }
+console.log(m.deafult); // 1
+```
+
+这就是现在打包工具做的事情，可以看到编译时屏蔽细节，对上层的开发者是不可感知的。<strong>问题出现在 Node.js 对 cjs 和 esm 的 interop 处理上。</strong>node.js 默认将 module.exports = export default。
+
+```js
+// Node.js 中
+// a.js
+module.exports = 1;
+
+// b.js
+import a from './a.js';
+console.log(a); // 1
+```
+
+对于上层开发者层面来说，Node.js 的处理和打包工具的处理是一致的。但是当 Node.js 中使用打包工具打包后源码时，事情就发生了变化。
+
+```js
+// a.js
+export default 1;
+// 编译为
+exports.default = 1;
+
+// b.js
+import a from './a.js';
+// 本来应该是 1，然而源码已经被打包工具处理了，这里输出的是 { default: 1 }
+// 也就是说两套系统不兼容，以至于 npm 生态上的很多包，用 Node.js 原生的 esm 系统就会出问题
+console.log(a);
+```
+
+## 建议
+
+假如我们开发的是公共包，框架之类的，<strong>建议不要使用 export default 语法。</strong>限制为只能使用 export 导出。假如你的同伴们因此和你争论，就将 Node.js 和打包工具的不兼容的地方告诉他。

@@ -54,4 +54,5 @@ export type BlogMdxProps = {
   Content: ComponentType<Record<string, unknown>>;
   articleSourcePath: string;
   resolveAssetUrl: ResolveBlogAssetUrl;
+  openLightbox?: (image: LightboxImage | null) => void;
 };
