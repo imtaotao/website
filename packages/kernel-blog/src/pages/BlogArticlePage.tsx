@@ -10,7 +10,11 @@ import {
   type SVGProps,
 } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
-import { ListBulletIcon, ArrowUpIcon } from '@radix-ui/react-icons';
+import {
+  ListBulletIcon,
+  ArrowUpIcon,
+  CaretUpIcon,
+} from '@radix-ui/react-icons';
 
 import type { BlogArticleFrontmatter } from '#blog/articleTypes';
 import {
@@ -119,6 +123,17 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
     return article.tags.includes(value) ? value : '';
   }, [article, searchParams]);
   const shouldEnableBgm = Boolean(article?.bgm && props.bgmUrl);
+  const scrollToTop = useCallback(() => {
+    const scrollElement =
+      document.scrollingElement ?? document.documentElement ?? document.body;
+
+    if (scrollElement && 'scrollTo' in scrollElement) {
+      scrollElement.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   const collectArticleLightboxImages = useCallback((): Array<LightboxImage> => {
     const articleBody = articleBodyRef.current;
@@ -339,17 +354,31 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   useEffect(() => {
     if (!article) return;
 
+    const scrollElement =
+      document.scrollingElement ?? document.documentElement ?? document.body;
+
     const updateBackToTopVisibility = () => {
-      setShowBackToTop(window.scrollY > 480);
+      const scrollTop =
+        scrollElement?.scrollTop ??
+        window.scrollY ??
+        document.documentElement.scrollTop ??
+        document.body.scrollTop ??
+        0;
+
+      setShowBackToTop(scrollTop > 480);
     };
 
     updateBackToTopVisibility();
     window.addEventListener('scroll', updateBackToTopVisibility, {
       passive: true,
     });
+    scrollElement?.addEventListener('scroll', updateBackToTopVisibility, {
+      passive: true,
+    });
 
     return () => {
       window.removeEventListener('scroll', updateBackToTopVisibility);
+      scrollElement?.removeEventListener('scroll', updateBackToTopVisibility);
     };
   }, [article, slug]);
 
@@ -551,13 +580,14 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
             className={`blog-article-action blog-back-to-top${
               showBackToTop ? ' blog-back-to-top--visible' : ''
             }`}
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onClick={scrollToTop}
             aria-label={COPY.backToTop}
             title={COPY.backToTop}
             aria-hidden={!showBackToTop}
             tabIndex={showBackToTop ? 0 : -1}
           >
-            <ArrowUpIcon className="blog-back-to-top-icon" />
+            <ArrowUpIcon className="blog-back-to-top-icon blog-back-to-top-icon--desktop" />
+            <CaretUpIcon className="blog-back-to-top-icon blog-back-to-top-icon--mobile" />
           </button>
 
           {shouldEnableBgm ? (

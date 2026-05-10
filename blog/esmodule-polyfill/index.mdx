@@ -8,9 +8,9 @@ tags:
   - frontend
 ---
 
-我们来说说如何手动实现一个 esmodule polyfill。整体流程可以概括为：<Color c="blue">parse 源码</Color>、<Color c="cyan">分析 `import/export` 信息</Color>、<Color c="orange">做错误检测、处理模块冲突并</Color>、<Color c="red">编译代码</Color>、<Color c="purple">注入运行时环境的 api</Color>，最后再 <Color c="green">执行代码</Color>。这样就可以把它转换成一个运行时的加载系统。
+我们来说说如何实现一个 **ESM Polyfill**。
 
-> 仓库地址：https://github.com/imtaotao/virtual-es-module
+> https://github.com/imtaotao/virtual-es-module
 
 ![架构图](./image/1.png '架构图')
 

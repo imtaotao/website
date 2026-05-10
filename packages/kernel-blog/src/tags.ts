@@ -29,7 +29,7 @@ export const blogTagMap: BlogTagMap = {
   notes: {
     label: '笔记',
     description: '更轻量的记录、摘记和阶段性整理。',
-    order: 60,
+    order: 90,
   },
   other: {
     label: '其他',
@@ -39,6 +39,6 @@ export const blogTagMap: BlogTagMap = {
   essay: {
     label: '随笔',
     description: '更松弛一些的片段记录、即兴表达和短文感想。',
-    order: 90,
+    order: 60,
   },
 };
