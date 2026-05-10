@@ -1,0 +1,14 @@
+---
+title: Corepack 实践
+slug: Corepack
+tags:
+  - frontend
+publishedAt: 2024-06-20
+---
+
+1. 设置全局的 pnpm 版本 `corepack prepare pnpm@version --activate`
+2. 项目中固定 pnpm 版本，在 `package.json` 声明 `packageManager` 字段
+3. 禁止自动添加 `packageManager`，设置环境变量 `COREPACK_ENABLE_AUTO_PIN="0"`
+4. `corepack` 版本保持一致
+5. 不要使用 pnpm 管理自身，不要使用 `volta` 之类的工具，不要使用 `npx` 执行 pnpm 命令。
+6. 垫片原理需要学习一下

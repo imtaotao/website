@@ -4,6 +4,8 @@ import { useParams } from 'react-router';
 import { getBlogArticleBySlug, resolveBlogAssetUrl } from '#app/lib/blog';
 import { usePageMeta } from '#app/lib/pageMeta';
 
+const BLOG_BGM_URL = '/src/assets/bgm.mp3';
+
 export default function BlogArticlePage() {
   const { slug = '' } = useParams();
   const article = getBlogArticleBySlug(slug, { includeHidden: true });
@@ -20,6 +22,7 @@ export default function BlogArticlePage() {
     <KernelBlogArticlePage
       getArticleBySlug={getBlogArticleBySlug}
       resolveAssetUrl={resolveBlogAssetUrl}
+      bgmUrl={BLOG_BGM_URL}
     />
   );
 }

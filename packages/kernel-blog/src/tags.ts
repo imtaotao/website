@@ -17,9 +17,9 @@ export const blogTagMap: BlogTagMap = {
     order: 30,
   },
   life: {
-    label: '生活日常',
+    label: '生活',
     description: '偏生活化的记录、经历和日常观察。',
-    order: 40,
+    order: 80,
   },
   thinking: {
     label: '思考',
@@ -35,5 +35,10 @@ export const blogTagMap: BlogTagMap = {
     label: '其他',
     description: '暂时不适合归入其他主分类的内容。',
     order: 70,
+  },
+  essay: {
+    label: '随笔',
+    description: '更松弛一些的片段记录、即兴表达和短文感想。',
+    order: 90,
   },
 };

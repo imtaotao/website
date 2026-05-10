@@ -6,6 +6,7 @@ import {
   useState,
   type CSSProperties,
   type ComponentType,
+  type SVGProps,
 } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 import { ListBulletIcon, ArrowUpIcon } from '@radix-ui/react-icons';
@@ -49,6 +50,7 @@ export type BlogArticlePageProps = {
     articleSourcePath: string,
     assetPath: string,
   ) => string | undefined;
+  bgmUrl?: string;
 };
 
 const COPY = {
@@ -59,6 +61,27 @@ const COPY = {
   articleToc: '\u6587\u7ae0\u76ee\u5f55',
   backToTop: '\u8fd4\u56de\u9876\u90e8',
 } as const;
+
+function BlogBgmSpeakerIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 15 15" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M2.5 6.1H4.9L7.85 3.8V11.2L4.9 8.9H2.5V6.1Z"
+        stroke="currentColor"
+        strokeWidth="1.95"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10.15 5.4C10.77 5.95 11.1 6.65 11.1 7.5C11.1 8.35 10.77 9.05 10.15 9.6"
+        stroke="currentColor"
+        strokeWidth="1.95"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 export function BlogArticlePage(props: BlogArticlePageProps) {
   const blogTheme = useBlogTheme();
@@ -76,11 +99,16 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   const [headings, setHeadings] = useState<Array<BlogArticleHeading>>([]);
   const [tocTop, setTocTop] = useState<number | null>(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [isBgmReady, setIsBgmReady] = useState(false);
+  const [isBgmPlaying, setIsBgmPlaying] = useState(false);
+  const [hasBgmError, setHasBgmError] = useState(false);
+  const bgmRef = useRef<HTMLAudioElement | null>(null);
   const activeTag = useMemo(() => {
     const value = searchParams.get(BLOG_TAG_QUERY_KEY)?.trim() ?? '';
     if (!value || !article) return '';
     return article.tags.includes(value) ? value : '';
   }, [article, searchParams]);
+  const shouldEnableBgm = Boolean(article?.bgm && props.bgmUrl);
 
   useEffect(() => {
     if (!lightboxImage) return;
@@ -100,6 +128,79 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
       window.removeEventListener('keydown', onKeyDown);
     };
   }, [lightboxImage]);
+
+  useEffect(() => {
+    if (!shouldEnableBgm) {
+      bgmRef.current?.pause();
+      bgmRef.current = null;
+      setIsBgmReady(false);
+      setIsBgmPlaying(false);
+      setHasBgmError(false);
+      return;
+    }
+
+    const audio = new Audio(props.bgmUrl);
+    audio.preload = 'metadata';
+    audio.loop = true;
+    audio.volume = 0.28;
+    bgmRef.current = audio;
+
+    const tryAutoPlay = async () => {
+      try {
+        await audio.play();
+        setHasBgmError(false);
+      } catch {
+        setIsBgmPlaying(false);
+      }
+    };
+
+    const handleCanPlay = () => {
+      setIsBgmReady(true);
+      setHasBgmError(false);
+      void tryAutoPlay();
+    };
+    const handlePlay = () => setIsBgmPlaying(true);
+    const handlePause = () => setIsBgmPlaying(false);
+    const handleError = () => {
+      setHasBgmError(true);
+      setIsBgmReady(false);
+      setIsBgmPlaying(false);
+    };
+
+    audio.addEventListener('canplay', handleCanPlay);
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
+    audio.addEventListener('error', handleError);
+
+    return () => {
+      audio.pause();
+      audio.removeEventListener('canplay', handleCanPlay);
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('error', handleError);
+      if (bgmRef.current === audio) {
+        bgmRef.current = null;
+      }
+    };
+  }, [props.bgmUrl, shouldEnableBgm, slug]);
+
+  const handleToggleBgm = async () => {
+    const audio = bgmRef.current;
+    if (!audio) return;
+
+    if (!audio.paused) {
+      audio.pause();
+      return;
+    }
+
+    try {
+      await audio.play();
+      setHasBgmError(false);
+    } catch {
+      setHasBgmError(true);
+      setIsBgmPlaying(false);
+    }
+  };
 
   useEffect(() => {
     if (!article) return;
@@ -331,6 +432,36 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
           >
             <ArrowUpIcon className="blog-back-to-top-icon" />
           </button>
+
+          {shouldEnableBgm && !hasBgmError ? (
+            <button
+              type="button"
+              className={`blog-article-action blog-bgm-toggle${
+                isBgmPlaying ? ' blog-bgm-toggle--playing' : ''
+              }`}
+              onClick={() => {
+                void handleToggleBgm();
+              }}
+              aria-label={isBgmPlaying ? '暂停背景音乐' : '播放背景音乐'}
+              title={isBgmPlaying ? '暂停背景音乐' : '播放背景音乐'}
+              disabled={!isBgmReady}
+            >
+              <span className="blog-bgm-orbit" aria-hidden="true" />
+              <span
+                className={`blog-bgm-icon-wrap${
+                  isBgmPlaying ? ' blog-bgm-icon-wrap--hidden' : ''
+                }`}
+                aria-hidden="true"
+              >
+                <BlogBgmSpeakerIcon className="blog-article-action-icon" />
+              </span>
+              <span className="blog-bgm-bars" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </span>
+            </button>
+          ) : null}
         </div>
 
         {lightboxImage ? (

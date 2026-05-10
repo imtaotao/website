@@ -87,6 +87,14 @@ const normalizeExternalUrl = (value: unknown, sourcePath: string) => {
   return externalUrl;
 };
 
+const normalizeBgm = (value: unknown, sourcePath: string) => {
+  if (value == null) return undefined;
+  if (typeof value !== 'boolean') {
+    throw new Error(`Field "bgm" must be a boolean in ${sourcePath}.`);
+  }
+  return value;
+};
+
 const assertDateString = (
   value: unknown,
   fieldName: 'publishedAt',
@@ -170,6 +178,7 @@ export function normalizeBlogArticleFrontmatter(
     cover: normalizeCover(input.cover, sourcePath),
     coverPosition: normalizeCoverPosition(input.coverPosition, sourcePath),
     externalUrl: normalizeExternalUrl(input.externalUrl, sourcePath),
+    bgm: normalizeBgm(input.bgm, sourcePath),
   };
 }
 const parseFrontmatter = (source: string, sourcePath: string) => {

@@ -22,6 +22,7 @@ export type BlogArticleFrontmatter = {
   cover?: string;
   coverPosition?: string;
   externalUrl?: string;
+  bgm?: boolean;
 };
 
 export type BlogArticleMeta = BlogArticleFrontmatter & {
