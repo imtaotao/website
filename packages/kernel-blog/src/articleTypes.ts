@@ -22,7 +22,7 @@ export type BlogArticleFrontmatter = {
   cover?: string;
   coverPosition?: string;
   externalUrl?: string;
-  bgm?: boolean;
+  bgm?: boolean | string;
   hidden?: boolean;
 };
 

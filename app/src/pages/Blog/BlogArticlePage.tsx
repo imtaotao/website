@@ -9,6 +9,12 @@ const BLOG_BGM_URL = '/src/assets/bgm.mp3';
 export default function BlogArticlePage() {
   const { slug = '' } = useParams();
   const article = getBlogArticleBySlug(slug, { includeHidden: true });
+  const bgmUrl =
+    article?.bgm === true
+      ? BLOG_BGM_URL
+      : typeof article?.bgm === 'string'
+      ? resolveBlogAssetUrl(article.sourcePath, article.bgm)
+      : undefined;
 
   usePageMeta({
     title: article?.title ?? '文章不存在',
@@ -22,7 +28,7 @@ export default function BlogArticlePage() {
     <KernelBlogArticlePage
       getArticleBySlug={getBlogArticleBySlug}
       resolveAssetUrl={resolveBlogAssetUrl}
-      bgmUrl={BLOG_BGM_URL}
+      bgmUrl={bgmUrl}
     />
   );
 }

@@ -89,7 +89,7 @@ const normalizeExternalUrl = (value: unknown, sourcePath: string) => {
 
 const normalizeBoolean = (
   value: unknown,
-  fieldName: 'bgm' | 'hidden',
+  fieldName: 'hidden',
   sourcePath: string,
 ) => {
   if (value == null) return undefined;
@@ -97,6 +97,21 @@ const normalizeBoolean = (
     throw new Error(`Field "${fieldName}" must be a boolean in ${sourcePath}.`);
   }
   return value;
+};
+
+const normalizeBgm = (value: unknown, sourcePath: string) => {
+  if (value == null) return undefined;
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') {
+    const bgm = value.trim();
+    if (!bgm) {
+      throw new Error(
+        `Field "bgm" must be a non-empty string or boolean in ${sourcePath}.`,
+      );
+    }
+    return bgm;
+  }
+  throw new Error(`Field "bgm" must be a boolean or string in ${sourcePath}.`);
 };
 
 const assertDateString = (
@@ -182,7 +197,7 @@ export function normalizeBlogArticleFrontmatter(
     cover: normalizeCover(input.cover, sourcePath),
     coverPosition: normalizeCoverPosition(input.coverPosition, sourcePath),
     externalUrl: normalizeExternalUrl(input.externalUrl, sourcePath),
-    bgm: normalizeBoolean(input.bgm, 'bgm', sourcePath),
+    bgm: normalizeBgm(input.bgm, sourcePath),
     hidden: normalizeBoolean(input.hidden, 'hidden', sourcePath),
   };
 }

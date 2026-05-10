@@ -560,18 +560,33 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
             <ArrowUpIcon className="blog-back-to-top-icon" />
           </button>
 
-          {shouldEnableBgm && !hasBgmError ? (
+          {shouldEnableBgm ? (
             <button
               type="button"
               className={`blog-article-action blog-bgm-toggle${
                 isBgmPlaying ? ' blog-bgm-toggle--playing' : ''
+              }${hasBgmError ? ' blog-bgm-toggle--error' : ''}${
+                !isBgmReady ? ' blog-bgm-toggle--loading' : ''
               }`}
               onClick={() => {
-                void handleToggleBgm();
+                handleToggleBgm();
               }}
-              aria-label={isBgmPlaying ? '暂停背景音乐' : '播放背景音乐'}
-              title={isBgmPlaying ? '暂停背景音乐' : '播放背景音乐'}
-              disabled={!isBgmReady}
+              aria-label={
+                hasBgmError
+                  ? '背景音乐加载失败，点击重试'
+                  : isBgmPlaying
+                  ? '暂停背景音乐'
+                  : '播放背景音乐'
+              }
+              title={
+                hasBgmError
+                  ? '背景音乐加载失败，点击重试'
+                  : isBgmPlaying
+                  ? '暂停背景音乐'
+                  : isBgmReady
+                  ? '播放背景音乐'
+                  : '背景音乐加载中'
+              }
             >
               <span className="blog-bgm-orbit" aria-hidden="true" />
               <span
