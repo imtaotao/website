@@ -20,7 +20,7 @@ import { BlogMdxPoem } from '#blog/components/MarkdownPoem';
 import { BlogMdxSummaryCards } from '#blog/components/MarkdownSummaryCards';
 import type {
   BlogMdxProps,
-  LightboxImage,
+  LightboxState,
 } from '#blog/components/MarkdownTypes';
 
 export { extractMarkdownHeadings } from '#blog/components/MarkdownHeading';
@@ -50,9 +50,9 @@ export function BlogMdx(props: BlogMdxProps) {
   };
   type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   const nextHeadingId = createHeadingIdFactory();
-  const openLightbox = (image: LightboxImage | null) => {
-    if (!image) return;
-    props.openLightbox?.(image);
+  const openLightbox = (state: LightboxState | null) => {
+    if (!state || !state.images.length) return;
+    props.openLightbox?.(state);
   };
   const isPresetColor = (value?: string): value is PresetColor =>
     presetColors.includes(value as PresetColor);

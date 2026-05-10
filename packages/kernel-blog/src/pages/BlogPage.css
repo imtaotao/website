@@ -124,7 +124,7 @@
   --blog-code-addition: #22863a;
   --blog-floating-bg: rgba(255, 255, 255, 0.96);
   --blog-floating-hover-bg: rgba(241, 245, 249, 0.98);
-  --blog-lightbox-bg: rgba(8, 10, 14, 0.88);
+  --blog-lightbox-bg: rgba(248, 250, 252, 0.94);
   --blog-bgm-ripple-core: color-mix(
     in srgb,
     var(--blog-bg) 74%,
@@ -234,6 +234,7 @@
   --blog-code-addition: #aff5b4;
   --blog-floating-bg: rgba(29, 32, 37, 0.96);
   --blog-floating-hover-bg: rgba(40, 43, 49, 0.98);
+  --blog-lightbox-bg: rgba(3, 7, 12, 0.92);
 }
 
 .blog-shell:not([data-blog-theme='dark']) {
@@ -1953,7 +1954,7 @@
 
 .blog-prose-image-button:focus-visible,
 .blog-prose-gallery-button:focus-visible,
-.blog-lightbox-close:focus-visible {
+.blog-lightbox-nav:focus-visible {
   outline: 2px solid var(--blog-focus-ring);
   outline-offset: 2px;
 }
@@ -3072,20 +3073,28 @@
   backdrop-filter: blur(8px);
 }
 
-.blog-lightbox-close {
+.blog-lightbox-nav {
   position: absolute;
-  top: 18px;
-  right: 18px;
+  top: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
+  margin-top: -22px;
   border: 0;
   border-radius: 999px;
-  background: var(--blog-surface);
+  background: var(--blog-floating-bg);
   color: var(--blog-text-strong);
   cursor: pointer;
+}
+
+.blog-lightbox-nav--prev {
+  left: 50px;
+}
+
+.blog-lightbox-nav--next {
+  right: 50px;
 }
 
 .blog-lightbox-figure {

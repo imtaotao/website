@@ -89,6 +89,13 @@ const assertKnownTags = (
   }
 };
 
+const isVisibleArticle = (
+  article: BlogArticleDetail,
+  options?: BlogContentOptions,
+) => {
+  return !article.hidden || Boolean(options?.includeHidden);
+};
+
 const getArticleDirFromSourcePath = (sourcePath: string) => {
   const normalized = sourcePath.replace(/\\/g, '/');
   const lastSlash = normalized.lastIndexOf('/');
@@ -126,9 +133,8 @@ const createBlogContent = (options?: BlogContentOptions) => {
   );
 
   const articleBySlug = new Map<string, BlogArticleDetail>();
-  const tagCounts = new Map<string, number>();
 
-  const articles = sortBlogArticles(
+  const allArticles = sortBlogArticles(
     entries.map(([sourcePath, source]) => {
       const article = readArticleFromModule(sourcePath, source);
 
@@ -141,13 +147,19 @@ const createBlogContent = (options?: BlogContentOptions) => {
       assertKnownTags(article, tagMap, article.sourcePath);
       articleBySlug.set(article.slug, article);
 
-      for (const tag of article.tags) {
-        tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
-      }
-
       return article;
     }),
   );
+  const articles = allArticles.filter((article) =>
+    isVisibleArticle(article, options),
+  );
+  const tagCounts = new Map<string, number>();
+
+  for (const article of articles) {
+    for (const tag of article.tags) {
+      tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+    }
+  }
 
   return {
     articles,
@@ -161,7 +173,12 @@ export function getAllArticles(options?: BlogContentOptions) {
 }
 
 export function getArticleBySlug(slug: string, options?: BlogContentOptions) {
-  return createBlogContent(options).articleBySlug.get(slug);
+  const article = createBlogContent({
+    ...options,
+    includeHidden: true,
+  }).articleBySlug.get(slug);
+  if (!article) return undefined;
+  return isVisibleArticle(article, options) ? article : undefined;
 }
 
 export function getAllTags(options?: BlogContentOptions) {

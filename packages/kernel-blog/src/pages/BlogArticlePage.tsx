@@ -17,7 +17,10 @@ import {
   createLightboxImage,
 } from '#blog/components/MarkdownLightbox';
 import { BlogMdx } from '#blog/components/Markdown';
-import type { LightboxImage } from '#blog/components/MarkdownTypes';
+import type {
+  LightboxImage,
+  LightboxState,
+} from '#blog/components/MarkdownTypes';
 import { useBlogTheme } from '#blog/components/BlogThemeToggle';
 import {
   BLOG_TAG_QUERY_KEY,
@@ -93,6 +96,10 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(
     null,
   );
+  const [lightboxImages, setLightboxImages] = useState<Array<LightboxImage>>(
+    [],
+  );
+  const [, setLightboxIndex] = useState(0);
   const articleRef = useRef<HTMLElement | null>(null);
   const titleRef = useRef<HTMLHeadingElement | null>(null);
   const articleBodyRef = useRef<HTMLElement | null>(null);
@@ -110,13 +117,90 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   }, [article, searchParams]);
   const shouldEnableBgm = Boolean(article?.bgm && props.bgmUrl);
 
+  const collectArticleLightboxImages = (): Array<LightboxImage> => {
+    const articleBody = articleBodyRef.current;
+    if (!articleBody) return [];
+
+    return Array.from(
+      articleBody.querySelectorAll<HTMLElement>('figure.blog-prose-image'),
+    )
+      .map((figure) => {
+        const img = figure.querySelector<HTMLImageElement>(
+          '.blog-prose-image-asset',
+        );
+        if (!img?.src) return null;
+        const caption = figure.querySelector<HTMLElement>(
+          '.blog-prose-image-caption',
+        )?.textContent;
+
+        return {
+          src: img.src,
+          alt: img.alt || undefined,
+          caption: caption?.trim() || undefined,
+        };
+      })
+      .filter((item): item is NonNullable<typeof item> => Boolean(item));
+  };
+
+  const openLightbox = (state: LightboxState | null) => {
+    if (!state || !state.images.length) return;
+
+    const fallbackImages =
+      state.images.length === 1 ? collectArticleLightboxImages() : [];
+    const resolvedImages =
+      fallbackImages.length > 1 ? fallbackImages : state.images;
+    const targetImage =
+      state.images[
+        Math.min(Math.max(state.currentIndex, 0), state.images.length - 1)
+      ] ?? state.images[0];
+    const fallbackIndex = resolvedImages.findIndex(
+      (item) =>
+        item.src === targetImage?.src &&
+        item.caption === targetImage?.caption &&
+        item.alt === targetImage?.alt,
+    );
+    const nextIndex =
+      fallbackIndex >= 0
+        ? fallbackIndex
+        : Math.min(Math.max(state.currentIndex, 0), resolvedImages.length - 1);
+
+    setLightboxImages(resolvedImages);
+    setLightboxIndex(nextIndex);
+    setLightboxImage(resolvedImages[nextIndex] ?? null);
+  };
+
+  const closeLightbox = () => {
+    setLightboxImage(null);
+    setLightboxImages([]);
+    setLightboxIndex(0);
+  };
+
+  const handleLightboxStep = (direction: -1 | 1) => {
+    if (lightboxImages.length <= 1) return;
+    setLightboxIndex((currentIndex) => {
+      const nextIndex =
+        (currentIndex + direction + lightboxImages.length) %
+        lightboxImages.length;
+      setLightboxImage(lightboxImages[nextIndex] ?? null);
+      return nextIndex;
+    });
+  };
+
   useEffect(() => {
     if (!lightboxImage) return;
 
     const previousOverflow = document.body.style.overflow;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setLightboxImage(null);
+        closeLightbox();
+        return;
+      }
+      if (event.key === 'ArrowLeft' && lightboxImages.length > 1) {
+        handleLightboxStep(-1);
+        return;
+      }
+      if (event.key === 'ArrowRight' && lightboxImages.length > 1) {
+        handleLightboxStep(1);
       }
     };
 
@@ -127,7 +211,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, [lightboxImage]);
+  }, [lightboxImage, lightboxImages]);
 
   useEffect(() => {
     if (!shouldEnableBgm) {
@@ -322,9 +406,12 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
               type="button"
               className="blog-article-cover-button"
               onClick={() =>
-                setLightboxImage(
-                  createLightboxImage(article.coverUrl, article.title),
-                )
+                openLightbox({
+                  images: [
+                    createLightboxImage(article.coverUrl, article.title),
+                  ].filter((item): item is LightboxImage => Boolean(item)),
+                  currentIndex: 0,
+                })
               }
               aria-label={`${COPY.enlargeCoverPrefix}${article.title}`}
             >
@@ -384,7 +471,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
                 Content={article.Content}
                 articleSourcePath={article.sourcePath}
                 resolveAssetUrl={props.resolveAssetUrl}
-                openLightbox={setLightboxImage}
+                openLightbox={openLightbox}
               />
             </section>
           </div>
@@ -467,7 +554,17 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
         {lightboxImage ? (
           <BlogLightbox
             image={lightboxImage}
-            onClose={() => setLightboxImage(null)}
+            onClose={closeLightbox}
+            onPrev={
+              lightboxImages.length > 1
+                ? () => handleLightboxStep(-1)
+                : undefined
+            }
+            onNext={
+              lightboxImages.length > 1
+                ? () => handleLightboxStep(1)
+                : undefined
+            }
           />
         ) : null}
       </article>

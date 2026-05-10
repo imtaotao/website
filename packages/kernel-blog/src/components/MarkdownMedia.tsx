@@ -12,13 +12,14 @@ import type {
   BlogMediaEmbedProps,
   BlogMediaLinkProps,
   LightboxImage,
+  LightboxState,
   ResolveBlogAssetUrl,
 } from '#blog/components/MarkdownTypes';
 
 type MarkdownMediaContext = {
   articleSourcePath: string;
   resolveAssetUrl: ResolveBlogAssetUrl;
-  openLightbox: (image: LightboxImage | null) => void;
+  openLightbox: (state: LightboxState | null) => void;
 };
 
 export function createBlogMdxImage(context: MarkdownMediaContext) {
@@ -35,7 +36,16 @@ export function createBlogMdxImage(context: MarkdownMediaContext) {
         <button
           type="button"
           className="blog-prose-image-button"
-          onClick={() => context.openLightbox(image)}
+          onClick={() =>
+            context.openLightbox(
+              image
+                ? {
+                    images: [image],
+                    currentIndex: 0,
+                  }
+                : null,
+            )
+          }
           aria-label={p.alt ? `放大查看图片：${p.alt}` : '放大查看图片'}
         >
           <img
@@ -70,6 +80,9 @@ export function createImageGallery(context: MarkdownMediaContext) {
         return resolvedSrc ? { ...item, src: resolvedSrc } : null;
       })
       .filter((item): item is NonNullable<typeof item> => Boolean(item));
+    const lightboxImages = normalizedImages
+      .map((item) => createLightboxImage(item.src, item.alt, item.caption))
+      .filter((item): item is LightboxImage => Boolean(item));
 
     if (!normalizedImages.length) return null;
 
@@ -92,7 +105,12 @@ export function createImageGallery(context: MarkdownMediaContext) {
               className="blog-prose-gallery-button"
               onClick={() =>
                 context.openLightbox(
-                  createLightboxImage(item.src, item.alt, item.caption),
+                  lightboxImages.length
+                    ? {
+                        images: lightboxImages,
+                        currentIndex: index,
+                      }
+                    : null,
                 )
               }
               aria-label={

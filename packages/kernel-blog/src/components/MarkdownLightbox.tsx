@@ -1,10 +1,12 @@
-import { Cross2Icon } from '@radix-ui/react-icons';
+import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 
 import type { LightboxImage } from '#blog/components/MarkdownTypes';
 
 type BlogLightboxProps = {
   image: LightboxImage;
   onClose: () => void;
+  onPrev?: () => void;
+  onNext?: () => void;
 };
 
 export const createLightboxImage = (
@@ -25,14 +27,32 @@ export function BlogLightbox(props: BlogLightboxProps) {
       aria-label="图片预览"
       onClick={props.onClose}
     >
-      <button
-        type="button"
-        className="blog-lightbox-close"
-        onClick={props.onClose}
-        aria-label="关闭图片预览"
-      >
-        <Cross2Icon />
-      </button>
+      {props.onPrev ? (
+        <button
+          type="button"
+          className="blog-lightbox-nav blog-lightbox-nav--prev"
+          onClick={(event) => {
+            event.stopPropagation();
+            props.onPrev?.();
+          }}
+          aria-label="上一张图片"
+        >
+          <ChevronLeftIcon />
+        </button>
+      ) : null}
+      {props.onNext ? (
+        <button
+          type="button"
+          className="blog-lightbox-nav blog-lightbox-nav--next"
+          onClick={(event) => {
+            event.stopPropagation();
+            props.onNext?.();
+          }}
+          aria-label="下一张图片"
+        >
+          <ChevronRightIcon />
+        </button>
+      ) : null}
       <figure
         className="blog-lightbox-figure"
         onClick={(event) => event.stopPropagation()}

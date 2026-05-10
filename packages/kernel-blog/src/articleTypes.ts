@@ -23,6 +23,7 @@ export type BlogArticleFrontmatter = {
   coverPosition?: string;
   externalUrl?: string;
   bgm?: boolean;
+  hidden?: boolean;
 };
 
 export type BlogArticleMeta = BlogArticleFrontmatter & {
@@ -37,10 +38,11 @@ export type BlogArticleDetail = BlogArticleMeta & {
 export type BlogContentOptions = {
   articlesDir?: string;
   tagMap?: BlogTagMap;
+  includeHidden?: boolean;
   /**
-   * Browser/Vite 场景下通过 import.meta.glob 注入的文章源文件内容。
-   * key: sourcePath（glob 返回的模块 key）
-   * value: 源文件字符串（通常来自 ?raw）
+   * Browser/Vite environment data loaded with import.meta.glob.
+   * key: sourcePath
+   * value: file content string, usually imported with ?raw
    */
   articleSourceModules?: Record<string, string>;
 };

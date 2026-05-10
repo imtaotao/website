@@ -12,6 +12,11 @@ export type LightboxImage = {
   caption?: string;
 };
 
+export type LightboxState = {
+  images: Array<LightboxImage>;
+  currentIndex: number;
+};
+
 export type BlogImageGalleryItem =
   | string
   | {
@@ -54,5 +59,5 @@ export type BlogMdxProps = {
   Content: ComponentType<Record<string, unknown>>;
   articleSourcePath: string;
   resolveAssetUrl: ResolveBlogAssetUrl;
-  openLightbox?: (image: LightboxImage | null) => void;
+  openLightbox?: (state: LightboxState | null) => void;
 };

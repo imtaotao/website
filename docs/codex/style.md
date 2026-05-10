@@ -29,6 +29,7 @@
 - package 内部导入优先使用对应的 `#` 别名，例如 `#shared/*`、`#resume/*`、`#blog/*`。
 - 需要时使用 `pnpm format` 或 `pnpm format:md` 做格式整理。
 - 博客或 MDX 中文正文里的强调，前后如果紧贴中文、全角标点、链接或内联语法，优先使用 `<strong>...</strong>`，不要依赖 `**...**`。
+- 博客 frontmatter 里的 `hidden: true` 表示文章隐藏，不在博客首页和标签页展示，但仍可通过直达 URL 访问。
 
 ## 命名
 

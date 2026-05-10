@@ -87,10 +87,14 @@ const normalizeExternalUrl = (value: unknown, sourcePath: string) => {
   return externalUrl;
 };
 
-const normalizeBgm = (value: unknown, sourcePath: string) => {
+const normalizeBoolean = (
+  value: unknown,
+  fieldName: 'bgm' | 'hidden',
+  sourcePath: string,
+) => {
   if (value == null) return undefined;
   if (typeof value !== 'boolean') {
-    throw new Error(`Field "bgm" must be a boolean in ${sourcePath}.`);
+    throw new Error(`Field "${fieldName}" must be a boolean in ${sourcePath}.`);
   }
   return value;
 };
@@ -178,9 +182,11 @@ export function normalizeBlogArticleFrontmatter(
     cover: normalizeCover(input.cover, sourcePath),
     coverPosition: normalizeCoverPosition(input.coverPosition, sourcePath),
     externalUrl: normalizeExternalUrl(input.externalUrl, sourcePath),
-    bgm: normalizeBgm(input.bgm, sourcePath),
+    bgm: normalizeBoolean(input.bgm, 'bgm', sourcePath),
+    hidden: normalizeBoolean(input.hidden, 'hidden', sourcePath),
   };
 }
+
 const parseFrontmatter = (source: string, sourcePath: string) => {
   try {
     return parse(source);

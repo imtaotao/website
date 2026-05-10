@@ -130,10 +130,9 @@ const buildBlogArticles = () => {
 };
 
 const BLOG_ARTICLES = buildBlogArticles();
-const HIDDEN_ARTICLE_SLUGS = new Set(['demo']);
 
 const isHiddenBlogArticle = (article: BlogArticleView) => {
-  return HIDDEN_ARTICLE_SLUGS.has(article.slug);
+  return Boolean(article.hidden);
 };
 
 const PUBLIC_BLOG_ARTICLES = BLOG_ARTICLES.filter(
