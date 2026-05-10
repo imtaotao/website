@@ -588,7 +588,6 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
                   : '背景音乐加载中'
               }
             >
-              <span className="blog-bgm-orbit" aria-hidden="true" />
               <span
                 className={`blog-bgm-icon-wrap${
                   isBgmPlaying ? ' blog-bgm-icon-wrap--hidden' : ''

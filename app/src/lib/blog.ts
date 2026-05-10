@@ -1,4 +1,3 @@
-// https://doc.edk24.com/music163
 import type { ComponentType } from 'react';
 import {
   blogTagMap,

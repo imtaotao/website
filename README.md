@@ -63,6 +63,10 @@ pnpm build:packages
 
 Blog posts live under `blog/`. Each post keeps its content and local image assets in its own directory. Resume-related implementation follows the documents under `docs/codex/`; reusable logic should live in `packages/kernel-resume/` instead of being mixed into the app entry.
 
+## Resouce
+
+- https://doc.edk24.com/music163
+
 ## Codex Notes
 
 - Site experience roadmap: `docs/codex/site-experience.md`

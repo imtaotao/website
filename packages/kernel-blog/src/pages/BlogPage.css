@@ -127,18 +127,18 @@
   --blog-lightbox-bg: rgba(248, 250, 252, 0.94);
   --blog-bgm-ripple-core: color-mix(
     in srgb,
-    var(--blog-bg) 74%,
-    #7dd3a6 26%
+    var(--blog-bg) 52%,
+    #16a34a 48%
   );
   --blog-bgm-ripple-mid: color-mix(
     in srgb,
-    var(--blog-bg) 84%,
-    #86efac 16%
+    var(--blog-bg) 64%,
+    #22c55e 36%
   );
   --blog-bgm-ripple-ring: color-mix(
     in srgb,
-    var(--blog-bg) 90%,
-    #bbf7d0 10%
+    var(--blog-bg) 76%,
+    #4ade80 24%
   );
   --blog-cover-height: clamp(160px, 22vw, 280px);
   --blog-body-font: var(
@@ -235,23 +235,38 @@
   --blog-floating-bg: rgba(29, 32, 37, 0.96);
   --blog-floating-hover-bg: rgba(40, 43, 49, 0.98);
   --blog-lightbox-bg: rgba(3, 7, 12, 0.92);
+  --blog-bgm-ripple-core: color-mix(
+    in srgb,
+    var(--blog-bg) 64%,
+    #22c55e 36%
+  );
+  --blog-bgm-ripple-mid: color-mix(
+    in srgb,
+    var(--blog-bg) 80%,
+    #4ade80 20%
+  );
+  --blog-bgm-ripple-ring: color-mix(
+    in srgb,
+    var(--blog-bg) 88%,
+    #86efac 12%
+  );
 }
 
 .blog-shell:not([data-blog-theme='dark']) {
   --blog-bgm-ripple-core: color-mix(
     in srgb,
-    var(--blog-bg) 66%,
-    #6ee7b7 34%
+    var(--blog-bg) 52%,
+    #16a34a 48%
   );
   --blog-bgm-ripple-mid: color-mix(
     in srgb,
-    var(--blog-bg) 76%,
-    #86efac 24%
+    var(--blog-bg) 64%,
+    #22c55e 36%
   );
   --blog-bgm-ripple-ring: color-mix(
     in srgb,
-    var(--blog-bg) 84%,
-    #bbf7d0 16%
+    var(--blog-bg) 76%,
+    #4ade80 24%
   );
 }
 
@@ -333,8 +348,12 @@
 }
 
 .blog-tags-label {
+  display: inline-block;
   color: rgba(102, 102, 102, 0.44);
   white-space: nowrap;
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
 }
 
 .blog-shell[data-blog-theme='dark'] .blog-tags-label {
@@ -342,19 +361,19 @@
 }
 
 .blog-tags-item--active .blog-tags-label {
-  color: #444444;
+  color: #4f4f4f;
 }
 
 .blog-shell[data-blog-theme='dark'] .blog-tags-item--active .blog-tags-label {
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.84);
 }
 
 .blog-tags-item:hover .blog-tags-label {
-  color: #555555;
+  color: rgba(85, 85, 85, 0.9);
 }
 
 .blog-shell[data-blog-theme='dark'] .blog-tags-item:hover .blog-tags-label {
-  color: rgba(255, 255, 255, 0.64);
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .blog-article-main {
@@ -813,6 +832,10 @@
   border-radius: 0;
   background: transparent;
   transition: color 180ms ease, transform 180ms ease;
+}
+
+.blog-index-item.blog-enter {
+  animation-duration: 3600ms;
 }
 
 .blog-index-item:nth-child(5n + 1) {
@@ -2844,79 +2867,102 @@
 .blog-bgm-toggle {
   position: relative;
   left: 2px;
-  overflow: hidden;
+  overflow: visible;
   background: transparent;
   color: var(--blog-text-soft);
   opacity: 0.92;
   isolation: isolate;
 }
 
-.blog-bgm-toggle::before {
-  content: '';
-  position: absolute;
-  inset: 0.06rem;
-  border-radius: 999px;
-  background:
-    radial-gradient(
-      circle at 50% 50%,
-      var(--blog-bgm-ripple-core) 0%,
-      var(--blog-bgm-ripple-core) 16%,
-      var(--blog-bgm-ripple-mid) 28%,
-      color-mix(in srgb, var(--blog-bg) 88%, #86efac 12%) 38%,
-      transparent 48%
-    ),
-    radial-gradient(
-      circle at 50% 50%,
-      transparent 30%,
-      transparent 42%,
-      color-mix(in srgb, var(--blog-bg) 84%, #7dd3a6 16%) 52%,
-      color-mix(in srgb, var(--blog-bg) 90%, #bbf7d0 10%) 64%,
-      transparent 76%
-    ),
-    radial-gradient(
-      circle at 50% 50%,
-      transparent 0%,
-      transparent 66%,
-      color-mix(in srgb, var(--blog-bg) 92%, #d1fae5 8%) 78%,
-      transparent 92%
-    );
-  opacity: 0;
-  transform: scale(0.72);
-  transition: opacity 320ms ease, transform 420ms ease;
-}
-
-.blog-bgm-toggle:hover {
-  color: var(--blog-text-strong);
-  opacity: 0.98;
-}
-
-.blog-bgm-toggle--playing::before {
-  opacity: 1;
-  transform: scale(1);
-  animation: blog-bgm-pulse 2.8s ease-in-out infinite;
+.blog-bgm-toggle::before,
+.blog-bgm-toggle::after,
+.blog-bgm-orbit {
+  pointer-events: none;
 }
 
 .blog-bgm-orbit {
   position: absolute;
-  inset: -0.16rem;
+  inset: -0.3rem;
   border-radius: 999px;
   opacity: 0;
-  transform: scale(0.78);
+  transform: scale(0.88);
+  background:
+    conic-gradient(
+      from 0deg,
+      transparent 0 8deg,
+      color-mix(in srgb, var(--blog-bgm-ripple-core) 98%, transparent) 10deg,
+      color-mix(in srgb, var(--blog-bgm-ripple-core) 98%, transparent) 24deg,
+      transparent 26deg 78deg,
+      color-mix(in srgb, var(--blog-bgm-ripple-mid) 98%, transparent) 80deg,
+      color-mix(in srgb, var(--blog-bgm-ripple-mid) 98%, transparent) 96deg,
+      transparent 98deg 168deg,
+      color-mix(in srgb, var(--blog-bgm-ripple-ring) 96%, transparent) 170deg,
+      color-mix(in srgb, var(--blog-bgm-ripple-ring) 96%, transparent) 190deg,
+      transparent 192deg 258deg,
+      color-mix(in srgb, var(--blog-bgm-ripple-mid) 94%, transparent) 260deg,
+      color-mix(in srgb, var(--blog-bgm-ripple-mid) 94%, transparent) 276deg,
+      transparent 278deg 360deg
+    );
+  -webkit-mask:
+    radial-gradient(circle, transparent 34%, #000 38%, #000 74%, transparent 80%);
+  mask:
+    radial-gradient(circle, transparent 34%, #000 38%, #000 74%, transparent 80%);
+  filter:
+    drop-shadow(0 0 10px color-mix(in srgb, var(--blog-bgm-ripple-core) 46%, transparent))
+    drop-shadow(0 0 18px color-mix(in srgb, var(--blog-bgm-ripple-mid) 28%, transparent));
+}
+
+.blog-bgm-orbit::before,
+.blog-bgm-orbit::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.blog-bgm-orbit::before {
+  background:
+    conic-gradient(
+      from 28deg,
+      transparent 0 6deg,
+      color-mix(in srgb, var(--blog-bgm-ripple-mid) 98%, transparent) 8deg,
+      color-mix(in srgb, var(--blog-bgm-ripple-mid) 98%, transparent) 22deg,
+      transparent 24deg 86deg,
+      color-mix(in srgb, var(--blog-bgm-ripple-ring) 96%, transparent) 88deg,
+      color-mix(in srgb, var(--blog-bgm-ripple-ring) 96%, transparent) 104deg,
+      transparent 106deg 164deg,
+      color-mix(in srgb, var(--blog-bgm-ripple-mid) 96%, transparent) 166deg,
+      color-mix(in srgb, var(--blog-bgm-ripple-mid) 96%, transparent) 180deg,
+      transparent 182deg 252deg,
+      color-mix(in srgb, var(--blog-bgm-ripple-core) 96%, transparent) 254deg,
+      color-mix(in srgb, var(--blog-bgm-ripple-core) 96%, transparent) 270deg,
+      transparent 272deg 360deg
+    );
+  -webkit-mask:
+    radial-gradient(circle, transparent 24%, #000 29%, #000 62%, transparent 69%);
+  mask:
+    radial-gradient(circle, transparent 24%, #000 29%, #000 62%, transparent 69%);
+  opacity: 0.98;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--blog-bgm-ripple-ring) 34%, transparent));
+}
+
+.blog-bgm-orbit::after {
+  inset: 0.08rem;
   background:
     radial-gradient(
-      circle at 50% 50%,
-      transparent 56%,
-      color-mix(in srgb, var(--blog-bg) 91%, #86efac 9%) 72%,
-      color-mix(in srgb, var(--blog-bg) 96%, #d1fae5 4%) 84%,
-      transparent 100%
+      circle,
+      transparent 43%,
+      color-mix(in srgb, var(--blog-bgm-ripple-core) 92%, transparent) 48%,
+      color-mix(in srgb, var(--blog-bgm-ripple-mid) 86%, transparent) 56%,
+      transparent 63%
     );
-  transition: opacity 260ms ease, transform 420ms ease;
+  opacity: 0.9;
+  filter: blur(0.35px) drop-shadow(0 0 5px color-mix(in srgb, var(--blog-bgm-ripple-core) 26%, transparent));
 }
 
 .blog-bgm-toggle--playing .blog-bgm-orbit {
+  animation: blog-bgm-orbit-spin 4.2s linear infinite;
   opacity: 1;
-  transform: scale(1);
-  animation: blog-bgm-orbit 3.4s ease-out infinite;
 }
 
 .blog-bgm-icon-wrap {
@@ -2927,16 +2973,12 @@
   align-items: center;
   justify-content: center;
   color: currentColor;
-  opacity: 0.34;
+  opacity: 0.32;
   transform: scale(1);
   transition:
     opacity 220ms ease,
     transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
     filter 220ms ease;
-}
-
-.blog-bgm-toggle:hover .blog-bgm-icon-wrap {
-  opacity: 0.46;
 }
 
 .blog-bgm-icon-wrap--hidden {
@@ -2946,8 +2988,8 @@
 }
 
 .blog-bgm-toggle .blog-bgm-icon-wrap .blog-article-action-icon {
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.22rem;
+  height: 1.22rem;
   transform: none;
 }
 
@@ -2957,11 +2999,11 @@
   top: 50%;
   display: inline-flex;
   align-items: flex-end;
-  gap: 3px;
-  width: 0.92rem;
-  height: 0.52rem;
+  gap: 4px;
+  width: 1.04rem;
+  height: 0.62rem;
   opacity: 0;
-  transform: translate(-50%, -50%) scale(0.7);
+  transform: translate(-50%, -50%) scale(0.78);
   transition:
     opacity 220ms ease,
     transform 340ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -2970,7 +3012,7 @@
 }
 
 .blog-bgm-bars span {
-  width: 2px;
+  width: 2.6px;
   border-radius: 999px;
   background: currentColor;
   transform-origin: center bottom;
@@ -2989,20 +3031,20 @@
 }
 
 .blog-bgm-toggle--playing .blog-bgm-bars {
-  opacity: 0.42;
+  opacity: 0.72;
   transform: translate(-50%, -50%) scale(1);
 }
 
 .blog-bgm-toggle--playing .blog-bgm-bars span:nth-child(1) {
-  animation: blog-bgm-wave 1.2s ease-in-out infinite;
+  animation: blog-bgm-wave 1.05s ease-in-out infinite;
 }
 
 .blog-bgm-toggle--playing .blog-bgm-bars span:nth-child(2) {
-  animation: blog-bgm-wave 1.2s ease-in-out 140ms infinite;
+  animation: blog-bgm-wave 1.05s ease-in-out 120ms infinite;
 }
 
 .blog-bgm-toggle--playing .blog-bgm-bars span:nth-child(3) {
-  animation: blog-bgm-wave 1.2s ease-in-out 280ms infinite;
+  animation: blog-bgm-wave 1.05s ease-in-out 240ms infinite;
 }
 
 .blog-back-to-top {
@@ -3032,33 +3074,15 @@
   }
 }
 
-@keyframes blog-bgm-pulse {
-  0%,
-  100% {
-    opacity: 0.48;
-    transform: scale(0.88);
-  }
-
-  50% {
-    opacity: 0.92;
-    transform: scale(1.02);
-  }
-}
-
-@keyframes blog-bgm-orbit {
+@keyframes blog-bgm-orbit-spin {
   0% {
-    opacity: 0.28;
-    transform: scale(0.84);
-  }
-
-  50% {
-    opacity: 0.5;
-    transform: scale(1.04);
+    opacity: 0.96;
+    transform: scale(0.88) rotate(0deg);
   }
 
   100% {
-    opacity: 0;
-    transform: scale(1.22);
+    opacity: 1;
+    transform: scale(0.88) rotate(360deg);
   }
 }
 
@@ -3344,6 +3368,30 @@
   .blog-article-actions {
     right: 16px;
     bottom: 16px;
+  }
+
+  .blog-back-to-top {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: rgba(120, 120, 120, 0.92);
+    opacity: 0.96;
+  }
+
+  .blog-back-to-top.blog-back-to-top--visible {
+    opacity: 0.98;
+  }
+
+  .blog-back-to-top.blog-back-to-top--visible:hover {
+    opacity: 1;
+    background: transparent;
+  }
+
+  .blog-back-to-top-icon {
+    width: 1.2rem;
+    height: 1.2rem;
+    transform: none;
   }
 
 

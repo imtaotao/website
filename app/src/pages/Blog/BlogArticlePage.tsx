@@ -4,7 +4,7 @@ import { useParams } from 'react-router';
 import { getBlogArticleBySlug, resolveBlogAssetUrl } from '#app/lib/blog';
 import { usePageMeta } from '#app/lib/pageMeta';
 
-const BLOG_BGM_URL = '/src/assets/bgm.mp3';
+const BLOG_BGM_URL = '/bgm.mp3';
 
 export default function BlogArticlePage() {
   const { slug = '' } = useParams();
