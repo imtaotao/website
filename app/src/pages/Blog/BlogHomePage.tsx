@@ -7,7 +7,7 @@ import avatarUrl from '#app/assets/image/avatar1.jpg';
 export default function BlogHomePage() {
   usePageMeta({
     title: '博客',
-    description: '陈涛的博客，记录前端工程、技术实践、工具使用和日常思考。',
+    description: '陈涛的博客，记录前端工程、技术实践、工具使用和日常想法。',
     canonicalPath: '/blog',
   });
 

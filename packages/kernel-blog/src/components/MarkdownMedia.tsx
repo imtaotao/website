@@ -1,4 +1,10 @@
-import type { CSSProperties, ComponentProps } from 'react';
+import {
+  useId,
+  useRef,
+  type CSSProperties,
+  type ComponentProps,
+  type PointerEvent as ReactPointerEvent,
+} from 'react';
 import {
   ExternalLinkIcon,
   PlayIcon,
@@ -24,29 +30,71 @@ type MarkdownMediaContext = {
 
 export function createBlogMdxImage(context: MarkdownMediaContext) {
   function BlogMdxImage(p: ComponentProps<'img'>) {
+    const hasMovedRef = useRef(false);
+    const shouldOpenRef = useRef(false);
+    const lightboxId = useId();
     const resolvedSrc = p.src
       ? context.resolveAssetUrl(context.articleSourcePath, p.src)
       : undefined;
 
-    const image = createLightboxImage(resolvedSrc, p.alt, p.title);
+    const image = createLightboxImage(resolvedSrc, p.alt, p.title, lightboxId);
     if (!resolvedSrc) return null;
+
+    const openImage = () => {
+      context.openLightbox(
+        image
+          ? {
+              images: [image],
+              currentIndex: 0,
+              selectedId: lightboxId,
+              selectedImage: image,
+            }
+          : null,
+      );
+    };
+
+    const handlePointerDown = () => {
+      hasMovedRef.current = false;
+      shouldOpenRef.current = false;
+    };
+
+    const handlePointerMove = (event: ReactPointerEvent<HTMLButtonElement>) => {
+      if (Math.abs(event.movementX) > 10 || Math.abs(event.movementY) > 10) {
+        hasMovedRef.current = true;
+      }
+    };
+
+    const handlePointerUp = () => {
+      shouldOpenRef.current = !hasMovedRef.current;
+      hasMovedRef.current = false;
+    };
+
+    const handlePointerCancel = () => {
+      hasMovedRef.current = false;
+      shouldOpenRef.current = false;
+    };
 
     return (
       <figure className="blog-prose-image">
         <button
           type="button"
           className="blog-prose-image-button"
-          onClick={() =>
-            context.openLightbox(
-              image
-                ? {
-                    images: [image],
-                    currentIndex: 0,
-                  }
-                : null,
-            )
-          }
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerCancel}
+          onClick={(event) => {
+            if (!shouldOpenRef.current) {
+              event.preventDefault();
+              shouldOpenRef.current = false;
+              return;
+            }
+
+            shouldOpenRef.current = false;
+            openImage();
+          }}
           aria-label={p.alt ? `放大查看图片：${p.alt}` : '放大查看图片'}
+          data-blog-lightbox-id={lightboxId}
         >
           <img
             src={resolvedSrc}
@@ -69,6 +117,70 @@ export function createBlogMdxImage(context: MarkdownMediaContext) {
 }
 
 export function createImageGallery(context: MarkdownMediaContext) {
+  function BlogGalleryImageButton({ item }: { item: LightboxImage }) {
+    const hasMovedRef = useRef(false);
+    const shouldOpenRef = useRef(false);
+
+    const openGalleryImage = () => {
+      context.openLightbox(
+        item.id
+          ? {
+              images: [item],
+              currentIndex: 0,
+              selectedId: item.id,
+              selectedImage: item,
+            }
+          : null,
+      );
+    };
+
+    return (
+      <button
+        type="button"
+        className="blog-prose-gallery-button"
+        onPointerDown={() => {
+          hasMovedRef.current = false;
+          shouldOpenRef.current = false;
+        }}
+        onPointerMove={(event) => {
+          if (
+            Math.abs(event.movementX) > 10 ||
+            Math.abs(event.movementY) > 10
+          ) {
+            hasMovedRef.current = true;
+          }
+        }}
+        onPointerUp={() => {
+          shouldOpenRef.current = !hasMovedRef.current;
+          hasMovedRef.current = false;
+        }}
+        onPointerCancel={() => {
+          hasMovedRef.current = false;
+          shouldOpenRef.current = false;
+        }}
+        onClick={(event) => {
+          if (!shouldOpenRef.current) {
+            event.preventDefault();
+            shouldOpenRef.current = false;
+            return;
+          }
+
+          shouldOpenRef.current = false;
+          openGalleryImage();
+        }}
+        aria-label={item.alt ? `放大查看图片：${item.alt}` : '放大查看图片'}
+        data-blog-lightbox-id={item.id}
+      >
+        <img
+          src={item.src}
+          alt={item.alt}
+          className="blog-prose-gallery-asset"
+          loading="lazy"
+        />
+      </button>
+    );
+  }
+
   return function ImageGallery({ images, columns = 2 }: BlogImageGalleryProps) {
     const normalizedImages = images
       .map((item) => (typeof item === 'string' ? { src: item } : { ...item }))
@@ -80,9 +192,14 @@ export function createImageGallery(context: MarkdownMediaContext) {
         return resolvedSrc ? { ...item, src: resolvedSrc } : null;
       })
       .filter((item): item is NonNullable<typeof item> => Boolean(item));
-    const lightboxImages = normalizedImages
-      .map((item) => createLightboxImage(item.src, item.alt, item.caption))
-      .filter((item): item is LightboxImage => Boolean(item));
+    const lightboxImages = normalizedImages.map((item, index) =>
+      createLightboxImage(
+        item.src,
+        item.alt,
+        item.caption,
+        `${item.src}::${index}`,
+      ),
+    );
 
     if (!normalizedImages.length) return null;
 
@@ -100,30 +217,7 @@ export function createImageGallery(context: MarkdownMediaContext) {
             key={`${item.src}-${index}`}
             className="blog-prose-gallery-item"
           >
-            <button
-              type="button"
-              className="blog-prose-gallery-button"
-              onClick={() =>
-                context.openLightbox(
-                  lightboxImages.length
-                    ? {
-                        images: lightboxImages,
-                        currentIndex: index,
-                      }
-                    : null,
-                )
-              }
-              aria-label={
-                item.alt ? `放大查看图片：${item.alt}` : '放大查看图片'
-              }
-            >
-              <img
-                src={item.src}
-                alt={item.alt}
-                className="blog-prose-gallery-asset"
-                loading="lazy"
-              />
-            </button>
+            <BlogGalleryImageButton item={lightboxImages[index] ?? item} />
             {item.caption ? (
               <figcaption className="blog-prose-gallery-caption">
                 {item.caption}
@@ -227,21 +321,28 @@ export function createMediaLink() {
     const normalizedHref = href.trim();
     const kind = type === 'audio' ? 'audio' : 'video';
     const mediaLabel = kind === 'audio' ? '音频' : '视频';
-    const Icon = kind === 'audio' ? SpeakerLoudIcon : VideoIcon;
-    const content = children ?? label ?? provider ?? mediaLabel;
+    const normalizedLabel = label?.trim();
 
     if (!normalizedHref) return null;
 
     return (
       <a
-        className={`blog-prose-media-link blog-prose-media-link--${kind}`}
+        className="blog-prose-media-link"
         href={normalizedHref}
         target="_blank"
         rel="noreferrer"
       >
-        <Icon className="blog-prose-media-link-icon" />
-        <span>{content}</span>
-        <ExternalLinkIcon className="blog-prose-media-link-external" />
+        {children ?? (
+          <span className="blog-prose-media-link-content">
+            <span className="blog-prose-media-link-kicker">
+              {provider ? `${provider} ${mediaLabel}` : mediaLabel}
+            </span>
+            <span className="blog-prose-media-link-title">
+              {normalizedLabel || normalizedHref}
+            </span>
+          </span>
+        )}
+        <ExternalLinkIcon className="blog-prose-media-link-icon" />
       </a>
     );
   };

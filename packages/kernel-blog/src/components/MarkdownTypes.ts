@@ -10,11 +10,15 @@ export type LightboxImage = {
   src: string;
   alt?: string;
   caption?: string;
+  id?: string;
 };
 
 export type LightboxState = {
   images: Array<LightboxImage>;
   currentIndex: number;
+  selectedIndex?: number;
+  selectedId?: string;
+  selectedImage?: LightboxImage;
 };
 
 export type BlogImageGalleryItem =

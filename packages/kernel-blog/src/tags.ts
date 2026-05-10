@@ -22,7 +22,7 @@ export const blogTagMap: BlogTagMap = {
     order: 80,
   },
   thinking: {
-    label: '思考',
+    label: '想法',
     description: '偏抽象一些的判断、取舍、方法论和复盘。',
     order: 50,
   },

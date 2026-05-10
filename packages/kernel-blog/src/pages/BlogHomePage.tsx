@@ -207,7 +207,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
           ) : null}
           <div>
             <p className="blog-home-subtitle">
-              记录一些我的技术分享思考、实践和日常生活。
+              记录一些我的技术想法、实践和日常生活。
             </p>
           </div>
         </div>

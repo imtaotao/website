@@ -1,3 +1,4 @@
+import type { ComponentType } from 'react';
 import {
   blogTagMap,
   normalizeBlogArticleFrontmatter,
@@ -5,7 +6,7 @@ import {
   type BlogArticleFrontmatter,
 } from '@website-kernel/blog';
 
-import type { ComponentType } from 'react';
+type RawAssetModule = Record<string, string>;
 
 type MdxArticleModule = Record<
   string,
@@ -14,7 +15,6 @@ type MdxArticleModule = Record<
     frontmatter?: unknown;
   }
 >;
-type RawAssetModule = Record<string, string>;
 
 export type BlogArticleView = BlogArticleFrontmatter & {
   Content: ComponentType<Record<string, unknown>>;
@@ -64,8 +64,48 @@ const DEFAULT_COVER_FILENAMES = [
   'cover.jpeg',
 ];
 
+const BLOG_TAG_ALIASES = {
+  ai: 'tech',
+  essay: 'essay',
+  frontend: 'tech',
+  life: 'essay',
+} as const;
+
+const BLOG_TAG_META = {
+  essay: {
+    label: '随笔',
+    description: '更偏日常观察、生活记录和轻量表达的内容。',
+    order: 80,
+  },
+  tech: {
+    label: '技术',
+    description: '和前端实现、AI 工具、工程实践相关的内容。',
+    order: 10,
+  },
+  nodejs: blogTagMap.nodejs,
+  thinking: blogTagMap.thinking,
+  notes: blogTagMap.notes,
+  other: blogTagMap.other,
+} as const;
+
+const BLOG_TAG_KEYS = Object.keys(BLOG_TAG_META) as Array<
+  keyof typeof BLOG_TAG_META
+>;
+
 const compareDateDesc = (left: string, right: string) => {
   return Date.parse(right) - Date.parse(left);
+};
+
+const normalizeBlogTag = (tag: string): string => {
+  return BLOG_TAG_ALIASES[tag as keyof typeof BLOG_TAG_ALIASES] ?? tag;
+};
+
+const normalizeBlogTags = (tags: Array<string>): Array<string> => {
+  return Array.from(new Set(tags.map(normalizeBlogTag)));
+};
+
+const getBlogTagMeta = (tag: string) => {
+  return BLOG_TAG_META[tag as keyof typeof BLOG_TAG_META] ?? blogTagMap[tag];
 };
 
 const toArticleAssetKey = (articlePath: string, assetPath: string) => {
@@ -108,14 +148,18 @@ const buildBlogArticles = () => {
         .replace(/\\/g, '/')
         .slice(0, sourcePath.replace(/\\/g, '/').lastIndexOf('/'));
       const coverUrl = resolveArticleCover(sourcePath, frontmatter.cover);
+      const normalizedTags: Array<string> = normalizeBlogTags(frontmatter.tags);
 
       return {
         ...frontmatter,
+        tags: normalizedTags,
         Content: module.default,
         coverUrl,
         sourcePath,
         articleDir,
-        tagLabels: frontmatter.tags.map((tag) => blogTagMap[tag]?.label ?? tag),
+        tagLabels: normalizedTags.map(
+          (tag) => getBlogTagMeta(tag)?.label ?? tag,
+        ),
       };
     })
     .sort((left, right) => {
@@ -154,14 +198,12 @@ export function getBlogArticleBySlug(
 }
 
 export function getBlogTagSummaries(): Array<BlogTagSummary> {
-  return Object.entries(blogTagMap)
-    .map(([key, tag]) => ({
-      key,
-      ...tag,
-      count: PUBLIC_BLOG_ARTICLES.filter((article) =>
-        article.tags.includes(key),
-      ).length,
-    }))
+  return BLOG_TAG_KEYS.map((key) => ({
+    key,
+    ...BLOG_TAG_META[key],
+    count: PUBLIC_BLOG_ARTICLES.filter((article) => article.tags.includes(key))
+      .length,
+  }))
     .filter((tag) => tag.count > 0)
     .sort((left, right) => {
       if (left.order !== right.order) return left.order - right.order;

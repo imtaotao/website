@@ -4,6 +4,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useCallback,
   type CSSProperties,
   type ComponentType,
   type SVGProps,
@@ -100,6 +101,8 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
     [],
   );
   const [, setLightboxIndex] = useState(0);
+  const [lightboxTransitionDirection, setLightboxTransitionDirection] =
+    useState<-1 | 0 | 1>(0);
   const articleRef = useRef<HTMLElement | null>(null);
   const titleRef = useRef<HTMLHeadingElement | null>(null);
   const articleBodyRef = useRef<HTMLElement | null>(null);
@@ -117,74 +120,111 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   }, [article, searchParams]);
   const shouldEnableBgm = Boolean(article?.bgm && props.bgmUrl);
 
-  const collectArticleLightboxImages = (): Array<LightboxImage> => {
+  const collectArticleLightboxImages = useCallback((): Array<LightboxImage> => {
     const articleBody = articleBodyRef.current;
     if (!articleBody) return [];
 
     return Array.from(
-      articleBody.querySelectorAll<HTMLElement>('figure.blog-prose-image'),
+      articleBody.querySelectorAll<HTMLElement>(
+        'figure.blog-prose-image, figure.blog-prose-gallery-item',
+      ),
     )
       .map((figure) => {
+        const button = figure.querySelector<HTMLButtonElement>(
+          'button[data-blog-lightbox-id]',
+        );
         const img = figure.querySelector<HTMLImageElement>(
-          '.blog-prose-image-asset',
+          '.blog-prose-image-asset, .blog-prose-gallery-asset',
         );
         if (!img?.src) return null;
         const caption = figure.querySelector<HTMLElement>(
-          '.blog-prose-image-caption',
+          '.blog-prose-image-caption, .blog-prose-gallery-caption',
         )?.textContent;
 
         return {
+          id: button?.dataset.blogLightboxId,
           src: img.src,
           alt: img.alt || undefined,
           caption: caption?.trim() || undefined,
         };
       })
       .filter((item): item is NonNullable<typeof item> => Boolean(item));
-  };
+  }, []);
 
-  const openLightbox = (state: LightboxState | null) => {
-    if (!state || !state.images.length) return;
+  const openLightbox = useCallback(
+    (state: LightboxState | null) => {
+      if (!state || !state.images.length) return;
 
-    const fallbackImages =
-      state.images.length === 1 ? collectArticleLightboxImages() : [];
-    const resolvedImages =
-      fallbackImages.length > 1 ? fallbackImages : state.images;
-    const targetImage =
-      state.images[
-        Math.min(Math.max(state.currentIndex, 0), state.images.length - 1)
-      ] ?? state.images[0];
-    const fallbackIndex = resolvedImages.findIndex(
-      (item) =>
-        item.src === targetImage?.src &&
-        item.caption === targetImage?.caption &&
-        item.alt === targetImage?.alt,
-    );
-    const nextIndex =
-      fallbackIndex >= 0
-        ? fallbackIndex
-        : Math.min(Math.max(state.currentIndex, 0), resolvedImages.length - 1);
+      const fallbackImages =
+        state.images.length === 1 ? collectArticleLightboxImages() : [];
+      const resolvedImages =
+        fallbackImages.length > 1 ? fallbackImages : state.images;
+      const assertValidIndex = (index: number, label: string) => {
+        if (!Number.isInteger(index)) {
+          throw new Error(`Invalid ${label}: must be an integer.`);
+        }
+        if (index < 0 || index >= resolvedImages.length) {
+          throw new Error(
+            `Invalid ${label}: ${index} is out of bounds for ${resolvedImages.length} images.`,
+          );
+        }
+        return index;
+      };
 
-    setLightboxImages(resolvedImages);
-    setLightboxIndex(nextIndex);
-    setLightboxImage(resolvedImages[nextIndex] ?? null);
-  };
+      let nextIndex: number;
 
-  const closeLightbox = () => {
+      if (state.selectedId != null) {
+        nextIndex = resolvedImages.findIndex(
+          (item) => item.id === state.selectedId,
+        );
+        if (nextIndex < 0) {
+          throw new Error(`Invalid selectedId: ${state.selectedId} not found.`);
+        }
+      } else if (state.selectedIndex != null) {
+        nextIndex = assertValidIndex(state.selectedIndex, 'selectedIndex');
+      } else if (state.selectedImage != null) {
+        nextIndex = resolvedImages.findIndex(
+          (item) =>
+            item.src === state.selectedImage?.src &&
+            item.caption === state.selectedImage?.caption &&
+            item.alt === state.selectedImage?.alt,
+        );
+        if (nextIndex < 0) {
+          throw new Error('Invalid selectedImage: image not found.');
+        }
+      } else {
+        nextIndex = assertValidIndex(state.currentIndex, 'currentIndex');
+      }
+
+      setLightboxImages(resolvedImages);
+      setLightboxIndex(nextIndex);
+      setLightboxTransitionDirection(0);
+      setLightboxImage(resolvedImages[nextIndex] ?? null);
+    },
+    [collectArticleLightboxImages],
+  );
+
+  const closeLightbox = useCallback(() => {
     setLightboxImage(null);
     setLightboxImages([]);
     setLightboxIndex(0);
-  };
+    setLightboxTransitionDirection(0);
+  }, []);
 
-  const handleLightboxStep = (direction: -1 | 1) => {
-    if (lightboxImages.length <= 1) return;
-    setLightboxIndex((currentIndex) => {
-      const nextIndex =
-        (currentIndex + direction + lightboxImages.length) %
-        lightboxImages.length;
-      setLightboxImage(lightboxImages[nextIndex] ?? null);
-      return nextIndex;
-    });
-  };
+  const handleLightboxStep = useCallback(
+    (direction: -1 | 1) => {
+      if (lightboxImages.length <= 1) return;
+      setLightboxIndex((currentIndex) => {
+        const nextIndex =
+          (currentIndex + direction + lightboxImages.length) %
+          lightboxImages.length;
+        setLightboxTransitionDirection(direction);
+        setLightboxImage(lightboxImages[nextIndex] ?? null);
+        return nextIndex;
+      });
+    },
+    [lightboxImages],
+  );
 
   useEffect(() => {
     if (!lightboxImage) return;
@@ -555,6 +595,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
           <BlogLightbox
             image={lightboxImage}
             onClose={closeLightbox}
+            transitionDirection={lightboxTransitionDirection}
             onPrev={
               lightboxImages.length > 1
                 ? () => handleLightboxStep(-1)
