@@ -67,7 +67,7 @@ commit 使用英文提交，不要一个个文件添加，可以通过 `git comm
 // 如 feat(resume): 增加了简历导出相关功能
 ```
 
-scope 选填表示 commit 的作用范围，如数据层、视图层，也可以是目录名称 subject 必填用于对 commit 进行简短的描述 type 必填表示提交类型，值有以下几种：
+scope 选填表示 commit 的作用范围，如数据层、视图层，也可以是目录名称 subject 必填用于对 commit 进行简短的描述 type 必填表示提交类型，值有以下几种且必须使用小写：
 
 ```shell
 eat - 新功能 feature

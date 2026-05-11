@@ -1,0 +1,85 @@
+.blog-prose-image,
+.blog-prose-gallery {
+  margin: 0 0 1.35rem;
+}
+
+.blog-prose-image,
+.blog-prose-gallery-item {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.blog-prose-image-button,
+.blog-prose-gallery-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: var(--blog-image-bg);
+  cursor: zoom-in;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.blog-prose-image-button:focus-visible,
+.blog-prose-gallery-button:focus-visible {
+  outline: 2px solid var(--blog-focus-ring);
+  outline-offset: 2px;
+}
+
+.blog-prose-image-asset,
+.blog-prose-gallery-asset {
+  display: block;
+  width: 100%;
+  background: var(--blog-image-bg);
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.blog-prose-image-asset {
+  max-height: 34rem;
+  object-fit: contain;
+}
+
+.blog-prose-gallery {
+  --blog-gallery-columns: 2;
+  display: grid;
+  grid-template-columns: repeat(var(--blog-gallery-columns), minmax(0, 1fr));
+  gap: 12px;
+}
+
+.blog-prose-gallery-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.blog-prose-gallery-asset {
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
+
+.blog-prose-image-button:hover .blog-prose-image-asset,
+.blog-prose-gallery-button:hover .blog-prose-gallery-asset {
+  opacity: 0.96;
+}
+
+.blog-prose-image-caption {
+  margin-top: 8px;
+}
+
+.blog-prose-image-caption,
+.blog-prose-gallery-caption {
+  color: var(--blog-text-faint);
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.7;
+}
+
+@media (max-width: 767px) {
+  .blog-prose-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+}

@@ -1,0 +1,105 @@
+.blog-prose-video-link,
+.blog-prose-video-link--player {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  max-width: 100%;
+  margin: 0 0.12rem;
+  padding: 0.12rem 0.42rem;
+  border: 1px solid rgba(37, 99, 235, 0.24);
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.07);
+  color: var(--blog-text-strong);
+  font-size: 0.88em;
+  font-weight: 650;
+  line-height: 1.38;
+  text-decoration: none;
+  text-shadow: none;
+  vertical-align: 0.02em;
+  transition: border-color 180ms ease, background-color 180ms ease,
+    color 180ms ease;
+}
+
+.blog-prose-video-link--player {
+  cursor: pointer;
+}
+
+.blog-prose-video-link:hover,
+.blog-prose-video-link--player:hover {
+  border-color: rgba(37, 99, 235, 0.4);
+  background: rgba(37, 99, 235, 0.11);
+  color: var(--blog-text-strong);
+  text-decoration: none;
+}
+
+.blog-prose-video-link-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  max-width: 100%;
+  vertical-align: 0.02em;
+}
+
+.blog-prose-video-link-icon,
+.blog-prose-media-link-external {
+  flex: none;
+  width: 0.86em;
+  height: 0.86em;
+  color: #2563eb;
+}
+
+.blog-prose-video-link-icon--trigger {
+  width: 0.92em;
+  height: 0.92em;
+}
+
+.blog-prose-media-link-external {
+  color: var(--blog-text-faint);
+}
+
+.blog-prose-video-link-external-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blog-text-faint);
+}
+
+.blog-prose-video-link-popover {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 0.55rem);
+  z-index: 20;
+  display: block;
+  width: min(24rem, calc(100vw - 3rem));
+  padding: 0.7rem;
+  border: 1px solid var(--blog-line);
+  border-radius: 12px;
+  background: var(--blog-panel-bg);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
+}
+
+.blog-prose-video-link-player {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--blog-line);
+  border-radius: 10px;
+  background: var(--blog-panel-bg);
+}
+
+.blog-shell[data-blog-theme='dark'] .blog-prose-video-link,
+.blog-shell[data-blog-theme='dark'] .blog-prose-video-link--player {
+  border-color: rgba(135, 188, 221, 0.24);
+  background: rgba(135, 188, 221, 0.08);
+}
+
+.blog-shell[data-blog-theme='dark'] .blog-prose-video-link-popover {
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.34);
+}
+
+@media (max-width: 767px) {
+  .blog-prose-video-link-popover {
+    width: min(20rem, calc(100vw - 2rem));
+  }
+}

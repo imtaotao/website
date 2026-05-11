@@ -16,12 +16,12 @@ import {
   createHeadingIdFactory,
   flattenText,
 } from '#blog/components/MarkdownHeading';
-import {
-  createBlogMdxImage,
-  createImageGallery,
-  createMediaEmbed,
-  createMediaLink,
-} from '#blog/components/MarkdownMedia';
+import { createAudioEmbed } from '#blog/components/MarkdownAudioEmbed';
+import { createAudioLink } from '#blog/components/MarkdownAudioLink';
+import { createBlogMdxImage } from '#blog/components/MarkdownImage';
+import { createImageGallery } from '#blog/components/MarkdownImageGallery';
+import { createVideoEmbed } from '#blog/components/MarkdownVideoEmbed';
+import { createVideoLink } from '#blog/components/MarkdownVideoLink';
 import { isMediaOnlyParagraph } from '#blog/components/MarkdownNodes';
 import { BlogMdxChatThread } from '#blog/components/MarkdownChat';
 import { BlogMdxDetailsBlock } from '#blog/components/MarkdownDetailsBlock';
@@ -108,16 +108,42 @@ function BlogMdxImpl(props: BlogMdxProps) {
       }),
     [openLightbox, props.articleSourcePath, props.resolveAssetUrl],
   );
-  const MediaEmbed = useMemo(
+  const AudioEmbed = useMemo(
     () =>
-      createMediaEmbed({
+      createAudioEmbed({
         articleSourcePath: props.articleSourcePath,
         resolveAssetUrl: props.resolveAssetUrl,
         openLightbox,
       }),
     [openLightbox, props.articleSourcePath, props.resolveAssetUrl],
   );
-  const MediaLink = useMemo(() => createMediaLink(), []);
+  const VideoEmbed = useMemo(
+    () =>
+      createVideoEmbed({
+        articleSourcePath: props.articleSourcePath,
+        resolveAssetUrl: props.resolveAssetUrl,
+        openLightbox,
+      }),
+    [openLightbox, props.articleSourcePath, props.resolveAssetUrl],
+  );
+  const AudioLink = useMemo(
+    () =>
+      createAudioLink({
+        articleSourcePath: props.articleSourcePath,
+        resolveAssetUrl: props.resolveAssetUrl,
+        openLightbox,
+      }),
+    [openLightbox, props.articleSourcePath, props.resolveAssetUrl],
+  );
+  const VideoLink = useMemo(
+    () =>
+      createVideoLink({
+        articleSourcePath: props.articleSourcePath,
+        resolveAssetUrl: props.resolveAssetUrl,
+        openLightbox,
+      }),
+    [openLightbox, props.articleSourcePath, props.resolveAssetUrl],
+  );
 
   const renderHeading = useCallback(
     (tag: HeadingTag, className: string, p: ComponentProps<'h1'>) => {
@@ -186,8 +212,10 @@ function BlogMdxImpl(props: BlogMdxProps) {
       ),
       img: BlogMdxImage,
       ImageGallery,
-      MediaEmbed,
-      MediaLink,
+      AudioEmbed,
+      VideoEmbed,
+      AudioLink,
+      VideoLink,
       ChatThread: BlogMdxChatThread,
       DetailsBlock: BlogMdxDetailsBlock,
       Poem: BlogMdxPoem,
@@ -202,8 +230,10 @@ function BlogMdxImpl(props: BlogMdxProps) {
     }),
     [
       ImageGallery,
-      MediaEmbed,
-      MediaLink,
+      AudioEmbed,
+      VideoEmbed,
+      AudioLink,
+      VideoLink,
       BlogMdxImage,
       renderColorText,
       renderHeading,

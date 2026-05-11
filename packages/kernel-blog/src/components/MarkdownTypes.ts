@@ -34,22 +34,36 @@ export type BlogImageGalleryProps = {
   columns?: 2 | 3 | 4;
 };
 
-export type BlogMediaEmbedKind = 'audio' | 'video';
-
-export type BlogMediaEmbedProps = {
-  href: string;
+export type BlogAudioEmbedProps = {
+  href?: string;
   title: string;
   src?: string;
-  type?: BlogMediaEmbedKind;
+  description?: string;
+  duration?: string;
+  provider?: string;
+};
+
+export type BlogVideoEmbedProps = {
+  href?: string;
+  title: string;
+  src?: string;
   description?: string;
   duration?: string;
   poster?: string;
   provider?: string;
 };
 
-export type BlogMediaLinkProps = {
-  href: string;
-  type?: BlogMediaEmbedKind;
+export type BlogAudioLinkProps = {
+  href?: string;
+  src?: string;
+  children?: ReactNode;
+  label?: string;
+  provider?: string;
+};
+
+export type BlogVideoLinkProps = {
+  href?: string;
+  src?: string;
   children?: ReactNode;
   label?: string;
   provider?: string;
