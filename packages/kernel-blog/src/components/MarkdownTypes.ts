@@ -80,6 +80,33 @@ export type BlogWebEmbedProps = {
   allowFullScreen?: boolean;
 };
 
+export type BlogGitHubMentionProps = {
+  username: string;
+  name?: string;
+  href?: string;
+  avatarUrl?: string;
+  bio?: string;
+  followers?: string | number;
+  repositories?: string | number;
+};
+
+export type BlogGitHubRepoProps = {
+  repo: string;
+  label?: string;
+  href?: string;
+  description?: string;
+  language?: string;
+  stars?: string | number;
+  owner?: string;
+  ownerAvatarUrl?: string;
+};
+
+export type BlogUrlLinkProps = {
+  href: string;
+  label?: string;
+  children?: ReactNode;
+};
+
 export type ResolveBlogAssetUrl = (
   articleSourcePath: string,
   assetPath: string,
