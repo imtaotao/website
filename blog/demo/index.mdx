@@ -274,7 +274,38 @@ lines={[
 ]}
 />
 
-## 13. 后续约定
+## 13. Fancy list
+
+`FancyList` is useful when you want a lighter custom list block but still need inline MDX content.
+
+<FancyList
+  title={<>Component usage notes</>}
+  items={[
+    (
+      <>
+        Use <code>UrlLink</code> for a plain external site, such as{' '}
+        <UrlLink href="https://imtaotao.me" label="imtaotao.me" />.
+      </>
+    ),
+    (
+      <>
+        Use <GitHubMention username="imtaotao" /> and{' '}
+        <GitHubRepo repo="imtaotao/website" /> when the article needs inline
+        GitHub references.
+      </>
+    ),
+    {
+      title: <>MDX content is allowed</>,
+      content: (
+        <>
+          You can place `inline` components, <Color c="blue">styled text</Color>, or regular emphasis like <strong>bold text</strong> inside each item.
+        </>
+      ),
+    },
+  ]}
+/>
+
+## 14. 后续约定
 
 - 单图优先用 Markdown 原生语法
 - 多图排版用 `ImageGallery`
@@ -283,6 +314,7 @@ lines={[
 - 段落内的音频小入口用 `AudioLink`
 - 段落内的视频小入口用 `VideoLink`
 - 网页 iframe 卡片用 `WebEmbed`
+- 普通外链胶囊用 `UrlLink`
 - GitHub 账号提及用 `GitHubMention`
 - GitHub 仓库入口用 `GitHubRepo`
 - 数学表达式用 `$...$` 写行内公式，用 `$$...$$` 写块级公式

@@ -29,6 +29,7 @@ import { BlogMdxWebEmbed } from '#blog/components/MarkdownWebEmbed';
 import { isMediaOnlyParagraph } from '#blog/components/MarkdownNodes';
 import { BlogMdxChatThread } from '#blog/components/MarkdownChat';
 import { BlogMdxDetailsBlock } from '#blog/components/MarkdownDetailsBlock';
+import { BlogMdxFancyList } from '#blog/components/MarkdownFancyList';
 import { BlogMdxPoem } from '#blog/components/MarkdownPoem';
 import { BlogMdxSummaryCards } from '#blog/components/MarkdownSummaryCards';
 import type {
@@ -225,6 +226,7 @@ function BlogMdxImpl(props: BlogMdxProps) {
       AudioLink,
       VideoLink,
       ChatThread: BlogMdxChatThread,
+      FancyList: BlogMdxFancyList,
       DetailsBlock: BlogMdxDetailsBlock,
       Poem: BlogMdxPoem,
       SummaryCards: BlogMdxSummaryCards,

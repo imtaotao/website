@@ -107,6 +107,19 @@ export type BlogUrlLinkProps = {
   children?: ReactNode;
 };
 
+export type BlogFancyListItem =
+  | ReactNode
+  | {
+      title?: ReactNode;
+      content: ReactNode | Array<ReactNode>;
+    };
+
+export type BlogFancyListProps = {
+  title?: ReactNode;
+  items: Array<BlogFancyListItem>;
+  className?: string;
+};
+
 export type ResolveBlogAssetUrl = (
   articleSourcePath: string,
   assetPath: string,
