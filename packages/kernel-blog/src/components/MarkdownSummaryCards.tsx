@@ -1,3 +1,5 @@
+import '#blog/components/MarkdownSummaryCards.css';
+
 type SummaryCardItem = {
   title: string;
   content: string | Array<string>;

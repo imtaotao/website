@@ -1,0 +1,31 @@
+.blog-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: var(--blog-surface);
+  color: var(--blog-text-soft);
+  cursor: pointer;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.blog-theme-toggle:hover {
+  background: var(--blog-surface-soft);
+  color: var(--blog-text-strong);
+}
+
+.blog-theme-toggle:focus-visible {
+  outline: 2px solid var(--blog-focus-ring);
+  outline-offset: 2px;
+}
+
+.blog-theme-toggle-icon {
+  width: 1.14rem;
+  height: 1.14rem;
+  transform: scale(1.12);
+  stroke-width: 2.15;
+}

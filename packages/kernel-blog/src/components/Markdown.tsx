@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 import 'katex/dist/katex.min.css';
+import '#blog/components/Markdown.css';
 
 import { BlogMdxPre } from '#blog/components/MarkdownCodeBlock';
 import {

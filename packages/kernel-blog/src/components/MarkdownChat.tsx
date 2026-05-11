@@ -1,4 +1,5 @@
 import { BlogMdxDetailsBlock } from '#blog/components/MarkdownDetailsBlock';
+import '#blog/components/MarkdownChat.css';
 
 type ChatMessage = {
   align?: 'left' | 'right';

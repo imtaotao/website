@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import '#blog/components/MarkdownPoem.css';
 
 type PoemStanza = string | Array<string>;
 

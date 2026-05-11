@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import '#blog/components/MarkdownDetailsBlock.css';
 
 export type BlogMdxDetailsBlockProps = {
   title: string;

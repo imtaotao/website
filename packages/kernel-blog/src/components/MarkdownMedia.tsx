@@ -13,6 +13,7 @@ import {
 } from '@radix-ui/react-icons';
 
 import { createLightboxImage } from '#blog/components/MarkdownLightbox';
+import '#blog/components/MarkdownMedia.css';
 import type {
   BlogImageGalleryProps,
   BlogMediaEmbedProps,

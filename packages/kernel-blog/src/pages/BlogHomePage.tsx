@@ -8,6 +8,8 @@ import {
 import type { BlogArticleMeta, BlogTagSummary } from '#blog/articleTypes';
 
 import '#blog/pages/BlogPage.css';
+import '#blog/pages/BlogShared.css';
+import '#blog/pages/BlogHomePage.css';
 
 export const BLOG_TAG_QUERY_KEY = 'tag';
 

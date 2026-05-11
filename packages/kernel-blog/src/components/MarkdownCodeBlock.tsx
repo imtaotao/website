@@ -2,6 +2,7 @@ import { useEffect, useState, type ComponentProps } from 'react';
 import hljs from 'highlight.js';
 
 import { copyToClipboard } from '#blog/components/MarkdownClipboard';
+import '#blog/components/MarkdownCodeBlock.css';
 
 const parseCodeMeta = (className?: string) => {
   const languageMatch = /language-([^\s]+)/.exec(className ?? '');

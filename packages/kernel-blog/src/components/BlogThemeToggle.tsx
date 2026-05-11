@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
 
+import '#blog/components/BlogThemeToggle.css';
+
 export type BlogTheme = 'light' | 'dark';
 
 const BLOG_THEME_STORAGE_KEY = 'website:blog-theme';
