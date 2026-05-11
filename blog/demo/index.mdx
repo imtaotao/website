@@ -147,6 +147,8 @@ images={[
 
 `AudioEmbed` and `VideoEmbed` also support a `src` prop now. When `src` is provided, the card renders a native player inside the card. If `href` is also provided, the external link is still kept in the top-right corner.
 
+Inline links can do the same. For example, this <AudioLink src="https://music.163.com/song/media/outer/url?id=493950499.mp3">audio button without an external href</AudioLink> can play directly and does not render the external-link icon.
+
 <AudioEmbed
   href="https://music.163.com/#/song?id=493950499"
   src="https://music.163.com/song/media/outer/url?id=493950499.mp3"
