@@ -63,7 +63,6 @@ export function createAudioLink(context: MarkdownMediaContext) {
         </a>
       );
     }
-    const TriggerIcon = isPlaying ? PauseIcon : PlayIcon;
     const statusLabel = loadError
       ? 'audio unavailable'
       : isLoading
@@ -104,11 +103,22 @@ export function createAudioLink(context: MarkdownMediaContext) {
           disabled={Boolean(loadError)}
           title={statusLabel ?? undefined}
         >
-          <TriggerIcon className="blog-prose-audio-link-icon blog-prose-audio-link-icon--trigger" />
+          <span
+            className="blog-prose-audio-link-trigger"
+            aria-hidden="true"
+            data-state={isPlaying ? 'playing' : 'idle'}
+          >
+            <PlayIcon className="blog-prose-audio-link-icon blog-prose-audio-link-icon--trigger blog-prose-audio-link-icon--play" />
+            <PauseIcon className="blog-prose-audio-link-icon blog-prose-audio-link-icon--trigger blog-prose-audio-link-icon--pause" />
+          </span>
           {content}
-          {statusLabel ? (
-            <span className="blog-prose-audio-link-status">{statusLabel}</span>
-          ) : null}
+          <span
+            className="blog-prose-audio-link-status"
+            data-visible={statusLabel ? 'true' : 'false'}
+            aria-hidden={statusLabel ? undefined : true}
+          >
+            {statusLabel ?? ''}
+          </span>
         </button>
         {normalizedHref ? (
           <MediaLinkExternalAction

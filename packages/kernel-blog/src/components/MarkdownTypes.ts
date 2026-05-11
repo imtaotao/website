@@ -69,6 +69,17 @@ export type BlogVideoLinkProps = {
   provider?: string;
 };
 
+export type BlogWebEmbedProps = {
+  src: string;
+  href?: string;
+  title: string;
+  description?: string;
+  provider?: string;
+  height?: number | string;
+  allow?: string;
+  allowFullScreen?: boolean;
+};
+
 export type ResolveBlogAssetUrl = (
   articleSourcePath: string,
   assetPath: string,

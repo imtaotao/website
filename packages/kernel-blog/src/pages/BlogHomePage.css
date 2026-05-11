@@ -348,6 +348,13 @@
   min-width: 0;
 }
 
+.blog-index-item--external .blog-index-title-text {
+  text-decoration-line: underline;
+  text-decoration-thickness: 0.05em;
+  text-underline-offset: 0.14em;
+  text-decoration-color: color-mix(in srgb, currentColor 38%, transparent);
+}
+
 .blog-index-external-icon {
   display: inline-flex;
   flex: none;

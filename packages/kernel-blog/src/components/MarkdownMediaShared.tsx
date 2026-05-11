@@ -7,6 +7,7 @@ import type {
   BlogAudioLinkProps,
   BlogVideoEmbedProps,
   BlogVideoLinkProps,
+  BlogWebEmbedProps,
   LightboxState,
   ResolveBlogAssetUrl,
 } from '#blog/components/MarkdownTypes';
@@ -21,6 +22,7 @@ export type AudioEmbedProps = BlogAudioEmbedProps;
 export type VideoEmbedProps = BlogVideoEmbedProps;
 export type AudioLinkProps = BlogAudioLinkProps;
 export type VideoLinkProps = BlogVideoLinkProps;
+export type WebEmbedProps = BlogWebEmbedProps;
 
 export function renderMediaLinkContent(
   children: ReactNode,

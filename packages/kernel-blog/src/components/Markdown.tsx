@@ -22,6 +22,7 @@ import { createBlogMdxImage } from '#blog/components/MarkdownImage';
 import { createImageGallery } from '#blog/components/MarkdownImageGallery';
 import { createVideoEmbed } from '#blog/components/MarkdownVideoEmbed';
 import { createVideoLink } from '#blog/components/MarkdownVideoLink';
+import { BlogMdxWebEmbed } from '#blog/components/MarkdownWebEmbed';
 import { isMediaOnlyParagraph } from '#blog/components/MarkdownNodes';
 import { BlogMdxChatThread } from '#blog/components/MarkdownChat';
 import { BlogMdxDetailsBlock } from '#blog/components/MarkdownDetailsBlock';
@@ -214,6 +215,7 @@ function BlogMdxImpl(props: BlogMdxProps) {
       ImageGallery,
       AudioEmbed,
       VideoEmbed,
+      WebEmbed: BlogMdxWebEmbed,
       AudioLink,
       VideoLink,
       ChatThread: BlogMdxChatThread,
