@@ -80,6 +80,13 @@ export type BlogWebEmbedProps = {
   allowFullScreen?: boolean;
 };
 
+export type BlogXPostEmbedProps = {
+  url?: string;
+  id?: string;
+  title?: string;
+  height?: number | string;
+};
+
 export type BlogGitHubMentionProps = {
   username: string;
   name?: string;

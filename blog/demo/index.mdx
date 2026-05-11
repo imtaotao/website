@@ -44,6 +44,13 @@ This is an English paragraph for typography testing. The quick brown fox jumps o
 
 ## 2. 标题层级
 
+# h1
+## H2
+### h3
+#### h4
+##### h5
+###### h6
+
 二级标题和三级标题都会进入阅读结构里，所以正文里正常写就行。
 
 ### 2.1 小标题示例
@@ -131,7 +138,6 @@ images={[
   provider="YouTube"
   duration="03:33"
   poster="./cover.jpg"
-
   description="适合放技术分享、演讲录像或产品演示。这里不会直接播放，只作为外部视频的漂亮入口。"
 />
 
@@ -150,8 +156,8 @@ images={[
 Inline links can do the same. For example, this <AudioLink src="https://music.163.com/song/media/outer/url?id=493950499.mp3">audio button without an external href</AudioLink> can play directly and does not render the external-link icon.
 
 <AudioEmbed
-  href="https://music.163.com/#/song?id=493950499"
-  src="https://music.163.com/song/media/outer/url?id=493950499.mp3"
+  href="https://music.163.com/#/song?id=285095"
+  src="http://music.163.com/song/media/outer/url?id=285095.mp3"
   title="Inline audio player demo"
   provider="NetEase Music"
   duration="04:42"
@@ -173,13 +179,19 @@ Inline links can do the same. For example, this <AudioLink src="https://music.16
 `WebEmbed` can render an iframe card directly inside the article. Use `src` for the embedded page and keep `href` if you also want an external-site entry.
 
 <WebEmbed
-  src="https://www.bilibili.com/video/BV16jd3BiEwz/?spm_id_from=333.1007.tianma.1-2-2.click&vd_source=fc7c0e0c39b598e927201b2c60d4fdb4"
+  src="https://github.com/imtaotao"
   href="https://github.com/imtaotao"
   title="Embedded web page demo"
   provider="github"
   height={440}
   description="This example renders an iframe-based web card and still keeps an external link in the top-right corner."
 />
+
+## 8.1 X post embed
+
+`XPostEmbed` can render an X post inside the article. You can pass either a full post URL or just a post id.
+
+<XPostEmbed url="https://x.com/KingJames/status/1776256638250594770"/>
 
 ## 9. GitHub mention
 

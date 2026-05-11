@@ -4,13 +4,12 @@ import type { CSSProperties } from 'react';
 import '#blog/components/MarkdownWebEmbed.css';
 import type { WebEmbedProps } from '#blog/components/MarkdownMediaShared';
 
-function normalizeHeight(height: number | string | undefined) {
+const normalizeHeight = (height?: number | string) => {
   if (typeof height === 'number' && Number.isFinite(height)) {
     return `${height}px`;
   }
-
-  return height?.trim() || '420px';
-}
+  return String(height)?.trim() || '420px';
+};
 
 export function BlogMdxWebEmbed({
   src,
