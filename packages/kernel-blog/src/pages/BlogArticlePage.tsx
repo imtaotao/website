@@ -115,6 +115,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   const articleBodyRef = useRef<HTMLElement | null>(null);
   const [headings, setHeadings] = useState<Array<BlogArticleHeading>>([]);
   const [tocTop, setTocTop] = useState<number | null>(null);
+  const [isTocOpen, setIsTocOpen] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [isBgmReady, setIsBgmReady] = useState(false);
   const [isBgmPlaying, setIsBgmPlaying] = useState(false);
@@ -393,17 +394,21 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
     }
 
     const nextHeadings = Array.from(
-      articleBody.querySelectorAll<HTMLHeadingElement>('h2[id]'),
+      articleBody.querySelectorAll<HTMLHeadingElement>('h2[id], h3[id]'),
     )
       .map((heading) => ({
         id: heading.id,
-        level: 2 as const,
+        level: heading.tagName === 'H3' ? (3 as const) : (2 as const),
         text: heading.textContent?.trim() ?? '',
       }))
       .filter((heading) => heading.id && heading.text);
 
     setHeadings(nextHeadings);
   }, [article, slug]);
+
+  useEffect(() => {
+    setIsTocOpen(false);
+  }, [slug]);
 
   useLayoutEffect(() => {
     if (!article) {
@@ -550,19 +555,28 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
 
           {headings.length ? (
             <aside
-              className="blog-article-toc--side"
+              className={`blog-article-toc--side${
+                isTocOpen ? ' blog-article-toc--open' : ''
+              }`}
               aria-label={COPY.articleToc}
               style={tocTop != null ? { top: `${tocTop}px` } : undefined}
             >
-              <div className="blog-article-toc-trigger" aria-hidden="true">
+              <button
+                type="button"
+                className="blog-article-toc-trigger"
+                aria-label={COPY.articleToc}
+                aria-expanded={isTocOpen}
+                onClick={() => setIsTocOpen((current) => !current)}
+              >
                 <ListBulletIcon className="blog-article-toc-trigger-icon" />
-              </div>
+              </button>
               <nav className="blog-article-toc blog-article-toc-panel">
                 {headings.map((heading, index) => (
                   <a
                     key={heading.id}
                     href={`#${heading.id}`}
                     className={`blog-article-toc-link blog-article-toc-link--h${heading.level}`}
+                    onClick={() => setIsTocOpen(false)}
                     style={
                       {
                         '--blog-toc-link-index': index,

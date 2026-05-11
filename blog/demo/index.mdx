@@ -13,6 +13,31 @@ tags:
 
 This is an English paragraph for typography testing. The quick brown fox jumps over the lazy dog, and the page should keep the same rhythm when Chinese and Latin characters appear together.
 
+## 0. Inline media player
+
+`MediaEmbed` also supports a `src` prop now. When `src` is provided, the card renders a native `audio` or `video` player inside the card. If `href` is also provided, the external link is still kept in the top-right corner.
+
+<MediaEmbed
+  type="audio"
+  href="https://music.163.com/#/song?id=493950499"
+  src="https://music.163.com/song/media/outer/url?id=493950499.mp3"
+  title="Inline audio player demo"
+  provider="NetEase Music"
+  duration="04:42"
+  description="This example keeps the external link and also renders a native audio player inside the card."
+/>
+
+<MediaEmbed
+  type="video"
+  href="https://interactive-examples.mdn.mozilla.net/pages/tabbed/video.html"
+  src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+  title="Inline video player demo"
+  provider="MDN Demo"
+  duration="00:30"
+  poster="./cover.jpg"
+  description="This example renders a native video player inside the card and still keeps the external link."
+/>
+
 ## 1. 基础正文
 
 普通段落、`inline code`、[站外链接](https://example.com) 都应该自然工作。**加粗**字体应该正常显示。
@@ -130,6 +155,7 @@ images={[
   provider="YouTube"
   duration="03:33"
   poster="./cover.jpg"
+
   description="适合放技术分享、演讲录像或产品演示。这里不会直接播放，只作为外部视频的漂亮入口。"
 />
 

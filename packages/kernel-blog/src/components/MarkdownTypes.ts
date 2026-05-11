@@ -39,6 +39,7 @@ export type BlogMediaEmbedKind = 'audio' | 'video';
 export type BlogMediaEmbedProps = {
   href: string;
   title: string;
+  src?: string;
   type?: BlogMediaEmbedKind;
   description?: string;
   duration?: string;

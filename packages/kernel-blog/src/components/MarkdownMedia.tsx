@@ -94,7 +94,7 @@ export function createBlogMdxImage(context: MarkdownMediaContext) {
             shouldOpenRef.current = false;
             openImage();
           }}
-          aria-label={p.alt ? `放大查看图片：${p.alt}` : '放大查看图片'}
+          aria-label={p.alt ? `Open image: ${p.alt}` : 'Open image'}
           data-blog-lightbox-id={lightboxId}
         >
           <img
@@ -169,7 +169,7 @@ export function createImageGallery(context: MarkdownMediaContext) {
           shouldOpenRef.current = false;
           openGalleryImage();
         }}
-        aria-label={item.alt ? `放大查看图片：${item.alt}` : '放大查看图片'}
+        aria-label={item.alt ? `Open image: ${item.alt}` : 'Open image'}
         data-blog-lightbox-id={item.id}
       >
         <img
@@ -234,6 +234,7 @@ export function createImageGallery(context: MarkdownMediaContext) {
 export function createMediaEmbed(context: MarkdownMediaContext) {
   function MediaEmbed({
     href,
+    src,
     title,
     type = 'video',
     description,
@@ -241,69 +242,124 @@ export function createMediaEmbed(context: MarkdownMediaContext) {
     poster,
     provider,
   }: BlogMediaEmbedProps) {
-    const normalizedHref = href.trim();
+    const normalizedHref = href?.trim() ?? '';
+    const normalizedSrc = src?.trim() ?? '';
     const normalizedTitle = title.trim();
     const kind = type === 'audio' ? 'audio' : 'video';
+    const resolvedSrc = normalizedSrc
+      ? context.resolveAssetUrl(context.articleSourcePath, normalizedSrc)
+      : undefined;
     const resolvedPoster = poster
       ? context.resolveAssetUrl(context.articleSourcePath, poster)
       : undefined;
+    const hasInlinePlayer = Boolean(resolvedSrc);
+    const hasExternalLink = Boolean(normalizedHref);
 
-    if (!normalizedHref || !normalizedTitle) return null;
+    if ((!hasExternalLink && !hasInlinePlayer) || !normalizedTitle) return null;
 
-    const mediaLabel = kind === 'audio' ? '音频' : '视频';
+    const mediaLabel = kind === 'audio' ? 'audio' : 'video';
     const Icon = kind === 'audio' ? SpeakerLoudIcon : VideoIcon;
     const showPoster = kind === 'video' && resolvedPoster;
-
-    return (
-      <a
-        className={`blog-prose-media-embed blog-prose-media-embed--${kind}`}
-        href={normalizedHref}
-        target="_blank"
-        rel="noreferrer"
-        aria-label={`打开外部${mediaLabel}：${normalizedTitle}`}
-      >
-        <span className="blog-prose-media-visual" aria-hidden="true">
-          {showPoster ? (
-            <img
-              src={resolvedPoster}
-              alt=""
-              className="blog-prose-media-poster"
-              loading="lazy"
-            />
-          ) : (
-            <span className="blog-prose-media-fallback">
-              <Icon className="blog-prose-media-kind-icon" />
-              {kind === 'audio' ? (
-                <span className="blog-prose-media-wave" aria-hidden="true">
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                </span>
-              ) : null}
-            </span>
-          )}
-          {kind === 'video' ? (
-            <span className="blog-prose-media-play">
-              <PlayIcon />
-            </span>
-          ) : null}
-        </span>
-        <span className="blog-prose-media-content">
-          <span className="blog-prose-media-kicker">
-            <Icon className="blog-prose-media-inline-icon" />
-            <span>{provider ? `${provider} ${mediaLabel}` : mediaLabel}</span>
-            {duration ? (
-              <span className="blog-prose-media-duration">{duration}</span>
+    const visual = (
+      <span className="blog-prose-media-visual" aria-hidden="true">
+        {showPoster ? (
+          <img
+            src={resolvedPoster}
+            alt=""
+            className="blog-prose-media-poster"
+            loading="lazy"
+          />
+        ) : (
+          <span className="blog-prose-media-fallback">
+            <Icon className="blog-prose-media-kind-icon" />
+            {kind === 'audio' ? (
+              <span className="blog-prose-media-wave" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+                <span />
+              </span>
             ) : null}
           </span>
-          <span className="blog-prose-media-title">{normalizedTitle}</span>
-          {description ? (
-            <span className="blog-prose-media-description">{description}</span>
+        )}
+        {kind === 'video' ? (
+          <span className="blog-prose-media-play">
+            <PlayIcon />
+          </span>
+        ) : null}
+      </span>
+    );
+    const content = (
+      <span className="blog-prose-media-content">
+        <span className="blog-prose-media-kicker">
+          <Icon className="blog-prose-media-inline-icon" />
+          <span>{provider ? `${provider} ${mediaLabel}` : mediaLabel}</span>
+          {duration ? (
+            <span className="blog-prose-media-duration">{duration}</span>
           ) : null}
         </span>
-        <ExternalLinkIcon className="blog-prose-media-external" />
-      </a>
+        <span className="blog-prose-media-title">{normalizedTitle}</span>
+        {description ? (
+          <span className="blog-prose-media-description">{description}</span>
+        ) : null}
+      </span>
+    );
+
+    if (!hasInlinePlayer) {
+      return (
+        <a
+          className={`blog-prose-media-embed blog-prose-media-embed--${kind}`}
+          href={normalizedHref}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={`Open external ${mediaLabel}: ${normalizedTitle}`}
+        >
+          {visual}
+          {content}
+          <ExternalLinkIcon className="blog-prose-media-external" />
+        </a>
+      );
+    }
+
+    return (
+      <article
+        className={`blog-prose-media-embed blog-prose-media-embed--${kind}`}
+      >
+        {visual}
+        {content}
+        {hasExternalLink ? (
+          <a
+            className="blog-prose-media-external-link"
+            href={normalizedHref}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Open external ${mediaLabel}: ${normalizedTitle}`}
+            title={`Open external ${mediaLabel}`}
+          >
+            <ExternalLinkIcon className="blog-prose-media-external" />
+          </a>
+        ) : (
+          <span className="blog-prose-media-external blog-prose-media-external--placeholder" />
+        )}
+        <div className="blog-prose-media-player-shell">
+          {kind === 'audio' ? (
+            <audio
+              className="blog-prose-media-player blog-prose-media-player--audio"
+              controls
+              preload="none"
+              src={resolvedSrc}
+            />
+          ) : (
+            <video
+              className="blog-prose-media-player blog-prose-media-player--video"
+              controls
+              preload="metadata"
+              src={resolvedSrc}
+              poster={resolvedPoster}
+            />
+          )}
+        </div>
+      </article>
     );
   }
 
@@ -321,7 +377,7 @@ export function createMediaLink() {
   }: BlogMediaLinkProps) {
     const normalizedHref = href.trim();
     const kind = type === 'audio' ? 'audio' : 'video';
-    const mediaLabel = kind === 'audio' ? '音频' : '视频';
+    const mediaLabel = kind === 'audio' ? '闊抽' : '瑙嗛';
     const normalizedLabel = label?.trim();
 
     if (!normalizedHref) return null;
