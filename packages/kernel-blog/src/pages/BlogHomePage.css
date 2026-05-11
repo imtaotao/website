@@ -329,10 +329,6 @@
   font-weight: 500;
 }
 
-.blog-index-meta-sep {
-  opacity: 0.55;
-}
-
 .blog-index-title {
   display: flex;
   align-items: baseline;
@@ -383,6 +379,36 @@
 
 .blog-shell[data-blog-theme='dark'] .blog-index-item:hover .blog-index-title {
   color: rgba(255, 255, 255, 0.9);
+}
+
+@media (min-width: 768px) {
+  .blog-tags-item {
+    font-size: 1.82rem;
+    line-height: 1.56;
+  }
+
+  .blog-tags-label {
+    font-size: inherit;
+  }
+
+  .blog-index-title {
+    font-size: 1.28rem;
+    line-height: 1.46;
+  }
+
+  .blog-index-title-text {
+    font-size: inherit;
+  }
+
+  .blog-index-meta {
+    gap: 9px;
+    font-size: 0.88rem;
+  }
+
+  .blog-index-date,
+  .blog-index-date time {
+    font-size: inherit;
+  }
 }
 
 @media (max-width: 767px) {

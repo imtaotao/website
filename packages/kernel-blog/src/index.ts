@@ -23,7 +23,6 @@ export {
   BlogHomePage,
   createBlogTagNavigation,
   formatBlogDate,
-  formatBlogMeta,
 } from '#blog/pages/BlogHomePage';
 export { BlogArticlePage } from '#blog/pages/BlogArticlePage';
 export type {

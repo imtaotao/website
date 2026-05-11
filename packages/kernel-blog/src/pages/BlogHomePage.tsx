@@ -66,13 +66,6 @@ export function formatBlogDate(value: string) {
   }).format(date);
 }
 
-export function formatBlogMeta(tags: Array<string>) {
-  if (tags.length === 0) {
-    return '未分类';
-  }
-  return tags.join(' / ');
-}
-
 export function BlogHomePage(props: BlogHomePageProps) {
   const blogTheme = useBlogTheme();
   const navigate = useNavigate();
@@ -139,10 +132,6 @@ export function BlogHomePage(props: BlogHomePageProps) {
               <time dateTime={article.publishedAt}>
                 {formatBlogDate(article.publishedAt)}
               </time>
-            </span>
-            <span className="blog-index-meta-sep">·</span>
-            <span className="blog-index-meta-item">
-              <span>{formatBlogMeta(article.tagLabels)}</span>
             </span>
           </span>
         </h3>
