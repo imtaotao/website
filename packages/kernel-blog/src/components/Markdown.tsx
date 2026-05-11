@@ -29,9 +29,12 @@ import { BlogMdxWebEmbed } from '#blog/components/MarkdownWebEmbed';
 import { BlogMdxXPostEmbed } from '#blog/components/MarkdownXPostEmbed';
 import { isMediaOnlyParagraph } from '#blog/components/MarkdownNodes';
 import { BlogMdxChatThread } from '#blog/components/MarkdownChat';
+import { BlogMdxCallout } from '#blog/components/MarkdownCallout';
 import { BlogMdxDetailsBlock } from '#blog/components/MarkdownDetailsBlock';
 import { BlogMdxFancyList } from '#blog/components/MarkdownFancyList';
+import { BlogMdxFileTree } from '#blog/components/MarkdownFileTree';
 import { BlogMdxPoem } from '#blog/components/MarkdownPoem';
+import { BlogMdxStep, BlogMdxSteps } from '#blog/components/MarkdownSteps';
 import { BlogMdxSummaryCards } from '#blog/components/MarkdownSummaryCards';
 import type {
   BlogMdxProps,
@@ -228,7 +231,11 @@ function BlogMdxImpl(props: BlogMdxProps) {
       AudioLink,
       VideoLink,
       ChatThread: BlogMdxChatThread,
+      Callout: BlogMdxCallout,
       FancyList: BlogMdxFancyList,
+      FileTree: BlogMdxFileTree,
+      Step: BlogMdxStep,
+      Steps: BlogMdxSteps,
       DetailsBlock: BlogMdxDetailsBlock,
       Poem: BlogMdxPoem,
       SummaryCards: BlogMdxSummaryCards,
@@ -247,8 +254,18 @@ function BlogMdxImpl(props: BlogMdxProps) {
       AudioLink,
       VideoLink,
       BlogMdxImage,
+      BlogMdxWebEmbed,
+      BlogMdxChatThread,
+      BlogMdxCallout,
+      BlogMdxDetailsBlock,
+      BlogMdxFancyList,
+      BlogMdxFileTree,
       BlogMdxGitHubMention,
       BlogMdxGitHubRepo,
+      BlogMdxPoem,
+      BlogMdxStep,
+      BlogMdxSteps,
+      BlogMdxSummaryCards,
       BlogMdxUrlLink,
       BlogMdxXPostEmbed,
       renderColorText,

@@ -11,7 +11,7 @@ tags:
 
 这篇文章专门用来放博客正文支持的各种 case。图片统一放在文章自己的 `image/` 文件夹里，正文直接写相对路径就行。
 
-This is an English paragraph for typography testing. The quick brown fox jumps over the lazy dog, and the page should keep the same rhythm when Chinese and Latin characters appear together.
+这是一段专门用于排版测试的中文说明。正文里如果同时出现中文、英文和代码片段，整体节奏和行高都应该保持自然，不要一眼看出是不同系统拼起来的。
 
 ## 1. 基础正文
 
@@ -45,10 +45,15 @@ This is an English paragraph for typography testing. The quick brown fox jumps o
 ## 2. 标题层级
 
 # h1
+
 ## H2
+
 ### h3
+
 #### h4
+
 ##### h5
+
 ###### h6
 
 二级标题和三级标题都会进入阅读结构里，所以正文里正常写就行。
@@ -149,53 +154,53 @@ images={[
   description="适合放播客、访谈、音乐或其他音频内容。没有 poster 时会使用音频样式的占位视觉。"
 />
 
-### 7.1 Inline media player
+### 7.1 内联媒体播放器
 
-`AudioEmbed` and `VideoEmbed` also support a `src` prop now. When `src` is provided, the card renders a native player inside the card. If `href` is also provided, the external link is still kept in the top-right corner.
+`AudioEmbed` 和 `VideoEmbed` 现在也支持 `src`。传了 `src` 之后，卡片内部会直接渲染播放器；如果同时还有 `href`，右上角的外链入口也会保留。
 
-Inline links can do the same. For example, this <AudioLink src="https://music.163.com/song/media/outer/url?id=493950499.mp3">audio button without an external href</AudioLink> can play directly and does not render the external-link icon.
+段落内的小入口也一样。比如这个 <AudioLink src="https://music.163.com/song/media/outer/url?id=493950499.mp3">没有外链 href 的音频按钮</AudioLink> 就可以直接播放，同时不会显示外链图标。
 
 <AudioEmbed
   href="https://music.163.com/#/song?id=285095"
   src="http://music.163.com/song/media/outer/url?id=285095.mp3"
-  title="Inline audio player demo"
+  title="内联音频播放器示例"
   provider="NetEase Music"
   duration="04:42"
-  description="This example keeps the external link and also renders a native audio player inside the card."
+  description="这个示例既保留了外链入口，也在卡片内部直接渲染了原生音频播放器。"
 />
 
 <VideoEmbed
   href="https://interactive-examples.mdn.mozilla.net/pages/tabbed/video.html"
   src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
-  title="Inline video player demo"
+  title="内联视频播放器示例"
   provider="MDN Demo"
   duration="00:30"
   poster="./cover.jpg"
-  description="This example renders a native video player inside the card and still keeps the external link."
+  description="这个示例会在卡片内部直接渲染原生视频播放器，同时保留右上角外链入口。"
 />
 
 ## 8. Web embed
 
-`WebEmbed` can render an iframe card directly inside the article. Use `src` for the embedded page and keep `href` if you also want an external-site entry.
+`WebEmbed` 可以直接在正文里渲染一个 iframe 卡片。`src` 用来指定嵌入页面，如果还想保留站外入口，就一起传 `href`。
 
 <WebEmbed
   src="https://github.com/imtaotao"
   href="https://github.com/imtaotao"
-  title="Embedded web page demo"
+  title="网页嵌入示例"
   provider="github"
   height={440}
-  description="This example renders an iframe-based web card and still keeps an external link in the top-right corner."
+  description="这个示例会渲染一个基于 iframe 的网页卡片，同时保留右上角站外链接。"
 />
 
 ## 8.1 X post embed
 
-`XPostEmbed` can render an X post inside the article. You can pass either a full post URL or just a post id.
+`XPostEmbed` 可以把一条 X 帖子直接嵌进正文里，既可以传完整链接，也可以只传帖子 id。
 
 <XPostEmbed url="https://x.com/KingJames/status/1776256638250594770"/>
 
 ## 9. GitHub mention
 
-Use `GitHubMention` when you want to reference a GitHub member directly inside the article. <GitHubMention username="imtaotao" bio="Building thoughtful web experiences and developer tools." /> You can also point to a repository inline with <GitHubRepo repo="imtaotao/website" description="Personal website and blog workspace." language="TypeScript" />. For a plain external site, use <UrlLink href="https://imtaotao.me" label="imtaotao.me" />.
+如果你想在正文里直接提到一个 GitHub 用户，可以用 <GitHubMention username="imtaotao" bio="专注于网站体验、内容表达和开发者工具。" />。如果是引用仓库入口，可以写成 <GitHubRepo repo="imtaotao/website" description="个人网站与博客工作区。" language="TypeScript" />。普通外链则继续用 <UrlLink href="https://imtaotao.me" label="imtaotao.me" />。
 
 ## 10. 对话记录
 
@@ -288,36 +293,130 @@ lines={[
 
 ## 13. Fancy list
 
-`FancyList` is useful when you want a lighter custom list block but still need inline MDX content.
+`FancyList` 适合那种比普通列表更轻一点，但又希望保留行内 MDX 能力的场景。
 
 <FancyList
-  title={<>Component usage notes</>}
-  items={[
-    (
-      <>
-        Use <code>UrlLink</code> for a plain external site, such as{' '}
-        <UrlLink href="https://imtaotao.me" label="imtaotao.me" />.
-      </>
-    ),
-    (
-      <>
-        Use <GitHubMention username="imtaotao" /> and{' '}
-        <GitHubRepo repo="imtaotao/website" /> when the article needs inline
-        GitHub references.
-      </>
-    ),
-    {
-      title: <>MDX content is allowed</>,
-      content: (
-        <>
-          You can place `inline` components, <Color c="blue">styled text</Color>, or regular emphasis like <strong>bold text</strong> inside each item.
-        </>
-      ),
-    },
-  ]}
+title={<>组件使用说明</>}
+items={[
+(
+<>
+普通站外链接优先用 <code>UrlLink</code>，比如{' '}
+<UrlLink href="https://imtaotao.me" label="imtaotao.me" />。
+</>
+),
+(
+<>
+如果正文里要顺手提到 GitHub 用户或仓库，可以直接写{' '}
+<GitHubMention username="imtaotao" /> 和{' '}
+<GitHubRepo repo="imtaotao/website" />。
+</>
+),
+{
+title: <>允许直接写 MDX 内容</>,
+content: (
+<>
+每一项里都可以直接放 `inline` 组件、<Color c="blue">强调文字</Color>，或者 <strong>加粗内容</strong>。
+</>
+),
+},
+]}
 />
 
-## 14. 后续约定
+## 14. Callout
+
+`Callout` 适合承载说明、提示、注意事项和完成状态。遇到普通 `blockquote` 不够明确的场景，可以优先用它。
+
+<Callout tone="note" title="补充说明">
+  适合放一些需要紧贴当前段落的背景信息、边界条件或上下文说明，不会打断正文节奏，但读者也不容易漏掉。
+</Callout>
+
+<Callout tone="tip" title="写作建议">
+  这里面依然可以直接写 MDX，所以像 <code>FileTree</code>、<Color c="green">强调文字</Color> 或 <UrlLink href="https://imtaotao.me" label="站点链接" /> 这种内容都能直接放进来。
+</Callout>
+
+<Callout tone="warning" title="明确写清代价">
+  适合放不可逆操作、迁移注意点，或者读者很容易想当然写错的地方。比把这类信息埋在长段落里更稳。
+</Callout>
+
+<Callout tone="success" title="适用场景">
+  适合放完成结果、确认结论，或者在分步骤内容之后做一个短收束，让读者快速知道这一段最后得到了什么。
+</Callout>
+
+## 15. Steps
+
+`Steps` 更适合教程、排障流程和操作说明。和普通有序列表相比，它更稳定，也更容易做统一样式。
+
+<Steps title="发布一篇新的 demo 文章">
+  <Step title="先准备文章目录">
+    文章放在博客目录下，图片等本地资源尽量和文章放在一起，这样相对路径最省心，也不容易写错。
+  </Step>
+  <Step title="普通 markdown 不够时再上 MDX 组件">
+    像 <code>Callout</code>、<code>FancyList</code> 或行内链接这种能力，优先用在能明显提升结构清晰度的地方，不要为了 demo 而 demo。
+  </Step>
+  <Step title="稳定后再做一次真实验证">
+    等正文结构差不多定下来，再跑一次完整构建或预览。很多导入路径和 MDX 写法问题，靠肉眼看没有实际渲染来得快。
+  </Step>
+</Steps>
+
+## 16. FileTree
+
+`FileTree` 适合展示项目目录、生成产物结构，或者告诉读者这篇文章主要应该看仓库里的哪几块。
+
+<FileTree
+title="Demo 工作区片段"
+caption="目录用嵌套结构表示即可，描述尽量短一点，这样整体看起来还像代码树而不是说明书。"
+items={[
+{
+name: 'app',
+kind: 'directory',
+children: [
+{
+name: 'src',
+kind: 'directory',
+children: [
+{ name: 'main.tsx', description: '应用入口' },
+{ name: 'App.tsx', description: '主页面组件' },
+],
+},
+],
+},
+{
+name: 'packages',
+kind: 'directory',
+children: [
+{
+name: 'kernel-blog',
+kind: 'directory',
+children: [
+{
+name: 'src/components',
+kind: 'directory',
+children: [
+{ name: 'Markdown.tsx', description: 'MDX 组件注册入口' },
+{ name: 'MarkdownCallout.tsx', description: '提示块组件' },
+{ name: 'MarkdownSteps.tsx', description: '步骤组件' },
+{ name: 'MarkdownFileTree.tsx', description: '目录树组件' },
+],
+},
+],
+},
+],
+},
+{
+name: 'blog',
+kind: 'directory',
+children: [
+{
+name: 'demo',
+kind: 'directory',
+children: [{ name: 'index.mdx', description: '组件演示文章' }],
+},
+],
+},
+]}
+/>
+
+## 17. 后续约定
 
 - 单图优先用 Markdown 原生语法
 - 多图排版用 `ImageGallery`
