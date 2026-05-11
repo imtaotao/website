@@ -4,7 +4,7 @@
   font-weight: 500;
   font-synthesis: none;
   line-height: 1.62;
-  color: #555555;
+  color: var(--blog-text);
   text-shadow: 0.018em 0 0 currentColor;
 }
 
@@ -133,7 +133,7 @@
 
 .blog-prose-p {
   margin: 0 0 11px;
-  color: #555555;
+  color: var(--blog-text);
   font-size: 1rem;
   font-weight: 500;
   line-height: 1.62;
@@ -142,7 +142,7 @@
 .blog-prose-ul,
 .blog-prose-ol {
   padding-left: 1.7rem;
-  color: #555555;
+  color: var(--blog-text);
   font-size: 1rem;
   font-weight: 500;
   line-height: 1.62;
@@ -166,7 +166,7 @@
 }
 
 .blog-prose-li::marker {
-  color: #6c7280;
+  color: var(--blog-text-faint);
 }
 
 .blog-prose-li > .blog-prose-ol,
@@ -178,7 +178,7 @@
 
 .blog-prose-li > .blog-prose-ol .blog-prose-li::marker,
 .blog-prose-li > .blog-prose-ul .blog-prose-li::marker {
-  color: #6c7280;
+  color: var(--blog-text-faint);
 }
 
 .blog-prose-mark {
@@ -196,7 +196,7 @@
 
 .blog-prose-quote {
   padding: 0.12rem 0 0.12rem 1rem;
-  color: rgba(31, 41, 55, 0.56);
+  color: var(--blog-text-soft);
   font-weight: 500;
   border-left: 3px solid var(--blog-line-strong);
 }
