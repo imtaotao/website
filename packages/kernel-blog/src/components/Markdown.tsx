@@ -29,7 +29,9 @@ import { BlogMdxWebEmbed } from '#blog/components/MarkdownWebEmbed';
 import { BlogMdxXPostEmbed } from '#blog/components/MarkdownXPostEmbed';
 import { isMediaOnlyParagraph } from '#blog/components/MarkdownNodes';
 import { BlogMdxChatThread } from '#blog/components/MarkdownChat';
+import { BlogMdxCallout } from '#blog/components/MarkdownCallout';
 import { BlogMdxDetailsBlock } from '#blog/components/MarkdownDetailsBlock';
+import { BlogMdxEnglishCards } from '#blog/components/MarkdownEnglishCards';
 import { BlogMdxFancyList } from '#blog/components/MarkdownFancyList';
 import { BlogMdxPoem } from '#blog/components/MarkdownPoem';
 import { BlogMdxStep, BlogMdxSteps } from '#blog/components/MarkdownSteps';
@@ -182,7 +184,7 @@ function BlogMdxImpl(props: BlogMdxProps) {
       className: string,
     ): BlogHeadingComponent => {
       const Heading = ((p: ComponentProps<'h1'>) =>
-        renderHeading(tag, className, p)) as BlogHeadingComponent;
+        renderHeading(tag, className, p)) as unknown as BlogHeadingComponent;
       Heading.blogMdxHeadingTag = tag;
       return Heading;
     };
@@ -242,6 +244,8 @@ function BlogMdxImpl(props: BlogMdxProps) {
       AudioLink,
       VideoLink,
       ChatThread: BlogMdxChatThread,
+      Callout: BlogMdxCallout,
+      EnglishCards: BlogMdxEnglishCards,
       FancyList: BlogMdxFancyList,
       Step: BlogMdxStep,
       Steps: BlogMdxSteps,
@@ -265,7 +269,9 @@ function BlogMdxImpl(props: BlogMdxProps) {
     BlogMdxImage,
     BlogMdxWebEmbed,
     BlogMdxChatThread,
+    BlogMdxCallout,
     BlogMdxDetailsBlock,
+    BlogMdxEnglishCards,
     BlogMdxFancyList,
     BlogMdxGitHubMention,
     BlogMdxGitHubRepo,

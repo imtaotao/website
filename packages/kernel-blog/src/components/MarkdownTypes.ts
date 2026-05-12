@@ -127,6 +127,64 @@ export type BlogFancyListProps = {
   className?: string;
 };
 
+export type BlogCalloutTone = 'note' | 'tip' | 'warning' | 'success' | 'error';
+
+export type BlogCalloutProps = {
+  tone?: BlogCalloutTone;
+  title?: ReactNode;
+  icon?: ReactNode;
+  className?: string;
+  children?: ReactNode;
+};
+
+export type BlogEnglishCardExample =
+  | ReactNode
+  | {
+      text: ReactNode;
+      translation?: ReactNode;
+    };
+
+export type BlogEnglishCardDetail = {
+  label: ReactNode;
+  items: Array<ReactNode>;
+};
+
+export type BlogEnglishCardItem = {
+  word: string;
+  phonetic?: string;
+  audioUrl?: string;
+  partOfSpeech?: string;
+  translation?: ReactNode | Array<ReactNode>;
+  explanation?: ReactNode | Array<ReactNode>;
+  example?: BlogEnglishCardExample | Array<BlogEnglishCardExample>;
+  details?: Array<BlogEnglishCardDetail>;
+  resources?: Array<BlogEnglishCardResource>;
+  note?: ReactNode;
+  tags?: Array<string>;
+};
+
+export type BlogEnglishCardResource = {
+  label: ReactNode;
+  href: string;
+  title?: ReactNode;
+  description?: ReactNode;
+};
+
+export type BlogEnglishCardsOpenApiConfig = {
+  enabled?: boolean;
+  language?: string;
+  endpoint?: string;
+};
+
+export type BlogEnglishCardsProps = {
+  title?: ReactNode;
+  words?: Array<string>;
+  items?: Array<BlogEnglishCardItem>;
+  openApi?: boolean | BlogEnglishCardsOpenApiConfig;
+  defaultMode?: 'study' | 'practice';
+  className?: string;
+};
+
 export type BlogStepsProps = {
   title?: ReactNode;
   direction?: 'vertical' | 'horizontal';

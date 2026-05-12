@@ -1,5 +1,5 @@
 ---
-title: 🧪 博客内容能力 Demo
+title: 🧪 博客内容能力 demo
 slug: demo
 publishedAt: 2026-04-30
 summary: 这是一篇集中展示博客正文能力的 demo，后续写文章时可以直接对照这里的写法。
@@ -322,7 +322,33 @@ content: (
 ]}
 />
 
-## 14. Steps
+## 14. Callout
+
+`Callout` 适合放短提示、边界条件和操作提醒。现在这套样式更收敛，主要靠细边框、淡背景和标题提示来区分内容。
+
+<Callout title="补充说明">
+  这类块不适合承载很长的正文，更适合放一两句和当前段落紧密相关的背景信息。
+</Callout>
+
+<Callout tone="tip" title="写作建议">
+  里面依然可以写 <Color c="green">行内强调</Color>、`inline
+  code`，也可以放普通链接{' '}
+  <UrlLink href="https://imtaotao.me" label="imtaotao.me" />。
+</Callout>
+
+<Callout tone="warning" title="谨慎处理">
+  用在迁移、删除、覆盖这类有代价的操作前，提醒读者先确认前置条件。
+</Callout>
+
+<Callout tone="success" title="完成状态">
+  适合放流程结束后的短结论，让读者快速知道这一段最后得到什么结果。
+</Callout>
+
+<Callout tone="error" title="出现错误">
+  用在失败结果、不可继续的状态，或者需要读者立即修正的问题。
+</Callout>
+
+## 15. Steps
 
 `Steps` 更适合教程、排障流程和操作说明。和普通有序列表相比，它更稳定，也更容易做统一样式。
 
@@ -370,7 +396,13 @@ content: (
   </Step>
 </Steps>
 
-## 15. 后续约定
+## 16. EnglishCards
+
+`EnglishCards` 适合批量整理单词，不需要一个单词写一个组件。点击右上角按钮可以一键切换学习模式和练习模式，词卡会从有道词典接口获取中文释义、英文释义、读音和例句。
+
+<EnglishCards title="阅读里常见的表达" words={['dark', 'gleamed', 'rustling']} />
+
+## 17. 后续约定
 
 - 单图优先用 Markdown 原生语法
 - 多图排版用 `ImageGallery`

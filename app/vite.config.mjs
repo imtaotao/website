@@ -58,12 +58,27 @@ export default defineConfig({
   define: {
     __RESUME_JSON__: JSON.stringify(RESUME_JSON),
   },
+  server: {
+    proxy: {
+      '/api/dictionary/youdao': {
+        target: 'https://dict.youdao.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/dictionary\/youdao/, ''),
+      },
+    },
+  },
   resolve: {
     alias: {
       react: resolve(__dirname, 'node_modules/react'),
       '@mdx-js/react': resolve(__dirname, 'node_modules/@mdx-js/react'),
-      'react/jsx-runtime': resolve(__dirname, 'node_modules/react/jsx-runtime.js'),
-      'react/jsx-dev-runtime': resolve(__dirname, 'node_modules/react/jsx-dev-runtime.js'),
+      'react/jsx-runtime': resolve(
+        __dirname,
+        'node_modules/react/jsx-runtime.js',
+      ),
+      'react/jsx-dev-runtime': resolve(
+        __dirname,
+        'node_modules/react/jsx-dev-runtime.js',
+      ),
     },
   },
   build: {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Tweet } from 'react-twitter-widgets';
 
 import '#blog/components/MarkdownXPostEmbed.css';
