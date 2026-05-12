@@ -13,18 +13,21 @@ import type {
 
 export { blogTagMap };
 export { extractFrontmatter, normalizeBlogArticleFrontmatter };
-export { BlogMdx, extractMarkdownHeadings } from '#blog/components/Markdown';
+export {
+  BlogMdx,
+  extractMarkdownHeadings,
+} from '#blog/components/Markdown/Markdown';
 export {
   BlogThemeToggle,
   useBlogTheme,
-} from '#blog/components/BlogThemeToggle';
+} from '#blog/components/BlogThemeToggle/BlogThemeToggle';
 export {
   BLOG_TAG_QUERY_KEY,
   BlogHomePage,
   createBlogTagNavigation,
   formatBlogDate,
-} from '#blog/pages/BlogHomePage';
-export { BlogArticlePage } from '#blog/pages/BlogArticlePage';
+} from '#blog/pages/BlogHomePage/HomePage';
+export { BlogArticlePage } from '#blog/pages/BlogArticlePage/ArticlePage';
 export type {
   BlogArticleDetail,
   BlogArticleFrontmatter,
@@ -35,16 +38,16 @@ export type {
   BlogTagMeta,
   BlogTagSummary,
 } from '#blog/articleTypes';
-export type { MarkdownHeading } from '#blog/components/Markdown';
-export type { BlogTheme } from '#blog/components/BlogThemeToggle';
+export type { MarkdownHeading } from '#blog/components/Markdown/Markdown';
+export type { BlogTheme } from '#blog/components/BlogThemeToggle/BlogThemeToggle';
 export type {
   BlogHomeArticle,
   BlogHomePageProps,
-} from '#blog/pages/BlogHomePage';
+} from '#blog/pages/BlogHomePage/HomePage';
 export type {
   BlogArticlePageProps,
   BlogArticleView,
-} from '#blog/pages/BlogArticlePage';
+} from '#blog/pages/BlogArticlePage/ArticlePage';
 
 const ARTICLE_ENTRY_FILENAME = 'index.mdx';
 

@@ -1,0 +1,261 @@
+@media (prefers-reduced-motion: reduce) {
+  .blog-enter {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+
+  .blog-article-toc-trigger,
+  .blog-article-toc-trigger-icon,
+  .blog-article-toc-panel,
+  .blog-article-toc-link {
+    transition: none;
+    animation: none;
+    filter: none;
+  }
+
+  .blog-pill {
+    transition: none;
+  }
+
+  .blog-pill:hover {
+    transform: none;
+  }
+}
+
+@keyframes blog-fade-rise-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.blog-enter {
+  opacity: 0;
+  animation: blog-fade-rise-in 1720ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--blog-enter-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.blog-shell {
+  --blog-bg: #ffffff;
+  --blog-bg-image: radial-gradient(
+      900px circle at 18% 8%,
+      rgba(191, 219, 254, 0.45) 0%,
+      rgba(255, 255, 255, 0) 62%
+    ),
+    radial-gradient(
+      860px circle at 86% 14%,
+      rgba(216, 180, 254, 0.38) 0%,
+      rgba(255, 255, 255, 0) 60%
+    ),
+    radial-gradient(
+      820px circle at 52% 108%,
+      rgba(167, 243, 208, 0.22) 0%,
+      rgba(255, 255, 255, 0) 58%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(250, 250, 255, 1) 100%
+    );
+  --blog-surface: rgba(15, 23, 42, 0.06);
+  --blog-surface-soft: rgba(15, 23, 42, 0.045);
+  --blog-surface-tint: rgba(15, 23, 42, 0.03);
+  --blog-text-strong: #111827;
+  --blog-text: rgba(17, 24, 39, 0.88);
+  --blog-text-soft: rgba(31, 41, 55, 0.72);
+  --blog-text-faint: rgba(31, 41, 55, 0.52);
+  --blog-line: rgba(15, 23, 42, 0.11);
+  --blog-line-strong: rgba(15, 23, 42, 0.18);
+  --blog-year-stroke: rgba(15, 23, 42, 0.07);
+  --blog-year-opacity: 0.6;
+  --blog-accent: #2563eb;
+  --blog-accent-soft: rgba(37, 99, 235, 0.12);
+  --blog-color-gray: #6b7280;
+  --blog-color-blue: #3d67b9;
+  --blog-color-green: #2f8767;
+  --blog-color-cyan: #2d8798;
+  --blog-color-orange: #c36a2f;
+  --blog-color-red: #b64b55;
+  --blog-color-purple: #7850bc;
+  --blog-color-pink: #ba4d7c;
+  --blog-highlight-bg: rgba(250, 204, 21, 0.32);
+  --blog-highlight-text: #713f12;
+  --blog-accent-2: #059669;
+  --blog-accent-2-soft: rgba(5, 150, 105, 0.1);
+  --blog-code-bg: #f3f4f6;
+  --blog-code-border: rgba(15, 23, 42, 0.1);
+  --blog-code-font: 'SFMono-Regular', 'SF Mono', Menlo, Consolas,
+    'Liberation Mono', monospace;
+  --blog-focus-ring: rgba(37, 99, 235, 0.34);
+  --blog-panel-bg: rgba(255, 255, 255, 0.98);
+  --blog-panel-shadow: 0 16px 36px rgba(15, 23, 42, 0.14);
+  --blog-cover-bg: #e5e7eb;
+  --blog-cover-gradient-start: rgba(255, 255, 255, 0);
+  --blog-cover-gradient-mid: rgba(255, 255, 255, 0.66);
+  --blog-image-bg: var(--blog-code-block-bg);
+  --blog-quote-bg: rgba(15, 23, 42, 0.05);
+  --blog-code-block-bg: #f6f6f7;
+  --blog-code-block-border: rgba(60, 60, 67, 0.12);
+  --blog-code-block-bottom: rgba(60, 60, 67, 0.1);
+  --blog-code-line-highlight: rgba(60, 60, 67, 0.1);
+  --blog-code-meta-border: transparent;
+  --blog-code-lang-bg: transparent;
+  --blog-code-lang-color: rgba(60, 60, 67, 0.56);
+  --blog-code-text: #24292e;
+  --blog-code-muted: #6a737d;
+  --blog-code-keyword: #d73a49;
+  --blog-code-string: #032f62;
+  --blog-code-number: #005cc5;
+  --blog-code-title: #6f42c1;
+  --blog-code-comment: #6a737d;
+  --blog-code-attr: #005cc5;
+  --blog-code-symbol: #e36209;
+  --blog-code-deletion: #b31d28;
+  --blog-code-addition: #22863a;
+  --blog-floating-bg: rgba(255, 255, 255, 0.96);
+  --blog-floating-hover-bg: rgba(241, 245, 249, 0.98);
+  --blog-lightbox-bg: rgba(248, 250, 252, 0.94);
+  --blog-bgm-ripple-core: color-mix(in srgb, var(--blog-bg) 52%, #16a34a 48%);
+  --blog-bgm-ripple-mid: color-mix(in srgb, var(--blog-bg) 64%, #22c55e 36%);
+  --blog-bgm-ripple-ring: color-mix(in srgb, var(--blog-bg) 76%, #4ade80 24%);
+  --blog-cover-height: clamp(160px, 22vw, 280px);
+  --blog-body-font: var(
+    --site-font-body,
+    'FZLanTingWork',
+    'FZLanTing',
+    system-ui,
+    -apple-system,
+    'SF Pro Text',
+    'Segoe UI',
+    'PingFang SC',
+    'Hiragino Sans GB',
+    'Microsoft YaHei',
+    Arial,
+    sans-serif
+  );
+  --blog-title-font: var(
+    --site-font-title,
+    'FZLanTing',
+    'FZLanTingWork',
+    system-ui,
+    -apple-system,
+    'SF Pro Display',
+    'SF Pro Text',
+    'Segoe UI',
+    'PingFang SC',
+    'Hiragino Sans GB',
+    'Microsoft YaHei',
+    Arial,
+    sans-serif
+  );
+  min-height: 100%;
+  position: relative;
+  isolation: isolate;
+  color: var(--blog-text);
+  font-family: var(--blog-body-font);
+  overflow-x: clip;
+}
+
+.blog-shell[data-blog-theme='dark'] {
+  --blog-bg: #000000;
+  --blog-bg-image: none;
+  --blog-surface: rgba(255, 255, 255, 0.06);
+  --blog-surface-soft: rgba(255, 255, 255, 0.045);
+  --blog-surface-tint: rgba(255, 255, 255, 0.03);
+  --blog-text-strong: #f3f4f6;
+  --blog-text: rgba(255, 255, 255, 0.86);
+  --blog-text-soft: rgba(255, 255, 255, 0.68);
+  --blog-text-faint: rgba(255, 255, 255, 0.52);
+  --blog-line: rgba(255, 255, 255, 0.11);
+  --blog-line-strong: rgba(255, 255, 255, 0.18);
+  --blog-year-stroke: rgba(255, 255, 255, 0.22);
+  --blog-year-opacity: 0.3;
+  --blog-accent: #7dd3fc;
+  --blog-accent-soft: rgba(125, 211, 252, 0.16);
+  --blog-color-gray: #9ca3af;
+  --blog-color-blue: #87bcdd;
+  --blog-color-green: #8bcea3;
+  --blog-color-cyan: #7bccd8;
+  --blog-color-orange: #e0ad79;
+  --blog-color-red: #de9ea1;
+  --blog-color-purple: #b7a9e0;
+  --blog-color-pink: #dda1bf;
+  --blog-highlight-bg: rgba(250, 204, 21, 0.2);
+  --blog-highlight-text: #fde68a;
+  --blog-accent-2: #86efac;
+  --blog-accent-2-soft: rgba(134, 239, 172, 0.12);
+  --blog-focus-ring: rgba(122, 162, 247, 0.5);
+  --blog-panel-bg: rgba(28, 31, 36, 0.98);
+  --blog-panel-shadow: 0 12px 32px rgba(0, 0, 0, 0.26);
+  --blog-cover-bg: #111317;
+  --blog-cover-gradient-start: rgba(15, 17, 23, 0);
+  --blog-cover-gradient-mid: rgba(15, 17, 23, 0.68);
+  --blog-image-bg: #0d121b;
+  --blog-quote-bg: rgba(255, 255, 255, 0.05);
+  --blog-code-block-bg: #151d29;
+  --blog-code-block-border: rgba(255, 255, 255, 0.06);
+  --blog-code-block-bottom: rgba(255, 255, 255, 0.06);
+  --blog-code-line-highlight: rgba(0, 0, 0, 0.36);
+  --blog-code-meta-border: transparent;
+  --blog-code-lang-bg: transparent;
+  --blog-code-lang-color: rgba(235, 235, 245, 0.38);
+  --blog-code-text: #c9d1d9;
+  --blog-code-muted: #8b949e;
+  --blog-code-keyword: #ff7b72;
+  --blog-code-string: #a5d6ff;
+  --blog-code-number: #79c0ff;
+  --blog-code-title: #d2a8ff;
+  --blog-code-comment: #8b949e;
+  --blog-code-attr: #79c0ff;
+  --blog-code-symbol: #ffa657;
+  --blog-code-deletion: #ffdcd7;
+  --blog-code-addition: #aff5b4;
+  --blog-floating-bg: rgba(29, 32, 37, 0.96);
+  --blog-floating-hover-bg: rgba(40, 43, 49, 0.98);
+  --blog-lightbox-bg: rgba(3, 7, 12, 0.92);
+  --blog-bgm-ripple-core: color-mix(in srgb, var(--blog-bg) 64%, #22c55e 36%);
+  --blog-bgm-ripple-mid: color-mix(in srgb, var(--blog-bg) 80%, #4ade80 20%);
+  --blog-bgm-ripple-ring: color-mix(in srgb, var(--blog-bg) 88%, #86efac 12%);
+}
+
+.blog-shell:not([data-blog-theme='dark']) {
+  --blog-bgm-ripple-core: color-mix(in srgb, var(--blog-bg) 52%, #16a34a 48%);
+  --blog-bgm-ripple-mid: color-mix(in srgb, var(--blog-bg) 64%, #22c55e 36%);
+  --blog-bgm-ripple-ring: color-mix(in srgb, var(--blog-bg) 76%, #4ade80 24%);
+}
+
+.blog-shell,
+.blog-shell * {
+  box-sizing: border-box;
+}
+
+.blog-shell::selection,
+.blog-shell *::selection {
+  background-color: rgb(223, 223, 223) !important;
+  color: inherit !important;
+  text-shadow: none !important;
+}
+
+.blog-shell::-moz-selection,
+.blog-shell *::-moz-selection {
+  background-color: rgb(223, 223, 223) !important;
+  color: inherit !important;
+  text-shadow: none !important;
+}
+
+.blog-shell[data-blog-theme='dark']::selection,
+.blog-shell[data-blog-theme='dark'] *::selection {
+  background-color: #282828 !important;
+}
+
+.blog-shell[data-blog-theme='dark']::-moz-selection,
+.blog-shell[data-blog-theme='dark'] *::-moz-selection {
+  background-color: #282828 !important;
+}
