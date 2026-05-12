@@ -15,28 +15,21 @@ import {
   ArrowUpIcon,
   CaretUpIcon,
 } from '@radix-ui/react-icons';
+import {
+  Lightbox,
+  Renderer,
+  createLightboxImage,
+  type LightboxImage,
+  type LightboxState,
+} from '@website-kernel/markdown';
 
 import type { BlogArticleFrontmatter } from '#blog/articleTypes';
-import {
-  BlogLightbox,
-  createLightboxImage,
-} from '#blog/components/MarkdownLightbox/Lightbox';
-import { BlogMdx } from '#blog/components/Markdown/Markdown';
-import type {
-  LightboxImage,
-  LightboxState,
-} from '#blog/components/MarkdownTypes';
 import { useBlogTheme } from '#blog/components/BlogThemeToggle/BlogThemeToggle';
 import {
   BLOG_TAG_QUERY_KEY,
   createBlogTagNavigation,
   formatBlogDate,
 } from '#blog/pages/BlogHomePage/HomePage';
-
-import '#blog/pages/BlogPage/Page.css';
-import '#blog/pages/BlogShared/Shared.css';
-import '#blog/pages/BlogArticlePage/ArticlePage.css';
-import '#blog/pages/BlogArticlePage/ArticleActions.css';
 
 type BlogArticleHeading = {
   id: string;
@@ -145,23 +138,23 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
 
     return Array.from(
       articleBody.querySelectorAll<HTMLElement>(
-        'figure.blog-prose-image, figure.blog-prose-gallery-item',
+        'figure.markdown-prose-image, figure.markdown-prose-gallery-item',
       ),
     )
       .map((figure) => {
         const button = figure.querySelector<HTMLButtonElement>(
-          'button[data-blog-lightbox-id]',
+          'button[data-markdown-lightbox-id]',
         );
         const img = figure.querySelector<HTMLImageElement>(
-          '.blog-prose-image-asset, .blog-prose-gallery-asset',
+          '.markdown-prose-image-asset, .markdown-prose-gallery-asset',
         );
         if (!img?.src) return null;
         const caption = figure.querySelector<HTMLElement>(
-          '.blog-prose-image-caption, .blog-prose-gallery-caption',
+          '.markdown-prose-image-caption, .markdown-prose-gallery-caption',
         )?.textContent;
 
         return {
-          id: button?.dataset.blogLightboxId,
+          id: button?.dataset.markdownLightboxId,
           src: img.src,
           alt: img.alt || undefined,
           caption: caption?.trim() || undefined,
@@ -452,7 +445,11 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
 
   if (!article) {
     return (
-      <main className="blog-shell" data-blog-theme={blogTheme.theme}>
+      <main
+        className="blog-shell markdown-shell"
+        data-blog-theme={blogTheme.theme}
+        data-markdown-theme={blogTheme.theme}
+      >
         <div className="blog-page blog-empty-state">
           <p>{COPY.articleMissing}</p>
           <Link to="/blog" className="blog-subtle-link">
@@ -466,8 +463,9 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   return (
     <main
       ref={articleRef}
-      className="blog-shell"
+      className="blog-shell markdown-shell"
       data-blog-theme={blogTheme.theme}
+      data-markdown-theme={blogTheme.theme}
     >
       <article
         className={`blog-article-page${
@@ -544,7 +542,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
                 } as CSSProperties
               }
             >
-              <BlogMdx
+              <Renderer
                 Content={article.Content}
                 articleSourcePath={article.sourcePath}
                 resolveAssetUrl={props.resolveAssetUrl}
@@ -653,7 +651,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
         </div>
 
         {lightboxImage ? (
-          <BlogLightbox
+          <Lightbox
             image={lightboxImage}
             onClose={closeLightbox}
             transitionDirection={lightboxTransitionDirection}

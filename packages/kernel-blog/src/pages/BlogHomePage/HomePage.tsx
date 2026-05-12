@@ -7,10 +7,6 @@ import {
 } from '#blog/components/BlogThemeToggle/BlogThemeToggle';
 import type { BlogArticleMeta, BlogTagSummary } from '#blog/articleTypes';
 
-import '#blog/pages/BlogPage/Page.css';
-import '#blog/pages/BlogShared/Shared.css';
-import '#blog/pages/BlogHomePage/HomePage.css';
-
 export const BLOG_TAG_QUERY_KEY = 'tag';
 
 export function createBlogTagNavigation(tag?: string) {

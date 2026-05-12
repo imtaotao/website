@@ -1,0 +1,122 @@
+.markdown-fancy-list-block {
+  margin: 1.7rem 0;
+}
+
+.markdown-fancy-list-block-title {
+  margin: 0 0 0.58rem;
+  color: #1d4ed8;
+  font-family: var(--markdown-title-font);
+  font-size: 0.98rem;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.markdown-fancy-list {
+  display: grid;
+  gap: 0;
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  border-radius: 14px;
+  background: rgba(59, 130, 246, 0.045);
+}
+
+.markdown-fancy-list-item {
+  position: relative;
+  padding: 0.72rem 0.9rem;
+}
+
+.markdown-fancy-list-item + .markdown-fancy-list-item {
+  border-top: none;
+}
+
+.markdown-fancy-list-item + .markdown-fancy-list-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 1.2rem;
+  right: 1.2rem;
+  height: 1px;
+  background: rgba(37, 99, 235, 0.16);
+}
+
+.markdown-fancy-list-item-body {
+  min-width: 0;
+}
+
+.markdown-fancy-list-item-title {
+  margin: 0;
+  color: #1d4ed8;
+  font-family: var(--markdown-title-font);
+  font-size: 0.94rem;
+  font-weight: 620;
+  line-height: 1.4;
+}
+
+.markdown-fancy-list-item-copy {
+  margin-top: 0.12rem;
+}
+
+.markdown-fancy-list-item-line {
+  margin: 0;
+  color: rgba(30, 64, 175, 0.86);
+  font-size: 0.92rem;
+  line-height: 1.72;
+}
+
+.markdown-fancy-list-item-line + .markdown-fancy-list-item-line {
+  margin-top: 0.22rem;
+}
+
+.markdown-shell[data-markdown-theme='dark'] .markdown-fancy-list {
+  border-color: rgba(96, 165, 250, 0.22);
+  background: rgba(37, 99, 235, 0.12);
+}
+
+.markdown-shell[data-markdown-theme='dark'] .markdown-fancy-list-block-title {
+  color: #93c5fd;
+}
+
+.markdown-shell[data-markdown-theme='dark']
+  .markdown-fancy-list-item
+  + .markdown-fancy-list-item::before {
+  background: rgba(96, 165, 250, 0.2);
+}
+
+.markdown-shell[data-markdown-theme='dark'] .markdown-fancy-list-item-title {
+  color: #93c5fd;
+}
+
+.markdown-shell[data-markdown-theme='dark'] .markdown-fancy-list-item-line {
+  color: rgba(219, 234, 254, 0.82);
+}
+
+@media (max-width: 767px) {
+  .markdown-fancy-list {
+  }
+
+  .markdown-fancy-list-block {
+    margin: 1.5rem 0;
+  }
+
+  .markdown-fancy-list-block-title {
+    margin-bottom: 0.52rem;
+    font-size: 0.94rem;
+  }
+
+  .markdown-fancy-list-item {
+    padding: 0.66rem 0.72rem;
+  }
+
+  .markdown-fancy-list-item + .markdown-fancy-list-item::before {
+    left: 0.92rem;
+    right: 0.92rem;
+  }
+
+  .markdown-fancy-list-item-title {
+    font-size: 0.92rem;
+  }
+
+  .markdown-fancy-list-item-line {
+    font-size: 0.9rem;
+    line-height: 1.68;
+  }
+}

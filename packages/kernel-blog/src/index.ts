@@ -13,10 +13,7 @@ import type {
 
 export { blogTagMap };
 export { extractFrontmatter, normalizeBlogArticleFrontmatter };
-export {
-  BlogMdx,
-  extractMarkdownHeadings,
-} from '#blog/components/Markdown/Markdown';
+export { Renderer as BlogMdx, extractHeadings } from '@website-kernel/markdown';
 export {
   BlogThemeToggle,
   useBlogTheme,
@@ -38,7 +35,6 @@ export type {
   BlogTagMeta,
   BlogTagSummary,
 } from '#blog/articleTypes';
-export type { MarkdownHeading } from '#blog/components/Markdown/Markdown';
 export type { BlogTheme } from '#blog/components/BlogThemeToggle/BlogThemeToggle';
 export type {
   BlogHomeArticle,
@@ -48,6 +44,7 @@ export type {
   BlogArticlePageProps,
   BlogArticleView,
 } from '#blog/pages/BlogArticlePage/ArticlePage';
+export type { Heading } from '@website-kernel/markdown';
 
 const ARTICLE_ENTRY_FILENAME = 'index.mdx';
 

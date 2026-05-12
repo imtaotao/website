@@ -186,15 +186,49 @@ importers:
 
   packages/kernel-blog:
     dependencies:
+      '@radix-ui/react-icons':
+        specifier: 'catalog:'
+        version: 1.3.2(react@19.2.5)
+      '@website-kernel/markdown':
+        specifier: workspace:*
+        version: link:../kernel-markdown
+      react:
+        specifier: ^19.0.0
+        version: 19.2.5
+      react-router:
+        specifier: ^7.14.2
+        version: 7.14.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      yaml:
+        specifier: 'catalog:'
+        version: 2.8.3
+    devDependencies:
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@vitest/coverage-v8':
+        specifier: 'catalog:'
+        version: 1.6.0(vitest@1.6.0(@types/node@20.12.12)(lightningcss@1.32.0))
+      rimraf:
+        specifier: 'catalog:'
+        version: 6.0.1
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.6.1)(postcss@8.5.8)(tsx@4.11.2)(typescript@6.0.3)(yaml@2.8.3)
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+      vitest:
+        specifier: 'catalog:'
+        version: 1.6.0(@types/node@20.12.12)(lightningcss@1.32.0)
+
+  packages/kernel-markdown:
+    dependencies:
       '@mdx-js/react':
         specifier: ^3.1.1
         version: 3.1.1(@types/react@19.2.14)(react@19.2.5)
       '@radix-ui/react-icons':
         specifier: 'catalog:'
         version: 1.3.2(react@19.2.5)
-      aidly:
-        specifier: 'catalog:'
-        version: 1.37.0
       highlight.js:
         specifier: ^11.11.1
         version: 11.11.1
@@ -204,15 +238,9 @@ importers:
       react:
         specifier: ^19.0.0
         version: 19.2.5
-      react-router:
-        specifier: ^7.14.2
-        version: 7.14.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       react-twitter-widgets:
         specifier: 'catalog:'
         version: 1.11.0(react@19.2.5)
-      yaml:
-        specifier: 'catalog:'
-        version: 2.8.3
     devDependencies:
       '@types/react':
         specifier: ^19.2.14

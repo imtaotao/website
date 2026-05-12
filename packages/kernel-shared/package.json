@@ -4,7 +4,7 @@
   "author": "chentao.arthur",
   "scripts": {
     "dev": "tsup --watch",
-    "build": "rimraf dist && tsup",
+    "build": "rimraf dist && tsup && node --import tsx ../../scripts/buildPackageModules.mjs",
     "typecheck": "tsc --noEmit --skipLibCheck"
   },
   "imports": {
@@ -14,25 +14,28 @@
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/index.d.ts",
-        "node": "./dist/index.mjs",
-        "default": "./dist/index.js"
+        "types": "./dist/es/index.d.ts",
+        "default": "./dist/es/index.js"
       },
       "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.cjs"
+        "types": "./dist/lib/index.d.ts",
+        "default": "./dist/lib/index.js"
       }
     },
-    "./style.css": "./dist/index.css"
+    "./es/*": "./dist/es/*",
+    "./lib/*": "./dist/lib/*",
+    "./style/*": "./dist/es/style/*",
+    "./style.css": "./dist/es/style/index.css",
+    "./style/index.css": "./dist/es/style/index.css"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/lib/index.js",
+  "module": "./dist/es/index.js",
+  "types": "./dist/es/index.d.ts",
   "files": [
     "dist"
   ],
   "sideEffects": [
-    "*.css"
+    "**/*.css"
   ],
   "peerDependencies": {
     "react": "^19.0.0"

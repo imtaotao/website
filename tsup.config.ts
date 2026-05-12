@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 import { replace } from 'esbuild-plugin-replace';
 import minimist from 'minimist';
 import type { Options } from 'tsup';
@@ -19,6 +19,11 @@ const require = createRequire(import.meta.url);
 const repoRoot = fileURLToPath(new URL('.', import.meta.url));
 const tailwindConfigPath = path.join(repoRoot, 'tailwind.config.js');
 
+type BaseOptions = {
+  styleImports?: Array<string>;
+  packageBuild?: PackageBuildOptions;
+};
+
 type PackageJsonLike = {
   name?: string;
   version?: string;
@@ -28,14 +33,19 @@ type PackageJsonLike = {
   peerDependencies?: Record<string, string>;
 };
 
+export type PackageBuildOptions = {
+  styleDependencies?: Array<string>;
+  componentStyleDependencies?: Record<string, string | Array<string>>;
+};
+
 function getPackageExternal(pkg: PackageJsonLike): string[] {
+  const external = new Set<string>();
   const depNames = new Set<string>([
     ...Object.keys(pkg.dependencies ?? {}),
     ...Object.keys(pkg.peerDependencies ?? {}),
     ...Object.keys(pkg.devDependencies ?? {}),
   ]);
 
-  const external = new Set<string>();
   for (const name of depNames) {
     external.add(name);
     external.add(`${name}/*`);
@@ -88,6 +98,7 @@ const formatMap = {
 export function baseOptions(
   dir: string,
   formats: Array<keyof typeof formatMap>,
+  options: BaseOptions = {},
 ) {
   const pkg: PackageJsonLike = JSON.parse(
     fs.readFileSync(new URL('./package.json', dir)).toString(),
@@ -95,7 +106,6 @@ export function baseOptions(
 
   const entry = 'src/index.ts';
   const external = getPackageExternal(pkg);
-
   const banner =
     '/*!\n' +
     ` * ${pkg.name}.js v${pkg.version}\n` +
@@ -103,6 +113,9 @@ export function baseOptions(
       pkg.author || 'chentao.arthur'
     }\n` +
     ' */';
+  const styleBanner = options.styleImports
+    ?.map((id) => `@import "${id}";`)
+    .join('\n');
 
   const outputConfigs: Array<{ format: string; extname: string }> = [];
 
@@ -126,7 +139,7 @@ export function baseOptions(
       format,
       globalName,
       entry: [entry],
-      dts: { entry },
+      dts: false,
       treeshake: true,
       clean: !argv.watch,
       sourcemap: argv.watch,
@@ -138,6 +151,7 @@ export function baseOptions(
       injectStyle: false,
       banner: {
         js: banner.trim(),
+        ...(styleBanner ? { css: styleBanner } : {}),
       },
       outExtension: () => ({
         js: extname,
