@@ -1,17 +1,18 @@
-import { Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { Theme } from '@radix-ui/themes';
 import { useWebsiteTheme } from '@website-kernel/shared';
 
 import { WebsiteThemeToggle } from '#app/components/WebsiteThemeToggle';
-import HomePage from '#app/pages/HomePage';
-import ResumePage from '#app/pages/ResumePage';
-import BlogHomePage from '#app/pages/Blog/BlogHomePage';
-import BlogArticlePage from '#app/pages/Blog/BlogArticlePage';
 import NotFoundPage from '#app/pages/NotFoundPage';
 
 import '@radix-ui/themes/styles.css';
 import '#app/App.css';
+
+const HomePage = lazy(() => import('#app/pages/HomePage'));
+const ResumePage = lazy(() => import('#app/pages/ResumePage'));
+const BlogHomePage = lazy(() => import('#app/pages/Blog/BlogHomePage'));
+const BlogArticlePage = lazy(() => import('#app/pages/Blog/BlogArticlePage'));
 
 function AppSuspenseFallback() {
   return (
