@@ -18,6 +18,12 @@
   counter-reset: blog-steps;
 }
 
+.blog-steps-block--horizontal .blog-steps-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+  column-gap: 1.25rem;
+}
+
 .blog-step {
   position: relative;
   padding: 0 0 1.15rem 3rem;
@@ -35,8 +41,8 @@
   width: 1.85rem;
   height: 1.85rem;
   border-radius: 999px;
-  background: #111827;
-  color: #ffffff;
+  background: var(--blog-step-marker-bg, #111827);
+  color: var(--blog-step-marker-color, #ffffff);
   font-family: var(--blog-code-font);
   font-size: 0.84rem;
   font-weight: 700;
@@ -61,12 +67,53 @@
   display: none;
 }
 
+.blog-steps-block--horizontal .blog-step {
+  min-width: 0;
+  padding: 2.75rem 0 0;
+}
+
+.blog-steps-block--horizontal .blog-step::before {
+  top: 0;
+  left: 0;
+}
+
+.blog-steps-block--horizontal .blog-step::after {
+  top: 0.92rem;
+  right: -0.45rem;
+  bottom: auto;
+  left: 2.35rem;
+  width: auto;
+  height: 1px;
+}
+
 .blog-step-title {
   margin-bottom: 0.44rem;
   color: var(--blog-text-strong);
   font-size: 0.96rem;
   font-weight: 600;
   line-height: 1.48;
+}
+
+.blog-step-body,
+.blog-step-body .blog-prose-p,
+.blog-step-body .blog-prose-ul,
+.blog-step-body .blog-prose-ol,
+.blog-step-body .blog-prose-li {
+  color: var(--blog-text-soft);
+  font-size: 0.94rem;
+  font-weight: 500;
+  line-height: 1.78;
+  text-shadow: none;
+}
+
+.blog-step-body .blog-prose-p,
+.blog-step-body .blog-prose-ul,
+.blog-step-body .blog-prose-ol {
+  margin-bottom: 0.62rem;
+}
+
+.blog-step-body .blog-prose-li + .blog-prose-li {
+  margin-top: 0.46rem;
 }
 
 .blog-step-line + .blog-step-line {
@@ -78,8 +125,8 @@
 }
 
 .blog-shell[data-blog-theme='dark'] .blog-step::before {
-  background: #f3f4f6;
-  color: #111827;
+  background: var(--blog-step-marker-bg, #f3f4f6);
+  color: var(--blog-step-marker-color, #111827);
 }
 
 .blog-shell[data-blog-theme='dark'] .blog-step::after {
@@ -91,16 +138,39 @@
     margin: 1.5rem 0;
   }
 
+  .blog-steps-block--horizontal .blog-steps-list {
+    display: block;
+  }
+
+  .blog-steps-block--horizontal .blog-step,
   .blog-step {
     padding-left: 2.7rem;
   }
 
+  .blog-steps-block--horizontal .blog-step {
+    padding-top: 0;
+    padding-bottom: 1.15rem;
+  }
+
+  .blog-steps-block--horizontal .blog-step:last-child {
+    padding-bottom: 0;
+  }
+
+  .blog-steps-block--horizontal .blog-step::before,
   .blog-step::before {
+    top: 0.02rem;
+    left: 0;
     width: 1.7rem;
     height: 1.7rem;
   }
 
+  .blog-steps-block--horizontal .blog-step::after,
   .blog-step::after {
+    top: 2.1rem;
+    right: auto;
+    bottom: 0.2rem;
     left: 0.84rem;
+    width: 1px;
+    height: auto;
   }
 }

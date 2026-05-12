@@ -127,42 +127,21 @@ export type BlogFancyListProps = {
   className?: string;
 };
 
-export type BlogCalloutTone = 'note' | 'tip' | 'warning' | 'success';
-
-export type BlogCalloutProps = {
-  tone?: BlogCalloutTone;
-  title?: ReactNode;
-  icon?: ReactNode;
-  className?: string;
-  children?: ReactNode;
-};
-
 export type BlogStepsProps = {
   title?: ReactNode;
+  direction?: 'vertical' | 'horizontal';
+  markerColor?: string;
+  markerTextColor?: string;
   className?: string;
   children?: ReactNode;
 };
 
 export type BlogStepProps = {
   title?: ReactNode;
+  markerColor?: string;
+  markerTextColor?: string;
   className?: string;
   children?: ReactNode;
-};
-
-export type BlogFileTreeItem =
-  | string
-  | {
-      name: string;
-      kind?: 'file' | 'directory';
-      description?: ReactNode;
-      children?: Array<BlogFileTreeItem>;
-    };
-
-export type BlogFileTreeProps = {
-  title?: ReactNode;
-  items: Array<BlogFileTreeItem>;
-  caption?: ReactNode;
-  className?: string;
 };
 
 export type ResolveBlogAssetUrl = (

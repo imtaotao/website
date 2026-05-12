@@ -322,27 +322,7 @@ content: (
 ]}
 />
 
-## 14. Callout
-
-`Callout` 适合承载说明、提示、注意事项和完成状态。遇到普通 `blockquote` 不够明确的场景，可以优先用它。
-
-<Callout tone="note" title="补充说明">
-  适合放一些需要紧贴当前段落的背景信息、边界条件或上下文说明，不会打断正文节奏，但读者也不容易漏掉。
-</Callout>
-
-<Callout tone="tip" title="写作建议">
-  这里面依然可以直接写 MDX，所以像 <code>FileTree</code>、<Color c="green">强调文字</Color> 或 <UrlLink href="https://imtaotao.me" label="站点链接" /> 这种内容都能直接放进来。
-</Callout>
-
-<Callout tone="warning" title="明确写清代价">
-  适合放不可逆操作、迁移注意点，或者读者很容易想当然写错的地方。比把这类信息埋在长段落里更稳。
-</Callout>
-
-<Callout tone="success" title="适用场景">
-  适合放完成结果、确认结论，或者在分步骤内容之后做一个短收束，让读者快速知道这一段最后得到了什么。
-</Callout>
-
-## 15. Steps
+## 14. Steps
 
 `Steps` 更适合教程、排障流程和操作说明。和普通有序列表相比，它更稳定，也更容易做统一样式。
 
@@ -351,72 +331,46 @@ content: (
     文章放在博客目录下，图片等本地资源尽量和文章放在一起，这样相对路径最省心，也不容易写错。
   </Step>
   <Step title="普通 markdown 不够时再上 MDX 组件">
-    像 <code>Callout</code>、<code>FancyList</code> 或行内链接这种能力，优先用在能明显提升结构清晰度的地方，不要为了 demo 而 demo。
+    像 <code>FancyList</code>、<code>SummaryCards</code> 或行内链接这种能力，优先用在能明显提升结构清晰度的地方，不要为了 demo 而 demo。
   </Step>
   <Step title="稳定后再做一次真实验证">
     等正文结构差不多定下来，再跑一次完整构建或预览。很多导入路径和 MDX 写法问题，靠肉眼看没有实际渲染来得快。
   </Step>
 </Steps>
 
-## 16. FileTree
+<Steps title="不用 Step 标签的写法">
 
-`FileTree` 适合展示项目目录、生成产物结构，或者告诉读者这篇文章主要应该看仓库里的哪几块。
+### 写一个标题
 
-<FileTree
-title="Demo 工作区片段"
-caption="目录用嵌套结构表示即可，描述尽量短一点，这样整体看起来还像代码树而不是说明书。"
-items={[
-{
-name: 'app',
-kind: 'directory',
-children: [
-{
-name: 'src',
-kind: 'directory',
-children: [
-{ name: 'main.tsx', description: '应用入口' },
-{ name: 'App.tsx', description: '主页面组件' },
-],
-},
-],
-},
-{
-name: 'packages',
-kind: 'directory',
-children: [
-{
-name: 'kernel-blog',
-kind: 'directory',
-children: [
-{
-name: 'src/components',
-kind: 'directory',
-children: [
-{ name: 'Markdown.tsx', description: 'MDX 组件注册入口' },
-{ name: 'MarkdownCallout.tsx', description: '提示块组件' },
-{ name: 'MarkdownSteps.tsx', description: '步骤组件' },
-{ name: 'MarkdownFileTree.tsx', description: '目录树组件' },
-],
-},
-],
-},
-],
-},
-{
-name: 'blog',
-kind: 'directory',
-children: [
-{
-name: 'demo',
-kind: 'directory',
-children: [{ name: 'index.mdx', description: '组件演示文章' }],
-},
-],
-},
-]}
-/>
+标题会自动变成步骤标题，下面的普通段落会进入当前步骤正文。
 
-## 17. 后续约定
+### 继续写 MDX
+
+正文里仍然可以写 <Color c="green">强调文字</Color>、`inline code`，也可以继续放普通列表。
+
+- 保持 markdown 写作节奏
+- 需要更细控制时再换回 `<Step>`
+
+</Steps>
+
+<Steps
+  title="组件落地节奏"
+  direction="horizontal"
+  markerColor="#2563eb"
+  markerTextColor="#ffffff"
+>
+  <Step title="整理结构">
+    先确认组件职责、属性和 demo 场景。
+  </Step>
+  <Step title="补齐样式" markerColor="#16a34a" markerTextColor="#ffffff">
+    再处理亮色、暗色和移动端表现。
+  </Step>
+  <Step title="跑检查">
+    最后用内容检查和构建确认没有引用问题。
+  </Step>
+</Steps>
+
+## 15. 后续约定
 
 - 单图优先用 Markdown 原生语法
 - 多图排版用 `ImageGallery`

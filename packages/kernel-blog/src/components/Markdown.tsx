@@ -29,10 +29,8 @@ import { BlogMdxWebEmbed } from '#blog/components/MarkdownWebEmbed';
 import { BlogMdxXPostEmbed } from '#blog/components/MarkdownXPostEmbed';
 import { isMediaOnlyParagraph } from '#blog/components/MarkdownNodes';
 import { BlogMdxChatThread } from '#blog/components/MarkdownChat';
-import { BlogMdxCallout } from '#blog/components/MarkdownCallout';
 import { BlogMdxDetailsBlock } from '#blog/components/MarkdownDetailsBlock';
 import { BlogMdxFancyList } from '#blog/components/MarkdownFancyList';
-import { BlogMdxFileTree } from '#blog/components/MarkdownFileTree';
 import { BlogMdxPoem } from '#blog/components/MarkdownPoem';
 import { BlogMdxStep, BlogMdxSteps } from '#blog/components/MarkdownSteps';
 import { BlogMdxSummaryCards } from '#blog/components/MarkdownSummaryCards';
@@ -67,6 +65,9 @@ function BlogMdxImpl(props: BlogMdxProps) {
     children?: ReactNode;
   };
   type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  type BlogHeadingComponent = ((p: ComponentProps<'h1'>) => ReactNode) & {
+    blogMdxHeadingTag: HeadingTag;
+  };
   const nextHeadingIdRef = useRef(createHeadingIdFactory());
   const openLightbox = useCallback(
     (state: LightboxState | null) => {
@@ -175,14 +176,24 @@ function BlogMdxImpl(props: BlogMdxProps) {
     [],
   );
 
-  const components = useMemo(
-    () => ({
-      h1: (p: ComponentProps<'h1'>) => renderHeading('h1', 'blog-prose-h1', p),
-      h2: (p: ComponentProps<'h2'>) => renderHeading('h2', 'blog-prose-h2', p),
-      h3: (p: ComponentProps<'h3'>) => renderHeading('h3', 'blog-prose-h3', p),
-      h4: (p: ComponentProps<'h4'>) => renderHeading('h4', 'blog-prose-h4', p),
-      h5: (p: ComponentProps<'h5'>) => renderHeading('h5', 'blog-prose-h5', p),
-      h6: (p: ComponentProps<'h6'>) => renderHeading('h6', 'blog-prose-h6', p),
+  const components = useMemo(() => {
+    const createHeadingComponent = (
+      tag: HeadingTag,
+      className: string,
+    ): BlogHeadingComponent => {
+      const Heading = ((p: ComponentProps<'h1'>) =>
+        renderHeading(tag, className, p)) as BlogHeadingComponent;
+      Heading.blogMdxHeadingTag = tag;
+      return Heading;
+    };
+
+    return {
+      h1: createHeadingComponent('h1', 'blog-prose-h1'),
+      h2: createHeadingComponent('h2', 'blog-prose-h2'),
+      h3: createHeadingComponent('h3', 'blog-prose-h3'),
+      h4: createHeadingComponent('h4', 'blog-prose-h4'),
+      h5: createHeadingComponent('h5', 'blog-prose-h5'),
+      h6: createHeadingComponent('h6', 'blog-prose-h6'),
       p: (p: ComponentProps<'p'>) => {
         if (isMediaOnlyParagraph(p.children)) {
           return <div className="blog-prose-media-block">{p.children}</div>;
@@ -231,9 +242,7 @@ function BlogMdxImpl(props: BlogMdxProps) {
       AudioLink,
       VideoLink,
       ChatThread: BlogMdxChatThread,
-      Callout: BlogMdxCallout,
       FancyList: BlogMdxFancyList,
-      FileTree: BlogMdxFileTree,
       Step: BlogMdxStep,
       Steps: BlogMdxSteps,
       DetailsBlock: BlogMdxDetailsBlock,
@@ -246,32 +255,29 @@ function BlogMdxImpl(props: BlogMdxProps) {
         if (!isInline) return <code className={p.className}>{p.children}</code>;
         return <code className="blog-prose-inline-code">{p.children}</code>;
       },
-    }),
-    [
-      ImageGallery,
-      AudioEmbed,
-      VideoEmbed,
-      AudioLink,
-      VideoLink,
-      BlogMdxImage,
-      BlogMdxWebEmbed,
-      BlogMdxChatThread,
-      BlogMdxCallout,
-      BlogMdxDetailsBlock,
-      BlogMdxFancyList,
-      BlogMdxFileTree,
-      BlogMdxGitHubMention,
-      BlogMdxGitHubRepo,
-      BlogMdxPoem,
-      BlogMdxStep,
-      BlogMdxSteps,
-      BlogMdxSummaryCards,
-      BlogMdxUrlLink,
-      BlogMdxXPostEmbed,
-      renderColorText,
-      renderHeading,
-    ],
-  );
+    };
+  }, [
+    ImageGallery,
+    AudioEmbed,
+    VideoEmbed,
+    AudioLink,
+    VideoLink,
+    BlogMdxImage,
+    BlogMdxWebEmbed,
+    BlogMdxChatThread,
+    BlogMdxDetailsBlock,
+    BlogMdxFancyList,
+    BlogMdxGitHubMention,
+    BlogMdxGitHubRepo,
+    BlogMdxPoem,
+    BlogMdxStep,
+    BlogMdxSteps,
+    BlogMdxSummaryCards,
+    BlogMdxUrlLink,
+    BlogMdxXPostEmbed,
+    renderColorText,
+    renderHeading,
+  ]);
 
   return (
     <MDXProvider components={components}>
