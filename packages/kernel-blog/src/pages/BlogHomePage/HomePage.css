@@ -1,3 +1,6 @@
+@import '../Page.css';
+@import '../Shared.css';
+
 .blog-tags-grid {
   display: flex;
   align-items: center;

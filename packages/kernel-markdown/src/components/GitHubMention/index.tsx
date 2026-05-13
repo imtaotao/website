@@ -2,6 +2,7 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { useEffect, useRef, useState } from 'react';
 
 import type { GitHubMentionProps } from '#markdown/components/Types';
+import '#markdown/components/GitHubMention/index.css';
 
 type GitHubUserResponse = {
   avatar_url?: string;

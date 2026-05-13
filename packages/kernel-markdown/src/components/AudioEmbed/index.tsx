@@ -16,6 +16,7 @@ import type {
   AudioEmbedProps,
   MediaContext,
 } from '#markdown/components/MediaShared';
+import '#markdown/components/AudioEmbed/index.css';
 
 export function createAudioEmbed(context: MediaContext) {
   const formatTime = (seconds: number) => {

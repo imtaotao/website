@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Tweet } from 'react-twitter-widgets';
 
 import type { XPostEmbedProps } from '#markdown/components/Types';
+import '#markdown/components/XPostEmbed/index.css';
 
 function XPostEmbedErrorFallback(props: { onVisible: () => void }) {
   useEffect(() => {

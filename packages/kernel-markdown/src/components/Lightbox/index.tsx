@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type TouchEvent } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 
 import type { LightboxImage } from '#markdown/components/Types';
+import '#markdown/components/Lightbox/index.css';
 type LightboxProps = {
   image: LightboxImage;
   onClose: () => void;

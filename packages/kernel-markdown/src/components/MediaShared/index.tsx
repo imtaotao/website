@@ -5,6 +5,7 @@ import type {
   LightboxState,
   ResolveAssetUrl,
 } from '#markdown/components/Types';
+import '#markdown/components/MediaShared/index.css';
 
 export type {
   AudioEmbedProps,

@@ -7,6 +7,7 @@ import {
   type MediaContext,
   type VideoLinkProps,
 } from '#markdown/components/MediaShared';
+import '#markdown/components/VideoLink/index.css';
 
 export function createVideoLink(context: MediaContext) {
   return function VideoLink({

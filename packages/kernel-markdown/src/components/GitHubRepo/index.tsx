@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ExclamationTriangleIcon, GitHubLogoIcon } from '@radix-ui/react-icons';
 
 import type { GitHubRepoProps } from '#markdown/components/Types';
+import '#markdown/components/GitHubRepo/index.css';
 
 type GitHubRepoResponse = {
   description?: string | null;

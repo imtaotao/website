@@ -3,6 +3,7 @@ import path from 'node:path';
 
 const rootDir = process.cwd();
 const packageDir = path.join(rootDir, 'packages/kernel-blog');
+const packagesDir = path.join(rootDir, 'packages');
 const srcDir = path.join(packageDir, 'src');
 const distDir = path.join(packageDir, 'dist');
 const packageJsonPath = path.join(packageDir, 'package.json');
@@ -10,6 +11,8 @@ const issues = [];
 const expectedDistFiles = new Set();
 
 const toPosix = (value) => value.split(path.sep).join('/');
+
+const getPackageDirName = (name) => name.replace('@website-kernel/', 'kernel-');
 
 const addIssue = (message) => {
   issues.push(message);
@@ -67,6 +70,80 @@ const sourceModuleFiles = sourceFiles.filter((file) =>
   /\.(ts|tsx)$/.test(file),
 );
 const sourceCssFiles = sourceFiles.filter((file) => file.endsWith('.css'));
+const sourceCssFileSet = new Set(sourceCssFiles);
+const importedCssFiles = new Set();
+const styleEntries = new Map();
+
+const addStyleEntry = (sourceDir, specifier) => {
+  const values = styleEntries.get(sourceDir) ?? [];
+  if (!values.includes(specifier)) values.push(specifier);
+  styleEntries.set(sourceDir, values);
+};
+
+for (const sourceFile of sourceCssFiles) {
+  const content = readFileSync(path.join(srcDir, sourceFile), 'utf8');
+  const imports = content.matchAll(/^\s*@import\s+["']([^"']+\.css)["'];/gm);
+
+  for (const match of imports) {
+    if (!match[1].startsWith('.')) continue;
+
+    importedCssFiles.add(
+      toPosix(
+        path.normalize(path.join(path.posix.dirname(sourceFile), match[1])),
+      ),
+    );
+  }
+}
+
+for (const sourceFile of sourceModuleFiles) {
+  const sourceDir = path.posix.dirname(sourceFile);
+  const outputBase = sourceFile.replace(/\.(ts|tsx)$/, '');
+  const sameNameCss = `${outputBase}.css`;
+
+  if (sourceCssFileSet.has(sameNameCss)) {
+    addStyleEntry(
+      sourceDir,
+      toPosix(path.posix.relative(`${sourceDir}/style`, sameNameCss)),
+    );
+  }
+
+  const code = readFileSync(path.join(srcDir, sourceFile), 'utf8');
+  const workspaceImports = code.matchAll(
+    /^\s*import\s+{([^}]+)}\s+from\s+["'](@website-kernel\/[^"']+)["'];/gm,
+  );
+
+  for (const match of workspaceImports) {
+    const packageName = match[2];
+    const packageDirName = getPackageDirName(packageName);
+    const importedNames = match[1]
+      .split(',')
+      .map((name) =>
+        name
+          .trim()
+          .replace(/^type\s+/, '')
+          .split(/\s+as\s+/)[0]
+          .trim(),
+      )
+      .filter(Boolean);
+
+    for (const importedName of importedNames) {
+      const cssFile = path.join(
+        packagesDir,
+        packageDirName,
+        'src/components',
+        importedName,
+        'index.css',
+      );
+
+      if (!existsSync(cssFile)) continue;
+
+      addStyleEntry(
+        sourceDir,
+        `${packageName}/es/components/${importedName}/style/index.css`,
+      );
+    }
+  }
+}
 
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 
@@ -120,7 +197,15 @@ for (const format of ['es', 'lib']) {
   for (const sourceFile of sourceCssFiles) {
     assertFile(`dist/${format}/${sourceFile}`);
 
+    if (importedCssFiles.has(sourceFile)) continue;
+
     const sourceDir = path.posix.dirname(sourceFile);
+    if (styleEntries.has(sourceDir)) {
+      assertFile(`dist/${format}/${sourceDir}/style/index.css`);
+    }
+  }
+
+  for (const sourceDir of styleEntries.keys()) {
     assertFile(`dist/${format}/${sourceDir}/style/index.css`);
   }
 
@@ -147,16 +232,36 @@ assertCssIncludes('dist/es/style/index.css', [
 assertCssIncludes('dist/lib/style/index.css', [
   '@import "@website-kernel/markdown/lib/style/index.css";',
 ]);
-assertCssIncludes('dist/es/pages/BlogArticlePage/style/index.css', [
-  '@import "@website-kernel/markdown/es/components/Renderer/style/index.css";',
-  '@import "@website-kernel/markdown/es/components/Lightbox/style/index.css";',
-  '@import "../ArticlePage.css";',
-]);
-assertCssIncludes('dist/lib/pages/BlogArticlePage/style/index.css', [
-  '@import "@website-kernel/markdown/lib/components/Renderer/style/index.css";',
-  '@import "@website-kernel/markdown/lib/components/Lightbox/style/index.css";',
-  '@import "../ArticlePage.css";',
-]);
+
+for (const [sourceDir, specifiers] of styleEntries) {
+  for (const format of ['es', 'lib']) {
+    const expectedLines = specifiers.map((specifier) => {
+      const outputSpecifier = specifier.startsWith('@website-kernel/')
+        ? specifier.replace('/es/', `/${format}/`)
+        : specifier;
+
+      return `@import "${outputSpecifier}";`;
+    });
+
+    assertCssIncludes(
+      `dist/${format}/${sourceDir}/style/index.css`,
+      expectedLines,
+    );
+  }
+}
+
+for (const sourceFile of sourceCssFiles) {
+  const content = readFileSync(path.join(srcDir, sourceFile), 'utf8');
+  const imports = Array.from(
+    content.matchAll(/^\s*@import\s+["']([^"']+\.css)["'];/gm),
+    (match) => match[0],
+  );
+
+  if (!imports.length) continue;
+
+  assertCssIncludes(`dist/es/${sourceFile}`, imports);
+  assertCssIncludes(`dist/lib/${sourceFile}`, imports);
+}
 
 if (!existsSync(distDir)) {
   addIssue('missing directory: packages/kernel-blog/dist');

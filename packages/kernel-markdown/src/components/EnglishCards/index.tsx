@@ -23,6 +23,7 @@ import type {
   EnglishCardResource,
   EnglishCardsProps,
 } from '#markdown/components/Types';
+import '#markdown/components/EnglishCards/index.css';
 
 type OpenApiWordState = {
   status: 'loading' | 'success' | 'error';

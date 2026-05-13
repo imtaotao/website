@@ -1,6 +1,7 @@
 import { isValidElement } from 'react';
 
 import type { FancyListProps } from '#markdown/components/Types';
+import '#markdown/components/FancyList/index.css';
 
 export function MdxFancyList(props: FancyListProps) {
   const { title, items, className } = props;

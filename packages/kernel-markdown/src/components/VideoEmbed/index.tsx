@@ -4,6 +4,7 @@ import type {
   MediaContext,
   VideoEmbedProps,
 } from '#markdown/components/MediaShared';
+import '#markdown/components/VideoEmbed/index.css';
 
 export function createVideoEmbed(context: MediaContext) {
   return function VideoEmbed({

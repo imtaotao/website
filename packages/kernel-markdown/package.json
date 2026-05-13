@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "author": "chentao.arthur",
   "scripts": {
-    "dev": "tsup --watch",
-    "build": "rimraf dist && tsup && website-package-modules",
+    "dev": "tsdown --config ./tsdown.config.ts --watch",
+    "build": "rimraf dist && tsdown --config ./tsdown.config.ts && website-package-modules",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit --skipLibCheck"
@@ -51,9 +51,8 @@
     "@website/infra": "workspace:*",
     "@types/react": "^19.2.14",
     "@vitest/coverage-v8": "catalog:",
-    "esbuild-plugin-replace": "catalog:",
     "rimraf": "catalog:",
-    "tsup": "catalog:",
+    "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

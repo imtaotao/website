@@ -8,9 +8,9 @@
 - 构建命令：`pnpm --filter @website-kernel/blog run build`
 - 包内构建流程：
   - `rimraf dist`
-  - `tsup`
+  - `tsdown --config ./tsdown.config.ts`
   - `website-package-modules`
-- `packages/kernel-blog/tsup.config.ts` 通过 `@website/infra/tsup.config` 的 `baseOptions` 产出根 bundle，并通过 `packageBuild` 声明样式依赖。Tailwind 相关处理使用 `@website/infra/tailwind.config.cjs` 对应的共享配置。
+- `packages/kernel-blog/tsdown.config.ts` 通过根目录 `tsdown.config.ts` 的 `baseOptions` 产出根 bundle。样式后处理配置放在 `packages/kernel-blog/packageBuild.config.ts`。Tailwind 相关处理使用根目录 `tailwind.config.js` 对应的共享配置。
 
 ## package.json 对外入口
 
@@ -46,7 +46,7 @@
 
 ## dist 根目录
 
-`dist/` 根目录由 `tsup` 产出兼容不同消费方式的 bundle：
+`dist/` 根目录由 `tsdown` 产出兼容不同消费方式的 bundle：
 
 - `dist/index.js`
 - `dist/index.mjs`

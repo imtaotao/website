@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import '#markdown/components/DetailsBlock/index.css';
 
 export type MdxDetailsBlockProps = {
   title: string;
