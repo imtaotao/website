@@ -9,8 +9,8 @@
 - 包内构建流程：
   - `rimraf dist`
   - `tsup`
-  - `node --import tsx ../../scripts/buildPackageModules.mjs`
-- `packages/kernel-blog/tsup.config.ts` 通过根目录 `tsup.config.ts` 的 `baseOptions` 产出根 bundle，并通过 `packageBuild` 声明样式依赖。
+  - `website-package-modules`
+- `packages/kernel-blog/tsup.config.ts` 通过 `@website/infra/tsup.config` 的 `baseOptions` 产出根 bundle，并通过 `packageBuild` 声明样式依赖。Tailwind 相关处理使用 `@website/infra/tailwind.config.cjs` 对应的共享配置。
 
 ## package.json 对外入口
 
@@ -58,7 +58,7 @@
 
 ## 模块化产物
 
-`scripts/buildPackageModules.mjs` 会额外生成两套模块化产物：
+`@website/infra` 的 `website-package-modules` 命令会额外生成两套模块化产物：
 
 - `dist/es/`：ES module，内部源码别名会改写为相对 `*.js` import。
 - `dist/lib/`：CommonJS，内部源码别名会改写为相对 `*.js` require。
@@ -127,22 +127,22 @@
 @import "@website-kernel/markdown/lib/style/index.css";
 ```
 
-## 验证脚本
+## 验证命令
 
-新增脚本：
+当前根命令：
 
 ```shell
 pnpm codex:blog-build-output
 ```
 
-这个脚本只检查现有产物结构，不会自动构建。典型流程是：
+这个命令只检查现有产物结构，不会自动构建。典型流程是：
 
 ```shell
 pnpm --filter @website-kernel/blog run build
 pnpm codex:blog-build-output
 ```
 
-脚本会检查：
+命令会检查：
 
 - package 对外入口字段是否仍指向当前 `dist` 布局。
 - 根 bundle 是否存在。

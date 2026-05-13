@@ -1,0 +1,22 @@
+{
+  "name": "@website/infra",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "author": "chentao.arthur",
+  "bin": {
+    "website-package-modules": "./bin/packageModules.cjs"
+  },
+  "dependencies": {
+    "@types/node": "^20.10.6",
+    "@types/minimist": "^1.2.5",
+    "tsup": "catalog:",
+    "tsx": "^4.11.2",
+    "typescript": "catalog:",
+    "esbuild-plugin-replace": "catalog:",
+    "execa": "^9.1.0",
+    "minimist": "^1.2.8",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^4.2.4"
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "exclude": ["**/tsup.config.ts", "scripts"],
+  "exclude": ["scripts"],
   "compilerOptions": {
     "target": "ES2018",
     "module": "preserve",
@@ -32,6 +32,7 @@
     "esModuleInterop": true,
     "paths": {
       // externals
+      "@website/infra/*": ["./infra/src/*"],
       "@website-kernel/*": ["./packages/kernel-*/src"],
 
       // app

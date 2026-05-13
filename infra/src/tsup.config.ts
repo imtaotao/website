@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 import { replace } from 'esbuild-plugin-replace';
 import minimist from 'minimist';
 import type { Options } from 'tsup';
@@ -16,8 +16,7 @@ type TsupEsbuildPlugin = NonNullable<Options['esbuildPlugins']>[number];
 const argv = minimist<{ watch: boolean }>(process.argv.slice(2));
 
 const require = createRequire(import.meta.url);
-const repoRoot = fileURLToPath(new URL('.', import.meta.url));
-const tailwindConfigPath = path.join(repoRoot, 'tailwind.config.js');
+const createTailwindConfig = require('./tailwind.config.cjs');
 
 type BaseOptions = {
   styleImports?: Array<string>;
@@ -38,7 +37,7 @@ export type PackageBuildOptions = {
   componentStyleDependencies?: Record<string, string | Array<string>>;
 };
 
-function getPackageExternal(pkg: PackageJsonLike): string[] {
+function getPackageExternal(pkg: PackageJsonLike) {
   const external = new Set<string>();
   const depNames = new Set<string>([
     ...Object.keys(pkg.dependencies ?? {}),
@@ -53,7 +52,8 @@ function getPackageExternal(pkg: PackageJsonLike): string[] {
   return [...external];
 }
 
-function tailwindPostcssEsbuildPlugin() {
+function tailwindPostcssEsbuildPlugin(repoRoot: string) {
+  const tailwindConfig = createTailwindConfig(repoRoot);
   const plugin: TsupEsbuildPlugin = {
     name: 'postcss-tailwind',
     setup(build: EsbuildPluginBuild) {
@@ -75,7 +75,7 @@ function tailwindPostcssEsbuildPlugin() {
         const postcss = require('postcss');
         const tailwindcss = require('tailwindcss');
         const result = await postcss([
-          tailwindcss({ config: tailwindConfigPath }),
+          tailwindcss({ config: tailwindConfig }),
         ]).process(css, { from: args.path });
 
         return {
@@ -89,6 +89,17 @@ function tailwindPostcssEsbuildPlugin() {
   return plugin;
 }
 
+function findRepoRoot(startDir: string) {
+  let currentDir = startDir;
+  while (currentDir !== path.dirname(currentDir)) {
+    if (fs.existsSync(path.join(currentDir, 'pnpm-workspace.yaml'))) {
+      return currentDir;
+    }
+    currentDir = path.dirname(currentDir);
+  }
+  return startDir;
+}
+
 const formatMap = {
   cjs: '.cjs',
   iife: '.global.js',
@@ -100,6 +111,8 @@ export function baseOptions(
   formats: Array<keyof typeof formatMap>,
   options: BaseOptions = {},
 ) {
+  const packageRoot = fileURLToPath(new URL('.', dir));
+  const repoRoot = findRepoRoot(packageRoot);
   const pkg: PackageJsonLike = JSON.parse(
     fs.readFileSync(new URL('./package.json', dir)).toString(),
   );
@@ -169,7 +182,7 @@ export function baseOptions(
           __DEV__:
             '(typeof process !== "undefined" ? (process.env?.NODE_ENV !== "production") : false)',
         }),
-        tailwindPostcssEsbuildPlugin(),
+        tailwindPostcssEsbuildPlugin(repoRoot),
       ],
-    }));
+    })) as unknown;
 }

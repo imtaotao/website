@@ -1,6 +1,7 @@
 {
   "name": "website",
   "version": "1.0.0",
+  "private": true,
   "author": "chentao.arthur",
   "scripts": {
     "prepare": "husky",
@@ -9,35 +10,25 @@
     "preview": "pnpm --filter @website/app run preview",
     "dev:packages": "pnpm --parallel --filter @website-kernel/* run dev",
     "build:packages": "pnpm --filter @website-kernel/* run build",
-    "codex:verify": "node scripts/verify.mjs",
-    "codex:status": "node scripts/codexStatus.mjs",
     "codex:blog-check": "node scripts/checkBlog.mjs",
     "codex:blog-build-output": "node scripts/checkBlogBuildOutput.mjs",
     "format:md": "prettier --write --parser markdown \"AGENTS.md\" \"docs/codex/**/*.(md|mdx)\" \"blog/**/*.(md|mdx)\"",
-    "format": "prettier --write --ignore-path .gitignore --parser typescript \"*.{js,mjs,cjs,ts,tsx}\" \"(app|packages)/**/*.(t|j)s?(x)\" \"scripts/**/*.{js,mjs,ts}\""
+    "format": "prettier --write --ignore-path .gitignore --parser typescript \"*.{js,mjs,cjs,ts,tsx}\" \"(app|infra|packages)/**/*.(t|j)s?(x)\" \"scripts/**/*.{js,mjs,ts}\""
   },
   "lint-staged": {
-    "*.js": [
-      "prettier --write"
-    ],
-    "*.ts?(x)": [
-      "prettier --parser=typescript --write"
-    ]
+    "*.js": ["prettier --write"],
+    "*.ts?(x)": ["prettier --parser=typescript --write"]
   },
   "devDependencies": {
     "@types/node": "^20.10.6",
     "@types/minimist": "^1.2.5",
-    "tsup": "catalog:",
     "typescript": "catalog:",
     "tsx": "^4.11.2",
     "execa": "^9.1.0",
     "husky": "^9.0.11",
     "prettier": "^2.4.1",
     "minimist": "^1.2.8",
-    "lint-staged": "^15.2.5",
-    "esbuild-plugin-replace": "^1.4.0",
-    "postcss": "^8.5.8",
-    "tailwindcss": "^4.2.4"
+    "lint-staged": "^15.2.5"
   },
   "packageManager": "pnpm@10.27.0",
   "engines": {

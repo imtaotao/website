@@ -1,4 +1,7 @@
-import { baseOptions, type PackageBuildOptions } from '../../tsup.config';
+import {
+  baseOptions,
+  type PackageBuildOptions,
+} from '@website/infra/tsup.config';
 
 export const packageBuild: PackageBuildOptions = {
   styleDependencies: ['@website-kernel/markdown/style.css'],
@@ -10,6 +13,10 @@ export const packageBuild: PackageBuildOptions = {
   },
 };
 
-export const tsup = baseOptions(import.meta.url, ['cjs', 'esm', 'iife'], {
-  packageBuild,
-});
+export const tsup: unknown = baseOptions(
+  import.meta.url,
+  ['cjs', 'esm', 'iife'],
+  {
+    packageBuild,
+  },
+);

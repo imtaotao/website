@@ -4,7 +4,7 @@
   "author": "chentao.arthur",
   "scripts": {
     "dev": "tsup --watch",
-    "build": "rimraf dist && tsup && node --import tsx ../../scripts/buildPackageModules.mjs",
+    "build": "rimraf dist && tsup && website-package-modules",
     "typecheck": "tsc --noEmit --skipLibCheck"
   },
   "imports": {
@@ -31,17 +31,15 @@
   "main": "./dist/lib/index.js",
   "module": "./dist/es/index.js",
   "types": "./dist/es/index.d.ts",
-  "files": [
-    "dist"
-  ],
-  "sideEffects": [
-    "**/*.css"
-  ],
+  "files": ["dist"],
+  "sideEffects": ["**/*.css"],
   "peerDependencies": {
     "react": "^19.0.0"
   },
   "devDependencies": {
+    "@website/infra": "workspace:*",
     "@types/react": "^19.2.14",
+    "esbuild-plugin-replace": "catalog:",
     "rimraf": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:"

@@ -3,26 +3,45 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import ts from 'typescript';
 
+type PackageJson = {
+  dependencies?: Record<string, string>;
+  imports?: Record<string, string>;
+};
+
+type PackageBuildConfig = {
+  styleDependencies?: Array<string>;
+  componentStyleDependencies?: Record<string, string | Array<string>>;
+};
+
+type AliasResolver = {
+  alias: string;
+  aliasPrefix: string;
+  aliasSuffix: string;
+  hasStar: boolean;
+  targetPrefix: string;
+  targetSuffix: string;
+};
+
 const packageRoot = process.cwd();
 const srcRoot = path.join(packageRoot, 'src');
 const tsExtensions = new Set(['.ts', '.tsx']);
 const copiedExtensions = new Set(['.css']);
 
-const toPosixPath = (value) => value.split(path.sep).join('/');
+const toPosixPath = (value: string) => value.split(path.sep).join('/');
 
-const ensureRelativeSpecifier = (value) => {
+const ensureRelativeSpecifier = (value: string) => {
   return value.startsWith('.') ? value : `./${value}`;
 };
 
-const stripKnownExtension = (value) => {
+const stripKnownExtension = (value: string) => {
   return value.replace(/\.(ts|tsx|js|jsx)$/, '');
 };
 
-const replaceJsExtension = (value) => {
+const replaceJsExtension = (value: string) => {
   return value.replace(/\.(ts|tsx|jsx)$/, '.js');
 };
 
-const isSourceFile = async (file) => {
+const isSourceFile = async (file: string) => {
   try {
     const stat = await fs.stat(file);
     return stat.isFile();
@@ -31,7 +50,7 @@ const isSourceFile = async (file) => {
   }
 };
 
-const normalizeSourceTarget = async (sourceTarget) => {
+const normalizeSourceTarget = async (sourceTarget: string) => {
   if (await isSourceFile(sourceTarget)) return sourceTarget;
 
   for (const extension of ['.ts', '.tsx', '.js', '.jsx']) {
@@ -47,7 +66,7 @@ const normalizeSourceTarget = async (sourceTarget) => {
   return sourceTarget;
 };
 
-const walkFiles = async (dir) => {
+const walkFiles = async (dir: string): Promise<Array<string>> => {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   const files = [];
 
@@ -88,7 +107,7 @@ const cleanupSourceDeclarations = async () => {
   );
 };
 
-const loadPackageJson = async () => {
+const loadPackageJson = async (): Promise<PackageJson> => {
   const content = await fs.readFile(
     path.join(packageRoot, 'package.json'),
     'utf8',
@@ -96,7 +115,7 @@ const loadPackageJson = async () => {
   return JSON.parse(content);
 };
 
-const loadPackageBuildConfig = async () => {
+const loadPackageBuildConfig = async (): Promise<PackageBuildConfig> => {
   const configPath = path.join(packageRoot, 'tsup.config.ts');
 
   try {
@@ -109,10 +128,14 @@ const loadPackageBuildConfig = async () => {
   return config.packageBuild ?? {};
 };
 
-const getPackageDirName = (name) => name.replace('@website-kernel/', 'kernel-');
+const getPackageDirName = (name: string) =>
+  name.replace('@website-kernel/', 'kernel-');
 
-const createCompilerPaths = (pkg, basePaths = {}) => {
-  const paths = { ...basePaths };
+const createCompilerPaths = (
+  pkg: PackageJson,
+  basePaths: ts.CompilerOptions['paths'] = {},
+) => {
+  const paths: NonNullable<ts.CompilerOptions['paths']> = { ...basePaths };
 
   for (const name of Object.keys(pkg.dependencies ?? {})) {
     if (!name.startsWith('@website-kernel/')) continue;
@@ -125,7 +148,7 @@ const createCompilerPaths = (pkg, basePaths = {}) => {
   return paths;
 };
 
-const createAliasResolvers = (pkg) => {
+const createAliasResolvers = (pkg: PackageJson): Array<AliasResolver> => {
   return Object.entries(pkg.imports ?? {})
     .map(([alias, target]) => {
       if (!target.startsWith('./src/')) return undefined;
@@ -142,10 +165,13 @@ const createAliasResolvers = (pkg) => {
         targetSuffix,
       };
     })
-    .filter(Boolean);
+    .filter((value): value is AliasResolver => Boolean(value));
 };
 
-const resolveAliasToSource = (specifier, resolvers) => {
+const resolveAliasToSource = (
+  specifier: string,
+  resolvers: Array<AliasResolver>,
+) => {
   for (const resolver of resolvers) {
     if (!resolver.hasStar && specifier === resolver.alias) {
       return resolver.targetPrefix;
@@ -167,11 +193,14 @@ const resolveAliasToSource = (specifier, resolvers) => {
   return undefined;
 };
 
-const createSpecifierRewriter = (resolvers, outRoot) => {
-  return async (code, sourceFile) => {
+const createSpecifierRewriter = (
+  resolvers: Array<AliasResolver>,
+  outRoot: string,
+) => {
+  return async (code: string, sourceFile: string) => {
     const sourceDir = path.dirname(sourceFile);
 
-    const rewriteSpecifier = async (specifier) => {
+    const rewriteSpecifier = async (specifier: string) => {
       const resolved = resolveAliasToSource(specifier, resolvers);
       if (!resolved) return specifier;
 
@@ -192,7 +221,7 @@ const createSpecifierRewriter = (resolvers, outRoot) => {
       return ensureRelativeSpecifier(withExtension);
     };
 
-    const rewriteMatches = async (source, pattern) => {
+    const rewriteMatches = async (source: string, pattern: RegExp) => {
       const matches = [...source.matchAll(pattern)];
       let rewritten = '';
       let cursor = 0;
@@ -218,7 +247,11 @@ const createSpecifierRewriter = (resolvers, outRoot) => {
   };
 };
 
-const compileJavaScript = async (files, outRoot, moduleKind) => {
+const compileJavaScript = async (
+  files: Array<string>,
+  outRoot: string,
+  moduleKind: ts.ModuleKind,
+) => {
   const pkg = await loadPackageJson();
   const rewriteSpecifiers = createSpecifierRewriter(
     createAliasResolvers(pkg),
@@ -241,7 +274,8 @@ const compileJavaScript = async (files, outRoot, moduleKind) => {
         },
       }).outputText;
     } catch (error) {
-      throw new Error(`Failed to compile ${sourceFile}: ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to compile ${sourceFile}: ${message}`);
     }
 
     const relative = path
@@ -253,7 +287,7 @@ const compileJavaScript = async (files, outRoot, moduleKind) => {
   }
 };
 
-const emitDeclarations = async (files, outRoot) => {
+const emitDeclarations = async (files: Array<string>, outRoot: string) => {
   const configPath = path.resolve(packageRoot, '../../tsconfig.json');
   const configFile = ts.readConfigFile(configPath, ts.sys.readFile);
   if (configFile.error) {
@@ -310,7 +344,7 @@ const emitDeclarations = async (files, outRoot) => {
   }
 };
 
-const copyStaticFiles = async (files, outRoot) => {
+const copyStaticFiles = async (files: Array<string>, outRoot: string) => {
   for (const sourceFile of files) {
     const relative = path.relative(srcRoot, sourceFile);
     const target = path.join(outRoot, relative);
@@ -319,7 +353,7 @@ const copyStaticFiles = async (files, outRoot) => {
   }
 };
 
-const resolveWorkspaceStyleImport = (specifier) => {
+const resolveWorkspaceStyleImport = (specifier: string) => {
   if (!specifier.startsWith('@website-kernel/')) return undefined;
 
   const [packageName, ...rest] = specifier.split('/');
@@ -344,19 +378,18 @@ const resolveWorkspaceStyleImport = (specifier) => {
   return undefined;
 };
 
-const resolveStyleDependency = (specifier) => {
+const resolveStyleDependency = (specifier: string) => {
   const workspacePath = resolveWorkspaceStyleImport(specifier);
   if (workspacePath) return workspacePath;
 
   return path.resolve(packageRoot, 'node_modules', specifier);
 };
 
-const toOutputStyleSpecifier = (specifier, outRoot) => {
+const toOutputStyleSpecifier = (specifier: string, outRoot: string) => {
   if (!specifier.startsWith('@website-kernel/')) return specifier;
 
   const [packageName, ...rest] = specifier.split('/');
   const scopedPackageName = `${packageName}/${rest.shift() ?? ''}`;
-  const packageDirName = getPackageDirName(scopedPackageName);
   const stylePath = rest.join('/');
   const currentOutputFormat = path.basename(outRoot);
 
@@ -375,7 +408,10 @@ const toOutputStyleSpecifier = (specifier, outRoot) => {
   return specifier;
 };
 
-const readStyleFile = async (cssPath, seen = new Set()) => {
+const readStyleFile = async (
+  cssPath: string,
+  seen = new Set<string>(),
+): Promise<string> => {
   try {
     await fs.access(cssPath);
   } catch {
@@ -402,9 +438,12 @@ const readStyleFile = async (cssPath, seen = new Set()) => {
   return inlined.join('\n');
 };
 
-const writePackageStyles = async (cssFiles, buildConfig) => {
-  const seen = new Set();
-  const sections = [];
+const writePackageStyles = async (
+  cssFiles: Array<string>,
+  buildConfig: PackageBuildConfig,
+) => {
+  const seen = new Set<string>();
+  const sections: Array<string> = [];
 
   for (const specifier of buildConfig.styleDependencies ?? []) {
     const cssPath = resolveStyleDependency(specifier);
@@ -427,10 +466,14 @@ const writePackageStyles = async (cssFiles, buildConfig) => {
   );
 };
 
-const writeEntryStyle = async (cssFiles, outRoot, buildConfig) => {
+const writeEntryStyle = async (
+  cssFiles: Array<string>,
+  outRoot: string,
+  buildConfig: PackageBuildConfig,
+) => {
   const target = path.join(outRoot, 'style/index.css');
-  const seen = new Set();
-  const sections = [];
+  const seen = new Set<string>();
+  const sections: Array<string> = [];
 
   for (const specifier of buildConfig.styleDependencies ?? []) {
     sections.push(`@import "${toOutputStyleSpecifier(specifier, outRoot)}";`);
@@ -447,9 +490,11 @@ const writeEntryStyle = async (cssFiles, outRoot, buildConfig) => {
   await fs.writeFile(target, `${sections.join('\n')}\n`);
 };
 
-const normalizeComponentStyleDependencies = (buildConfig) => {
+const normalizeComponentStyleDependencies = (
+  buildConfig: PackageBuildConfig,
+) => {
   const config = buildConfig.componentStyleDependencies ?? {};
-  const entries = new Map();
+  const entries = new Map<string, Array<string>>();
 
   for (const [key, value] of Object.entries(config)) {
     const normalizedKey = key.replace(/\\/g, '/').replace(/^src\//, '');
@@ -459,7 +504,11 @@ const normalizeComponentStyleDependencies = (buildConfig) => {
   return entries;
 };
 
-const writeComponentStyleEntries = async (cssFiles, outRoot, buildConfig) => {
+const writeComponentStyleEntries = async (
+  cssFiles: Array<string>,
+  outRoot: string,
+  buildConfig: PackageBuildConfig,
+) => {
   const componentStyleDependencies =
     normalizeComponentStyleDependencies(buildConfig);
 
