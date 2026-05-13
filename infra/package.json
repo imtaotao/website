@@ -5,14 +5,16 @@
   "type": "module",
   "author": "chentao.arthur",
   "bin": {
-    "website-package-modules": "./bin/packageModules.cjs"
+    "infra": "./bin/infra.cjs"
   },
   "dependencies": {
-    "@types/node": "^20.10.6",
-    "@types/minimist": "^1.2.5",
-    "tsx": "^4.11.2",
+    "@types/node": "catalog:",
+    "@types/minimist": "catalog:",
+    "tsx": "catalog:",
+    "postcss": "catalog:",
+    "execa": "catalog:",
+    "minimist": "catalog:",
     "typescript": "catalog:",
-    "execa": "^9.1.0",
-    "minimist": "^1.2.8"
+    "tailwindcss": "catalog:"
   }
 }

@@ -12,7 +12,6 @@ import {
   type AudioLinkProps,
   type MediaContext,
 } from '#markdown/components/MediaShared';
-import '#markdown/components/AudioLink/index.css';
 
 export function createAudioLink(context: MediaContext) {
   return function AudioLink({

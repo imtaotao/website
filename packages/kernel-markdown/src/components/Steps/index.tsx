@@ -7,7 +7,6 @@ import {
 } from 'react';
 
 import type { StepProps, StepsProps } from '#markdown/components/Types';
-import '#markdown/components/Steps/index.css';
 
 export function MdxSteps(props: StepsProps) {
   const {

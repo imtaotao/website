@@ -1,5 +1,4 @@
 import { MdxDetailsBlock } from '#markdown/components/DetailsBlock';
-import '#markdown/components/Chat/index.css';
 
 type ChatMessage = {
   align?: 'left' | 'right';

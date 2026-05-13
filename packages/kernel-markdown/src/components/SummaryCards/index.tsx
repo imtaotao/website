@@ -1,4 +1,3 @@
-import '#markdown/components/SummaryCards/index.css';
 type SummaryCardItem = {
   title: string;
   content: string | Array<string>;

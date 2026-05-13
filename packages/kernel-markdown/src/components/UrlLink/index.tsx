@@ -1,7 +1,6 @@
 import { Link2Icon } from '@radix-ui/react-icons';
 
 import type { UrlLinkProps } from '#markdown/components/Types';
-import '#markdown/components/UrlLink/index.css';
 
 function resolveUrlLabel(href: string) {
   try {

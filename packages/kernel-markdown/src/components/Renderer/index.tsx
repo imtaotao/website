@@ -35,7 +35,6 @@ import { MdxPoem } from '#markdown/components/Poem';
 import { MdxStep, MdxSteps } from '#markdown/components/Steps';
 import { MdxSummaryCards } from '#markdown/components/SummaryCards';
 import type { MdxProps, LightboxState } from '#markdown/components/Types';
-import '#markdown/components/Renderer/index.css';
 
 export { extractHeadings } from '#markdown/components/Heading';
 export type { MdxProps, Heading } from '#markdown/components/Types';

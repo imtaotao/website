@@ -8,7 +8,6 @@ import {
 } from '@radix-ui/react-icons';
 
 import type { CalloutProps, CalloutTone } from '#markdown/components/Types';
-import '#markdown/components/Callout/index.css';
 
 const toneTitleMap: Record<CalloutTone, string> = {
   note: '说明',

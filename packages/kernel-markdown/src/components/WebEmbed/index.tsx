@@ -2,7 +2,6 @@ import type { CSSProperties } from 'react';
 import { ExternalLinkIcon, GlobeIcon } from '@radix-ui/react-icons';
 
 import type { WebEmbedProps } from '#markdown/components/MediaShared';
-import '#markdown/components/WebEmbed/index.css';
 
 const normalizeHeight = (height?: number | string) => {
   if (typeof height === 'number' && Number.isFinite(height)) {

@@ -7,7 +7,6 @@ import { ResumeSummary } from '#resume/components/ResumeSummary';
 import { ResumeSkills } from '#resume/components/ResumeSkills';
 import { ResumeExperienceList } from '#resume/components/ResumeExperience';
 import { ResumeOpenSourceProjects } from '#resume/components/ResumeOpenSourceProjects';
-import '#resume/pages/ResumePage.css';
 
 export function ResumePageMobile(props: {
   model: ResumeModel;

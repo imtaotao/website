@@ -4,7 +4,7 @@
   "author": "chentao.arthur",
   "scripts": {
     "dev": "tsdown --config ./tsdown.config.ts --watch",
-    "build": "rimraf dist && tsdown --config ./tsdown.config.ts && website-package-modules",
+    "build": "rimraf dist && tsdown --config ./tsdown.config.ts && infra build-css",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit --skipLibCheck"
@@ -43,12 +43,12 @@
     "yaml": "catalog:"
   },
   "peerDependencies": {
-    "react": "^19.0.0",
-    "react-router": "^7.14.2"
+    "react": "catalog:",
+    "react-router": "catalog:"
   },
   "devDependencies": {
     "@website/infra": "workspace:*",
-    "@types/react": "^19.2.14",
+    "@types/react": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "tsdown": "catalog:",
     "rimraf": "catalog:",

@@ -9,8 +9,8 @@
 - 包内构建流程：
   - `rimraf dist`
   - `tsdown --config ./tsdown.config.ts`
-  - `website-package-modules`
-- `packages/kernel-blog/tsdown.config.ts` 通过根目录 `tsdown.config.ts` 的 `baseOptions` 产出根 bundle。样式后处理配置放在 `packages/kernel-blog/packageBuild.config.ts`。Tailwind 相关处理使用根目录 `tailwind.config.js` 对应的共享配置。
+  - `infra build-css`
+- `packages/kernel-blog/tsdown.config.ts` 通过根目录 `tsdown.config.ts` 的 `baseOptions` 产出根 bundle。样式后处理配置放在 `packages/kernel-blog/css.config.ts`。Tailwind 相关处理使用根目录 `tailwind.config.js` 对应的共享配置。
 
 ## package.json 对外入口
 
@@ -58,7 +58,7 @@
 
 ## 模块化产物
 
-`@website/infra` 的 `website-package-modules` 命令会额外生成两套模块化产物：
+`@website/infra` 的 `infra build-css` 命令会额外生成两套模块化 CSS 产物：
 
 - `dist/es/`：ES module，内部源码别名会改写为相对 `*.js` import。
 - `dist/lib/`：CommonJS，内部源码别名会改写为相对 `*.js` require。

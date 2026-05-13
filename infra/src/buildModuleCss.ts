@@ -2,9 +2,9 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-type PackageBuildConfig = {
+export interface CssOptions {
   styleDependencies?: Array<string>;
-};
+}
 
 const packageRoot = process.cwd();
 const srcRoot = path.join(packageRoot, 'src');
@@ -37,8 +37,8 @@ const getCopiedFiles = async () => {
   return files.filter((file) => copiedExtensions.has(path.extname(file)));
 };
 
-const loadPackageBuildConfig = async (): Promise<PackageBuildConfig> => {
-  const configPath = path.join(packageRoot, 'packageBuild.config.ts');
+const loadCssOptions = async (): Promise<CssOptions> => {
+  const configPath = path.join(packageRoot, 'css.config.ts');
 
   try {
     await fs.access(configPath);
@@ -47,7 +47,7 @@ const loadPackageBuildConfig = async (): Promise<PackageBuildConfig> => {
   }
 
   const config = await import(pathToFileURL(configPath).href);
-  return config.default ?? config.packageBuild ?? {};
+  return config.config ?? {};
 };
 
 const getPackageDirName = (name: string) =>
@@ -59,46 +59,6 @@ const copyStaticFiles = async (files: Array<string>, outRoot: string) => {
     const target = path.join(outRoot, relative);
     await fs.mkdir(path.dirname(target), { recursive: true });
     await fs.copyFile(sourceFile, target);
-  }
-};
-
-const normalizeTsdownCssImports = async (outRoot: string) => {
-  const files = await walkFiles(outRoot);
-  const jsFiles = files.filter((file) => path.extname(file) === '.js');
-
-  for (const file of jsFiles) {
-    const dir = path.dirname(file);
-    let code = await fs.readFile(file, 'utf8');
-
-    code = code.replace(
-      /^(import\s+["'])([^"']+?)2\.css(["'];)$/gm,
-      '$1$2.css$3',
-    );
-
-    code = code.replace(
-      /^require\(["']([^"']+?)\.js["']\);\n?/gm,
-      (statement, specifier: string) => {
-        const cssFile = path.resolve(dir, `${specifier}.css`);
-        const dedupedCssFile = path.resolve(dir, `${specifier}2.css`);
-        const jsFile = path.resolve(dir, `${specifier}.js`);
-
-        if (
-          !files.includes(jsFile) &&
-          (files.includes(cssFile) || files.includes(dedupedCssFile))
-        ) {
-          return '';
-        }
-
-        return statement;
-      },
-    );
-
-    await fs.writeFile(file, code);
-  }
-
-  for (const file of files) {
-    if (!file.endsWith('2.css')) continue;
-    await fs.rm(file);
   }
 };
 
@@ -157,19 +117,6 @@ const toOutputStyleSpecifier = (specifier: string, outRoot: string) => {
   return specifier;
 };
 
-const resolveSourceStyleImport = (sourceFile: string, specifier: string) => {
-  if (specifier.startsWith('.')) {
-    return path.resolve(path.dirname(sourceFile), specifier);
-  }
-
-  if (specifier.startsWith('#')) {
-    const [, ...segments] = specifier.split('/');
-    return path.resolve(srcRoot, ...segments);
-  }
-
-  return undefined;
-};
-
 const collectModuleStyleImports = async () => {
   const files = await walkFiles(srcRoot);
   const entries = new Map<string, Array<string>>();
@@ -185,21 +132,6 @@ const collectModuleStyleImports = async () => {
 
     const sourceDir = path.dirname(path.relative(srcRoot, file));
     const code = await fs.readFile(file, 'utf8');
-    const styleImports = code.matchAll(/^\s*import\s+["']([^"']+\.css)["'];/gm);
-
-    for (const match of styleImports) {
-      const cssFile = resolveSourceStyleImport(file, match[1]);
-      if (!cssFile) continue;
-
-      try {
-        await fs.access(cssFile);
-      } catch {
-        continue;
-      }
-
-      const relative = toPosixPath(path.relative(srcRoot, cssFile));
-      addEntry(sourceDir, relative);
-    }
 
     const workspaceImports = code.matchAll(
       /^\s*import\s+{([^}]+)}\s+from\s+["'](@website-kernel\/[^"']+)["'];/gm,
@@ -278,7 +210,7 @@ const readStyleFile = async (
 
 const writePackageStyles = async (
   cssFiles: Array<string>,
-  buildConfig: PackageBuildConfig,
+  buildConfig: CssOptions,
 ) => {
   const seen = new Set<string>();
   const sections: Array<string> = [];
@@ -307,7 +239,7 @@ const writePackageStyles = async (
 const writeEntryStyle = async (
   cssFiles: Array<string>,
   outRoot: string,
-  buildConfig: PackageBuildConfig,
+  buildConfig: CssOptions,
 ) => {
   const target = path.join(outRoot, 'style/index.css');
   const seen = new Set<string>();
@@ -406,21 +338,21 @@ const writeComponentStyleEntries = async (
 };
 
 const copiedFiles = await getCopiedFiles();
-const packageBuildConfig = await loadPackageBuildConfig();
+const cssOptions = await loadCssOptions();
 const moduleStyleImports = await collectModuleStyleImports();
 
-await writePackageStyles(copiedFiles, packageBuildConfig);
+await writePackageStyles(copiedFiles, cssOptions);
 await copyStaticFiles(copiedFiles, path.join(packageRoot, 'dist/es'));
 await copyStaticFiles(copiedFiles, path.join(packageRoot, 'dist/lib'));
 await writeEntryStyle(
   copiedFiles,
   path.join(packageRoot, 'dist/es'),
-  packageBuildConfig,
+  cssOptions,
 );
 await writeEntryStyle(
   copiedFiles,
   path.join(packageRoot, 'dist/lib'),
-  packageBuildConfig,
+  cssOptions,
 );
 await writeComponentStyleEntries(
   copiedFiles,
@@ -432,5 +364,3 @@ await writeComponentStyleEntries(
   path.join(packageRoot, 'dist/lib'),
   moduleStyleImports,
 );
-await normalizeTsdownCssImports(path.join(packageRoot, 'dist/es'));
-await normalizeTsdownCssImports(path.join(packageRoot, 'dist/lib'));

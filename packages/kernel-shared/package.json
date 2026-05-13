@@ -4,7 +4,7 @@
   "author": "chentao.arthur",
   "scripts": {
     "dev": "tsdown --config ./tsdown.config.ts --watch",
-    "build": "rimraf dist && tsdown --config ./tsdown.config.ts && website-package-modules",
+    "build": "rimraf dist && tsdown --config ./tsdown.config.ts && infra build-css",
     "typecheck": "tsc --noEmit --skipLibCheck"
   },
   "imports": {
@@ -35,11 +35,11 @@
   "files": ["dist"],
   "sideEffects": ["**/*.css"],
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": "catalog:"
   },
   "devDependencies": {
     "@website/infra": "workspace:*",
-    "@types/react": "^19.2.14",
+    "@types/react": "catalog:",
     "rimraf": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:"

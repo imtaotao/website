@@ -7,7 +7,6 @@ import {
 
 import { createLightboxImage } from '#markdown/components/Lightbox';
 import type { MediaContext } from '#markdown/components/MediaShared';
-import '#markdown/components/Image/index.css';
 
 export function createMdxImage(context: MediaContext) {
   function MdxImage(p: ComponentProps<'img'>) {
