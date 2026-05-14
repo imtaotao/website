@@ -207,6 +207,10 @@ describe('ModuleCssBuilder', () => {
       '@import "../../CodeBlock/style/index.css";\n' +
         '@import "../index.css";\n',
     );
+    expect(readFile('output/es/style/external.css')).toBe('');
+    expect(readFile('output/es/style/index.css')).toBe(
+      '@import "./external.css";\n@import "./module.css";\n',
+    );
   });
 
   test('builds module CSS entries for source modules without own CSS', async () => {

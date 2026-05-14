@@ -229,9 +229,11 @@ export class ModuleCssBuilder {
         this.resolver.toExternalStyleSpecifier(specifier, outRoot),
       );
     }
-    if (!root.nodes?.length) return null;
     fs.mkdirSync(path.dirname(target), { recursive: true });
-    fs.writeFileSync(target, this.styleProcessor.stringify(root));
+    fs.writeFileSync(
+      target,
+      root.nodes?.length ? this.styleProcessor.stringify(root) : '',
+    );
     return target;
   }
 

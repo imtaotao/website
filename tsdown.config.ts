@@ -9,7 +9,6 @@ type PackageJsonLike = {
   version?: string;
   author?: string;
   dependencies?: Record<string, string>;
-  devDependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
 };
 
@@ -21,7 +20,9 @@ type BuildContext = {
   packageRoot: string;
   tsconfig: string;
   pkg: PackageJsonLike;
-  external: Array<string>;
+  dependencyNames: Array<string>;
+  packageExternal: Array<string>;
+  peerExternal: Array<string>;
   globalName: string;
   banner: string;
 };
@@ -32,19 +33,51 @@ const formatMap = {
   esm: ['.js', '.mjs'],
 };
 
-const getPackageExternal = (pkg: PackageJsonLike) => {
+const getExternal = (names: Array<string>) => {
   const external = new Set<string>();
-  const depNames = new Set([
-    ...Object.keys(pkg.dependencies ?? {}),
-    ...Object.keys(pkg.peerDependencies ?? {}),
-    ...Object.keys(pkg.devDependencies ?? {}),
-  ]);
 
-  for (const name of depNames) {
+  for (const name of names) {
     external.add(name);
     external.add(`${name}/*`);
   }
   return [...external];
+};
+
+const getPackageExternal = (pkg: PackageJsonLike) => {
+  return getExternal([
+    ...Object.keys(pkg.dependencies ?? {}),
+    ...Object.keys(pkg.peerDependencies ?? {}),
+  ]);
+};
+
+const getPeerExternal = (pkg: PackageJsonLike) => {
+  return Object.keys(pkg.peerDependencies ?? {});
+};
+
+const getDependencyGlobalName = (name: string) => {
+  return name
+    .replace(/^@/, '')
+    .split(/[/-]/g)
+    .filter(Boolean)
+    .map((label) => label[0].toUpperCase() + label.slice(1))
+    .join('');
+};
+
+const getIifeGlobals = (context: BuildContext) => {
+  return Object.fromEntries(
+    context.peerExternal.map((name) => [name, getDependencyGlobalName(name)]),
+  );
+};
+
+const getIifeAlwaysBundle = (context: BuildContext) => {
+  const names = new Set(context.dependencyNames);
+
+  if (context.peerExternal.includes('react')) {
+    names.add('react/jsx-runtime');
+    names.add('react/jsx-dev-runtime');
+  }
+
+  return [...names];
 };
 
 const getGlobalName = (pkg: PackageJsonLike) => {
@@ -71,13 +104,18 @@ const createBuildContext = (dir: string): BuildContext => {
     packageRoot: fileURLToPath(new URL('.', dir)),
     tsconfig: fileURLToPath(new URL('../../tsconfig.json', dir)),
     pkg,
-    external: getPackageExternal(pkg),
+    dependencyNames: Object.keys(pkg.dependencies ?? {}),
+    packageExternal: getPackageExternal(pkg),
+    peerExternal: getPeerExternal(pkg),
     globalName: getGlobalName(pkg),
     banner,
   };
 };
 
-const createCommonConfig = (context: BuildContext) => {
+const createCommonConfig = (
+  context: BuildContext,
+  deps: NonNullable<UserConfig['deps']>,
+) => {
   return {
     cwd: context.packageRoot,
     clean: false,
@@ -85,9 +123,7 @@ const createCommonConfig = (context: BuildContext) => {
     tsconfig: context.tsconfig,
     target: 'es2018',
     platform: 'browser',
-    deps: {
-      neverBundle: context.external,
-    },
+    deps,
     define: {
       __TEST__: 'false',
       __VERSION__: JSON.stringify(context.pkg.version),
@@ -98,7 +134,6 @@ const createCommonConfig = (context: BuildContext) => {
 };
 
 const createBundleConfigs = (context: BuildContext, formats: Array<Format>) => {
-  const commonConfig = createCommonConfig(context);
   const outputConfigs: Array<{ format: Format; extname: string }> = [];
 
   for (const format of formats) {
@@ -108,23 +143,37 @@ const createBundleConfigs = (context: BuildContext, formats: Array<Format>) => {
     }
   }
 
-  return outputConfigs.map(({ format, extname }) => ({
-    ...commonConfig,
-    entry: ['src/index.ts'],
-    format,
-    globalName: context.globalName,
-    outDir: 'dist',
-    dts: false,
-    treeshake: true,
-    banner: context.banner,
-    outExtensions: () => ({
-      js: extname,
-    }),
-    outputOptions: {
-      entryFileNames: `[name]${extname}`,
-      chunkFileNames: `[name]-[hash]${extname}`,
-    },
-  })) satisfies Array<UserConfig>;
+  return outputConfigs.map(({ format, extname }) => {
+    const deps: NonNullable<UserConfig['deps']> =
+      format === 'iife'
+        ? {
+            neverBundle: context.peerExternal,
+            alwaysBundle: getIifeAlwaysBundle(context),
+            onlyBundle: false,
+          }
+        : {
+            neverBundle: context.packageExternal,
+          };
+
+    return {
+      ...createCommonConfig(context, deps),
+      entry: ['src/index.ts'],
+      format,
+      globalName: context.globalName,
+      outDir: 'dist',
+      dts: false,
+      treeshake: true,
+      banner: context.banner,
+      outExtensions: () => ({
+        js: extname,
+      }),
+      outputOptions: {
+        entryFileNames: `[name]${extname}`,
+        chunkFileNames: `[name]-[hash]${extname}`,
+        globals: format === 'iife' ? getIifeGlobals(context) : {},
+      },
+    };
+  }) satisfies Array<UserConfig>;
 };
 
 const createModuleConfig = (
@@ -154,7 +203,9 @@ const createModuleConfig = (
 };
 
 const createModuleConfigs = (context: BuildContext) => {
-  const commonConfig = createCommonConfig(context);
+  const commonConfig = createCommonConfig(context, {
+    neverBundle: context.packageExternal,
+  });
   return [
     createModuleConfig(commonConfig, 'esm', 'dist/es'),
     createModuleConfig(commonConfig, 'cjs', 'dist/lib'),
@@ -169,6 +220,5 @@ export function baseOptions(
   const context = createBuildContext(dir);
   const bundleConfigs = createBundleConfigs(context, formats);
   const moduleConfigs = options.modules ? createModuleConfigs(context) : [];
-
   return defineConfig([...bundleConfigs, ...moduleConfigs]);
 }

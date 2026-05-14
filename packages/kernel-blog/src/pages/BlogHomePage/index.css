@@ -173,9 +173,20 @@
   background: transparent;
 }
 
+.blog-home-links .blog-theme-toggle {
+  background: transparent;
+  color: var(--blog-text-soft);
+}
+
 .blog-home-links .blog-pill-label {
   font-size: 1.04rem;
   font-weight: 650;
+}
+
+.blog-home-links .blog-theme-toggle:hover {
+  background: transparent;
+  color: var(--blog-text-strong);
+  transform: translateY(-1px);
 }
 
 .blog-home-links .blog-pill:hover {

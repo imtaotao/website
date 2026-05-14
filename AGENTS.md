@@ -29,14 +29,18 @@
 - `pnpm dev:packages`
 - `pnpm build:packages`
 - `pnpm codex:blog-check`
+- `infra build-css`
+- `infra check-blog`
 - `pnpm format`
 - `pnpm format:md`
 
 ## Codex 辅助脚本
 
-辅助脚本优先用 `pnpm` 命令调用，不要直接复制脚本逻辑到临时命令里。构建和仓库辅助能力统一放在 `infra/`。
+辅助脚本和构建辅助能力统一放在 `infra/` 包里，优先通过 `infra <command>` 调用，不要直接复制脚本逻辑到临时命令里。根目录保留的 `pnpm codex:*` 命令只是对 `infra` 的兼容封装。
 
-- `pnpm codex:blog-check`：检查根目录 `blog/` 下文章的 frontmatter、slug 唯一性和本地图片资源引用。
+- `infra build-css`：构建 package 的 CSS 产物，包括组件 CSS、全局 CSS、外部依赖 CSS 和 package exports 需要的 CSS 文件。
+- `infra check-blog`：检查根目录 `blog/` 下文章的 frontmatter、slug 唯一性和本地图片资源引用。
+- `pnpm codex:blog-check`：等价于 `infra check-blog`。
 
 ## 常见修改入口
 
@@ -66,7 +70,7 @@ commit 使用英文提交，不要一个个文件添加，可以通过 `git comm
 scope 选填表示 commit 的作用范围，如数据层、视图层，也可以是目录名称 subject 必填用于对 commit 进行简短的描述 type 必填表示提交类型，值有以下几种且必须使用小写：
 
 ```shell
-eat - 新功能 feature
+feat - 新功能 feature
 fix - 修复 bug
 docs - 文档注释
 style - 代码格式(不影响代码运行的变动)
