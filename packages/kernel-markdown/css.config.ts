@@ -1,5 +1,11 @@
-import type { CssOptions } from '@website/infra/buildModuleCss';
+import type { CssOptions } from '@website/infra/css';
 
 export const config: CssOptions = {
-  styleDependencies: ['katex/dist/katex.min.css'],
+  sourceDir: 'src',
+  outputDir: 'dist',
+  cssDependencies: {
+    katex: {
+      global: '/dist/katex.min.css',
+    },
+  },
 };

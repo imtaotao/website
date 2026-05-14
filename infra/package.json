@@ -5,12 +5,19 @@
   "type": "module",
   "author": "chentao.arthur",
   "bin": {
-    "infra": "./bin/infra.cjs"
+    "infra": "./bin/entry.cjs"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
     "@types/node": "catalog:",
     "@types/minimist": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
     "tsx": "catalog:",
+    "vitest": "catalog:",
     "postcss": "catalog:",
     "execa": "catalog:",
     "minimist": "catalog:",

@@ -1,7 +1,11 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
+import ts from 'typescript';
 
 const rootDir = process.cwd();
+const infraRequire = createRequire(path.join(rootDir, 'infra/package.json'));
+const postcss = infraRequire('postcss');
 const packageDir = path.join(rootDir, 'packages/kernel-blog');
 const packagesDir = path.join(rootDir, 'packages');
 const srcDir = path.join(packageDir, 'src');
@@ -9,10 +13,167 @@ const distDir = path.join(packageDir, 'dist');
 const packageJsonPath = path.join(packageDir, 'package.json');
 const issues = [];
 const expectedDistFiles = new Set();
+const componentCssDependencies = {
+  '@website-kernel': '/*/es/components/**/style/index.css',
+};
 
 const toPosix = (value) => value.split(path.sep).join('/');
+const packageRelativeDir = toPosix(path.relative(rootDir, packageDir));
 
 const getPackageDirName = (name) => name.replace('@website-kernel/', 'kernel-');
+
+const parseCssImportSpecifier = (params) => {
+  const value = params.trim();
+  const first = value[0];
+
+  if (first === '"' || first === "'") {
+    const end = value.indexOf(first, 1);
+    return end > 0 ? value.slice(1, end) : null;
+  }
+
+  if (!value.startsWith('url(')) {
+    return null;
+  }
+
+  const end = value.indexOf(')', 4);
+  if (end < 0) return null;
+
+  const url = value.slice(4, end).trim();
+  const quote = url[0];
+
+  if (quote === '"' || quote === "'") {
+    const quoteEnd = url.indexOf(quote, 1);
+    return quoteEnd > 0 ? url.slice(1, quoteEnd) : null;
+  }
+
+  return url || null;
+};
+
+const getCssImportSpecifiers = (relativePath, content) => {
+  const root = postcss.parse(content, {
+    from: path.join(packageDir, relativePath),
+  });
+  const specifiers = [];
+
+  root.walkAtRules('import', (rule) => {
+    const specifier = parseCssImportSpecifier(rule.params);
+    if (specifier) specifiers.push(specifier);
+  });
+
+  return specifiers;
+};
+
+const getPackageNameParts = (specifier) => {
+  const parts = specifier.split('/');
+  if (specifier.startsWith('@'))
+    return [parts.slice(0, 2).join('/'), parts.slice(2)];
+  return [parts[0], parts.slice(1)];
+};
+
+const getImportDeclarations = (sourceFile, code) => {
+  const parsed = ts.createSourceFile(
+    sourceFile,
+    code,
+    ts.ScriptTarget.Latest,
+    false,
+    sourceFile.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
+  );
+  const imports = [];
+
+  parsed.forEachChild((node) => {
+    if (
+      !ts.isImportDeclaration(node) ||
+      !ts.isStringLiteral(node.moduleSpecifier)
+    ) {
+      return;
+    }
+
+    imports.push({
+      importPath: node.moduleSpecifier.text,
+      importClause: node.importClause,
+    });
+  });
+
+  return imports;
+};
+
+const getImportedNames = (sourceFile, item) => {
+  const importClause = item.importClause;
+  if (!importClause || importClause.isTypeOnly) return [];
+
+  const names = [];
+  if (importClause.name) names.push(importClause.name.text);
+
+  const namedBindings = importClause.namedBindings;
+  if (!namedBindings) return names;
+
+  if (ts.isNamespaceImport(namedBindings)) {
+    addIssue(
+      `unsupported namespace import for CSS auto import: ${item.importPath}. ` +
+        `file: ${packageRelativeDir}/src/${sourceFile}. ` +
+        `use named imports instead, for example: import { Component } from '${item.importPath}'.`,
+    );
+    return [];
+  }
+
+  for (const element of namedBindings.elements) {
+    if (element.isTypeOnly) continue;
+    names.push((element.propertyName ?? element.name).text);
+  }
+
+  return names;
+};
+
+const joinDependencySpecifier = (packageName, dependencyPath) => {
+  if (!dependencyPath) return packageName;
+  if (dependencyPath.startsWith('/')) return `${packageName}${dependencyPath}`;
+  return `${packageName}/${dependencyPath}`;
+};
+
+const getImportPathValues = (packageName, importPath) =>
+  importPath
+    .slice(packageName.length)
+    .replace(/^\//, '')
+    .split('/')
+    .filter(Boolean);
+
+const createStyleSpecifier = (outputPattern, values, importedName) => {
+  const pathValues = [...values];
+
+  return outputPattern.replace(/\*\*|\*/g, (token) => {
+    const matchedValue = pathValues.shift();
+    if (matchedValue) return matchedValue;
+    if (token === '**') return importedName;
+    return matchedValue ?? importedName;
+  });
+};
+
+const createDirectStyleSpecifier = (outputPattern, importPath) => {
+  const patternParts = outputPattern.split('/');
+  const globstarIndex = patternParts.indexOf('**');
+
+  if (globstarIndex < 0) return null;
+
+  const prefixParts = patternParts.slice(0, globstarIndex);
+  const suffixParts = patternParts.slice(globstarIndex + 1);
+  const importParts = importPath.split('/');
+
+  if (importParts.length < prefixParts.length) return null;
+
+  for (let index = 0; index < prefixParts.length; index += 1) {
+    const patternPart = prefixParts[index];
+    if (patternPart === '*') continue;
+    if (patternPart !== importParts[index]) return null;
+  }
+
+  return [...importParts, ...suffixParts].join('/');
+};
+
+const resolvePackageStyleFile = (specifier) => {
+  const [packageName, packagePath] = getPackageNameParts(specifier);
+  const packageDirName = getPackageDirName(packageName);
+  return path.join(packagesDir, packageDirName, 'dist', ...packagePath);
+};
 
 const addIssue = (message) => {
   issues.push(message);
@@ -66,8 +227,8 @@ const sourceFiles = readFiles(srcDir)
   .filter((file) => !file.startsWith('__tests__/'))
   .sort();
 
-const sourceModuleFiles = sourceFiles.filter((file) =>
-  /\.(ts|tsx)$/.test(file),
+const sourceModuleFiles = sourceFiles.filter(
+  (file) => /\.(ts|tsx)$/.test(file) && !/\.d\.[cm]?ts$/.test(file),
 );
 const sourceCssFiles = sourceFiles.filter((file) => file.endsWith('.css'));
 const sourceCssFileSet = new Set(sourceCssFiles);
@@ -82,14 +243,14 @@ const addStyleEntry = (sourceDir, specifier) => {
 
 for (const sourceFile of sourceCssFiles) {
   const content = readFileSync(path.join(srcDir, sourceFile), 'utf8');
-  const imports = content.matchAll(/^\s*@import\s+["']([^"']+\.css)["'];/gm);
+  const imports = getCssImportSpecifiers(sourceFile, content);
 
-  for (const match of imports) {
-    if (!match[1].startsWith('.')) continue;
+  for (const specifier of imports) {
+    if (!specifier.startsWith('.')) continue;
 
     importedCssFiles.add(
       toPosix(
-        path.normalize(path.join(path.posix.dirname(sourceFile), match[1])),
+        path.normalize(path.join(path.posix.dirname(sourceFile), specifier)),
       ),
     );
   }
@@ -108,39 +269,53 @@ for (const sourceFile of sourceModuleFiles) {
   }
 
   const code = readFileSync(path.join(srcDir, sourceFile), 'utf8');
-  const workspaceImports = code.matchAll(
-    /^\s*import\s+{([^}]+)}\s+from\s+["'](@website-kernel\/[^"']+)["'];/gm,
-  );
+  const imports = getImportDeclarations(sourceFile, code);
 
-  for (const match of workspaceImports) {
-    const packageName = match[2];
-    const packageDirName = getPackageDirName(packageName);
-    const importedNames = match[1]
-      .split(',')
-      .map((name) =>
-        name
-          .trim()
-          .replace(/^type\s+/, '')
-          .split(/\s+as\s+/)[0]
-          .trim(),
-      )
-      .filter(Boolean);
+  for (const item of imports) {
+    for (const [packagePrefix, dependencyPath] of Object.entries(
+      componentCssDependencies,
+    )) {
+      if (
+        item.importPath !== packagePrefix &&
+        !item.importPath.startsWith(`${packagePrefix}/`)
+      ) {
+        continue;
+      }
 
-    for (const importedName of importedNames) {
-      const cssFile = path.join(
-        packagesDir,
-        packageDirName,
-        'src/components',
-        importedName,
-        'index.css',
+      const outputPattern = joinDependencySpecifier(
+        packagePrefix,
+        dependencyPath,
+      );
+      const directSpecifier = createDirectStyleSpecifier(
+        outputPattern,
+        item.importPath,
       );
 
-      if (!existsSync(cssFile)) continue;
+      if (directSpecifier) {
+        const cssFile = resolvePackageStyleFile(directSpecifier);
 
-      addStyleEntry(
-        sourceDir,
-        `${packageName}/es/components/${importedName}/style/index.css`,
-      );
+        if (existsSync(cssFile)) {
+          addStyleEntry(sourceDir, directSpecifier);
+        }
+
+        continue;
+      }
+
+      const importedNames = getImportedNames(sourceFile, item);
+      const values = getImportPathValues(packagePrefix, item.importPath);
+
+      for (const importedName of importedNames.length ? importedNames : ['']) {
+        const specifier = createStyleSpecifier(
+          outputPattern,
+          values,
+          importedName,
+        );
+        const cssFile = resolvePackageStyleFile(specifier);
+
+        if (!existsSync(cssFile)) continue;
+
+        addStyleEntry(sourceDir, specifier);
+      }
     }
   }
 }
@@ -165,17 +340,7 @@ assertJsonValue(packageJson, ['exports', '.'], {
 });
 assertJsonValue(packageJson, ['exports', './es/*'], './dist/es/*');
 assertJsonValue(packageJson, ['exports', './lib/*'], './dist/lib/*');
-assertJsonValue(packageJson, ['exports', './style/*'], './dist/es/style/*');
-assertJsonValue(
-  packageJson,
-  ['exports', './style.css'],
-  './dist/es/style/index.css',
-);
-assertJsonValue(
-  packageJson,
-  ['exports', './style/index.css'],
-  './dist/es/style/index.css',
-);
+assertJsonValue(packageJson, ['exports', './style.css'], './dist/index.css');
 
 for (const file of [
   'dist/index.js',
@@ -212,55 +377,52 @@ for (const format of ['es', 'lib']) {
   assertFile(`dist/${format}/style/index.css`);
 }
 
-const assertCssIncludes = (relativePath, expectedLines) => {
+const assertCssImports = (relativePath, expectedSpecifiers) => {
   const file = path.join(packageDir, relativePath);
   if (!existsSync(file)) return;
 
   const content = readFileSync(file, 'utf8');
-  for (const line of expectedLines) {
-    if (!content.includes(line)) {
+  const imports = getCssImportSpecifiers(relativePath, content);
+
+  for (const specifier of expectedSpecifiers) {
+    if (!imports.includes(specifier)) {
       addIssue(
-        `packages/kernel-blog/${relativePath} is missing expected CSS import: ${line}`,
+        `packages/kernel-blog/${relativePath} is missing expected CSS import: ${specifier}`,
       );
     }
   }
 };
 
-assertCssIncludes('dist/es/style/index.css', [
-  '@import "@website-kernel/markdown/es/style/index.css";',
+assertCssImports('dist/es/style/index.css', [
+  '@website-kernel/markdown/style.css',
 ]);
-assertCssIncludes('dist/lib/style/index.css', [
-  '@import "@website-kernel/markdown/lib/style/index.css";',
+assertCssImports('dist/lib/style/index.css', [
+  '@website-kernel/markdown/style.css',
 ]);
 
 for (const [sourceDir, specifiers] of styleEntries) {
   for (const format of ['es', 'lib']) {
-    const expectedLines = specifiers.map((specifier) => {
-      const outputSpecifier = specifier.startsWith('@website-kernel/')
+    const expectedSpecifiers = specifiers.map((specifier) =>
+      specifier.startsWith('@website-kernel/')
         ? specifier.replace('/es/', `/${format}/`)
-        : specifier;
+        : specifier,
+    );
 
-      return `@import "${outputSpecifier}";`;
-    });
-
-    assertCssIncludes(
+    assertCssImports(
       `dist/${format}/${sourceDir}/style/index.css`,
-      expectedLines,
+      expectedSpecifiers,
     );
   }
 }
 
 for (const sourceFile of sourceCssFiles) {
   const content = readFileSync(path.join(srcDir, sourceFile), 'utf8');
-  const imports = Array.from(
-    content.matchAll(/^\s*@import\s+["']([^"']+\.css)["'];/gm),
-    (match) => match[0],
-  );
+  const imports = getCssImportSpecifiers(sourceFile, content);
 
   if (!imports.length) continue;
 
-  assertCssIncludes(`dist/es/${sourceFile}`, imports);
-  assertCssIncludes(`dist/lib/${sourceFile}`, imports);
+  assertCssImports(`dist/es/${sourceFile}`, imports);
+  assertCssImports(`dist/lib/${sourceFile}`, imports);
 }
 
 if (!existsSync(distDir)) {

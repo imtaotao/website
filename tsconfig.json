@@ -39,6 +39,7 @@
       "#app/*": ["./app/src/*"],
 
       // packages
+      "#infra/*": ["./infra/src/*"],
       "#blog/*": ["./packages/kernel-blog/src/*"],
       "#markdown/*": ["./packages/kernel-markdown/src/*"],
       "#resume/*": ["./packages/kernel-resume/src/*"],

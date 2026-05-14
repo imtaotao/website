@@ -1,27 +1,21 @@
 #!/usr/bin/env node
 
 const path = require('node:path');
-const { spawnSync } = require('node:child_process');
 const minimist = require('minimist');
 
 const commands = {
-  'build-css': 'buildModuleCss.ts',
+  'build-css': 'css/index.ts',
 };
 
-const run = (file, args) => {
+const run = async (file, args) => {
+  const { execa } = await import('execa');
   const entry = path.resolve(__dirname, `../src/${file}`);
-  const result = spawnSync(process.execPath, ['--import', 'tsx', entry, ...args], {
+  const result = await execa(process.execPath, ['--import', 'tsx', entry, ...args], {
     stdio: 'inherit',
     cwd: process.cwd(),
-    env: process.env,
+    reject: false,
   });
-
-  if (result.error) {
-    console.error(result.error);
-    process.exit(1);
-  }
-
-  process.exit(result.status ?? 1);
+  process.exit(result.exitCode ?? 1);
 };
 
 const argv = minimist(process.argv.slice(2), {
@@ -49,4 +43,7 @@ if (!file) {
   process.exit(1);
 }
 
-run(file, commandArgs);
+run(file, commandArgs).catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

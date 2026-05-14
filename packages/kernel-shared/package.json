@@ -24,9 +24,7 @@
     },
     "./es/*": "./dist/es/*",
     "./lib/*": "./dist/lib/*",
-    "./style/*": "./dist/es/style/*",
-    "./style.css": "./dist/es/style/index.css",
-    "./style/index.css": "./dist/es/style/index.css"
+    "./style.css": "./dist/index.css"
   },
   "main": "./dist/lib/index.js",
   "module": "./dist/es/index.js",
