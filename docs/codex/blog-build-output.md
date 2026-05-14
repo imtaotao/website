@@ -187,3 +187,70 @@ pnpm --filter @website/app run build
 - 支持具名导入、别名导入、deep import，以及 page/component 这类任意目录规则。
 - 禁止从包入口使用 namespace import 自动推导 CSS。
 - 通过 package exports 解析稳定的 `@scope/pkg/components/Button.css` 入口。
+
+## 下一步构建改造
+
+当前构建链路已经覆盖 JS、类型声明、CSS 依赖和 package exports。后续可以继续建设两项能力：
+
+### Less 支持
+
+目标是在源码中允许编写 `.less`，但发布产物仍保持 CSS 入口稳定：
+
+- `infra build-css` 的 `styleExtensions` 支持 `.less`。
+- `StyleProcessor` 按文件后缀分发处理：
+  - `.css`：继续走 PostCSS AST。
+  - `.less`：先用 Less 编译成 CSS，再交给 PostCSS AST 处理。
+- CSS 依赖分析仍以编译后的 CSS 为准。
+- 发布产物只输出 `.css`，不复制 `.less`。
+- 组件级入口继续保持 `style/index.css`。
+- `less` 依赖放在 `@website/infra` 内，由构建工具负责。
+
+### 主题 CSS 拆分
+
+目标是支持外部用户按主题引入样式，并给出稳定的主题切换方式。建议先用明确命名约定，不让构建器猜测主题语义：
+
+```text
+src/style/index.css
+src/style/theme.light.css
+src/style/theme.dark.css
+
+src/components/Button/index.css
+src/components/Button/theme.light.css
+src/components/Button/theme.dark.css
+```
+
+构建后保留独立主题入口：
+
+```text
+dist/es/style/theme.light.css
+dist/es/style/theme.dark.css
+dist/lib/style/theme.light.css
+dist/lib/style/theme.dark.css
+```
+
+外部用户可以按需引入：
+
+```ts
+import '@website-kernel/blog/external.css';
+import '@website-kernel/blog/pages/BlogHomePage.css';
+import '@website-kernel/blog/theme.light.css';
+import '@website-kernel/blog/theme.dark.css';
+```
+
+运行时切换推荐基于 DOM 属性和 CSS 变量，不依赖动态加载 CSS：
+
+```css
+[data-website-theme='dark'] {
+  --blog-bg: #0f172a;
+}
+```
+
+```ts
+document.documentElement.dataset.websiteTheme = 'dark';
+```
+
+建议建设顺序：
+
+1. 先支持 Less，边界最清晰。
+2. 再支持 package 级主题 CSS 拆分和 exports。
+3. 最后考虑组件级主题 CSS 自动汇总与按需导出。
