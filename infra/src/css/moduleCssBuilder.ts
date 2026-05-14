@@ -14,6 +14,29 @@ import { moduleCssBuildConfig } from '#infra/css/config';
 import { WorkspaceStyleResolver } from '#infra/css/workspaceStyleResolver';
 import { fileWalker, getSourceModuleDir, toPosixPath } from '#infra/utils';
 
+export function resolveCssOptionsModule(module: Record<string, unknown>) {
+  const candidates = [
+    module,
+    asRecord(module.default),
+    asRecord(module['module.exports']),
+  ];
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    const config = asRecord(candidate.config);
+    if (config) {
+      return config as CssOptions;
+    }
+  }
+  return {};
+}
+
+function asRecord(value: unknown) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null;
+  }
+  return value as Record<string, unknown>;
+}
+
 export class ModuleCssBuilder {
   private srcRoot: string;
   private resolver: WorkspaceStyleResolver;
@@ -98,8 +121,8 @@ export class ModuleCssBuilder {
     if (!fs.existsSync(configPath)) {
       return {};
     }
-    const { config } = await import(pathToFileURL(configPath).href);
-    return config ?? {};
+    const module = await import(pathToFileURL(configPath).href);
+    return resolveCssOptionsModule(module);
   }
 
   private createBuildContext(cssOptions: CssOptions) {

@@ -1,5 +1,5 @@
 {
-  "exclude": ["scripts"],
+  "exclude": ["scripts", "./packages/*/tsdown.config.mts"],
   "compilerOptions": {
     "target": "ES2018",
     "module": "preserve",
