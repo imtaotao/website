@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { type ResumeModel } from '#resume/resumeParser';
-import { exportElementToPdf } from '#resume/resumeExport';
-import type { ResumeImageAssets } from '#resume/components/ResumeAssets';
+import { type ResumeModel } from '#resume/parser';
+import { exportElementToPdf } from '#resume/exportPdf';
+import type { ResumeImageAssets } from '#resume/assets';
 import { type ResumeTheme, ResumeShell } from '#resume/components/ResumeShell';
 import { ResumeExportBar } from '#resume/components/ResumeExportBar';
 import { ResumeHeader } from '#resume/components/ResumeHeader';
@@ -11,7 +11,7 @@ import { ResumeSkills } from '#resume/components/ResumeSkills';
 import { ResumeExperienceList } from '#resume/components/ResumeExperience';
 import { ResumeOpenSourceProjects } from '#resume/components/ResumeOpenSourceProjects';
 
-export function ResumePageDesktop(props: {
+export function ResumeDesktop(props: {
   model: ResumeModel;
   assets?: ResumeImageAssets;
   theme?: ResumeTheme;

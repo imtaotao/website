@@ -29,4 +29,4 @@
 3. 简历移动端导出状态。
 4. 路由拆包、导出依赖延迟加载和字体加载优化。
 
-每次改动保持小步提交。页面体验类改动完成后，至少运行 `pnpm build`；涉及文章内容或博客数据时，同时运行 `pnpm codex:blog-check`；涉及 blog 包构建产物结构时，先构建 blog 包再运行 `pnpm codex:blog-build-output`。
+每次改动保持小步提交。页面体验类改动完成后，至少运行 `pnpm build`；涉及文章内容或博客数据时，同时运行 `pnpm codex:blog-check`；涉及包构建产物结构时，运行对应包构建，并补充或运行 `@website/infra` 的构建单元测试。

@@ -47,6 +47,18 @@ export function toPosixPath(value: string) {
   return value.split(path.sep).join(POSIX_SEPARATOR);
 }
 
+export function removeExtension(file: string) {
+  return file.slice(0, -path.extname(file).length);
+}
+
+export function getSourceModuleDir(file: string) {
+  const filename = path.basename(file);
+  if (filename.startsWith('index.')) {
+    return path.dirname(file);
+  }
+  return removeExtension(file);
+}
+
 export function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

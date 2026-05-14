@@ -25,16 +25,33 @@
         "default": "./dist/lib/index.js"
       }
     },
-    "./es/*": "./dist/es/*",
-    "./lib/*": "./dist/lib/*",
+    "./*/style.css": {
+      "import": "./dist/es/*/style/index.css",
+      "require": "./dist/lib/*/style/index.css",
+      "default": "./dist/es/*/style/index.css"
+    },
+    "./*": {
+      "import": {
+        "types": "./dist/es/*/index.d.ts",
+        "default": "./dist/es/*/index.js"
+      },
+      "require": {
+        "types": "./dist/lib/*/index.d.ts",
+        "default": "./dist/lib/*/index.js"
+      }
+    },
     "./style.css": "./dist/index.css"
   },
   "main": "./dist/lib/index.js",
   "module": "./dist/es/index.js",
   "unpkg": "./dist/index.global.js",
   "types": "./dist/es/index.d.ts",
-  "files": ["dist"],
-  "sideEffects": ["**/*.css"],
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "dependencies": {
     "@website-kernel/markdown": "workspace:*",
     "@radix-ui/react-icons": "catalog:",
@@ -42,7 +59,8 @@
   },
   "peerDependencies": {
     "react": "catalog:",
-    "react-router": "catalog:"
+    "react-router": "catalog:",
+    "tailwindcss": "catalog:"
   },
   "devDependencies": {
     "@website/infra": "workspace:*",

@@ -5,6 +5,7 @@ import type { CssOptions } from '#infra/css/types';
 import type { WorkspaceStyleResolver } from '#infra/css/workspaceStyleResolver';
 import {
   appendUniqueMapValue,
+  getSourceModuleDir,
   SOURCE_DECLARATION_RE,
   POSIX_SEPARATOR,
   SOURCE_MODULE_RE,
@@ -17,74 +18,88 @@ type AutoImportRule = {
   outputPattern: string;
 };
 
+type SourceImportAliasRule = {
+  prefix: string;
+};
+
 type SourceImportDeclaration = {
   importPath: string;
   importClause?: ts.ImportClause;
 };
 
 export class ModuleStyleImportCollector {
+  private readonly sourceImportAliasRules: Array<SourceImportAliasRule>;
+
   constructor(
     private readonly srcRoot: string,
+    private readonly packageRoot: string,
     private readonly resolver: WorkspaceStyleResolver,
-  ) {}
+    private readonly styleExtensions: Array<string> = ['.css'],
+  ) {
+    this.sourceImportAliasRules = this.createSourceImportAliasRules();
+  }
 
   collect(files: Array<string>, cssOptions: CssOptions) {
     const entries = new Map<string, Array<string>>();
     const rules = this.createAutoImportRules(cssOptions);
 
-    if (!rules.length) return entries;
-
     for (const file of files) {
       if (!SOURCE_MODULE_RE.test(file) || SOURCE_DECLARATION_RE.test(file)) {
         continue;
       }
-
-      const sourceDir = path.dirname(path.relative(this.srcRoot, file));
+      const sourceRelative = path.relative(this.srcRoot, file);
+      const sourceDir = path.dirname(sourceRelative);
+      const sourceModuleDir = getSourceModuleDir(sourceRelative);
       const code = fs.readFileSync(file, 'utf8');
       const imports = this.getImportDeclarations(file, code);
 
       for (const item of imports) {
-        const importPath = item.importPath;
-        const ruleMatch = this.matchAutoImportRule(rules, importPath);
-
-        if (!ruleMatch) continue;
-
-        const directSpecifier = this.createDirectStyleSpecifier(
-          ruleMatch.rule,
-          importPath,
+        this.collectSourceImportStyle(
+          entries,
+          sourceDir,
+          sourceModuleDir,
+          item,
         );
 
-        if (directSpecifier) {
-          const cssFile = this.resolver.resolveStyleDependency(directSpecifier);
+        const importPath = item.importPath;
+        const ruleMatches = this.matchAutoImportRules(rules, importPath);
+        if (!ruleMatches.length) continue;
 
-          if (fs.existsSync(cssFile)) {
-            appendUniqueMapValue(entries, sourceDir, directSpecifier);
+        const directSpecifiers = ruleMatches
+          .map((ruleMatch) =>
+            this.createDirectStyleSpecifier(ruleMatch.rule, importPath),
+          )
+          .filter((specifier): specifier is string => Boolean(specifier));
+
+        if (directSpecifiers.length) {
+          for (const specifier of directSpecifiers) {
+            const cssFile = this.resolver.resolveStyleDependency(specifier);
+            if (fs.existsSync(cssFile)) {
+              appendUniqueMapValue(entries, sourceModuleDir, specifier);
+            }
           }
-
           continue;
         }
 
-        const importedNames = this.getImportedNames(file, item);
+        for (const ruleMatch of ruleMatches) {
+          const importedNames = this.getImportedNames(file, item);
 
-        for (const importedName of importedNames.length
-          ? importedNames
-          : ['']) {
-          const specifier = this.createStyleSpecifier(
-            ruleMatch.rule,
-            ruleMatch.values,
-            importedName,
-          );
-          const cssFile = this.resolver.resolveStyleDependency(specifier);
+          for (const importedName of importedNames) {
+            const specifier = this.createStyleSpecifier(
+              ruleMatch.rule,
+              ruleMatch.values,
+              importedName,
+            );
+            const cssFile = this.resolver.resolveStyleDependency(specifier);
 
-          if (!fs.existsSync(cssFile)) {
-            continue;
+            if (!fs.existsSync(cssFile)) {
+              continue;
+            }
+            appendUniqueMapValue(entries, sourceModuleDir, specifier);
           }
-
-          appendUniqueMapValue(entries, sourceDir, specifier);
         }
       }
     }
-
     return entries;
   }
 
@@ -105,36 +120,133 @@ export class ModuleStyleImportCollector {
       ) {
         return;
       }
-
       imports.push({
         importPath: node.moduleSpecifier.text,
         importClause: node.importClause,
       });
     });
-
     return imports;
   }
 
-  private createAutoImportRules(cssOptions: CssOptions): Array<AutoImportRule> {
-    return Object.entries(cssOptions.cssDependencies ?? {})
-      .filter((entry): entry is [string, { component: string }] =>
-        Boolean(entry[1].component),
-      )
-      .map(([packageName, dependency]) => {
-        return {
+  private collectSourceImportStyle(
+    entries: Map<string, Array<string>>,
+    sourceDir: string,
+    sourceModuleDir: string,
+    item: SourceImportDeclaration,
+  ) {
+    if (item.importClause?.isTypeOnly) return;
+
+    const importedStyleEntry = this.resolveSourceImportStyleEntry(
+      sourceDir,
+      item.importPath,
+    );
+    if (!importedStyleEntry) return;
+
+    const sourceStyleDir = path.join(this.srcRoot, sourceModuleDir, 'style');
+    appendUniqueMapValue(
+      entries,
+      sourceModuleDir,
+      this.toRelativeSpecifier(sourceStyleDir, importedStyleEntry),
+    );
+  }
+
+  private resolveSourceImportStyleEntry(sourceDir: string, importPath: string) {
+    const sourceRelativePath = this.resolveSourceImportPath(
+      sourceDir,
+      importPath,
+    );
+    if (!sourceRelativePath) return null;
+
+    const sourceBase = path.join(this.srcRoot, sourceRelativePath);
+    const directoryStyleEntry = path.join(sourceBase, 'style', 'index.css');
+
+    for (const extension of this.styleExtensions) {
+      const directorySourceStyle = path.join(sourceBase, `index${extension}`);
+      if (fs.existsSync(directorySourceStyle)) return directoryStyleEntry;
+    }
+
+    const hasFileSourceStyle = this.styleExtensions.some((extension) =>
+      fs.existsSync(`${sourceBase}${extension}`),
+    );
+    if (!hasFileSourceStyle) return null;
+    return path.join(sourceBase, 'style', 'index.css');
+  }
+
+  private resolveSourceImportPath(sourceDir: string, importPath: string) {
+    if (importPath.startsWith('.')) {
+      return path.normalize(path.join(sourceDir, importPath));
+    }
+    for (const rule of this.sourceImportAliasRules) {
+      if (!importPath.startsWith(rule.prefix)) continue;
+      return importPath.slice(rule.prefix.length);
+    }
+    return null;
+  }
+
+  private createSourceImportAliasRules() {
+    const packageJsonPath = path.join(this.packageRoot, 'package.json');
+    if (!fs.existsSync(packageJsonPath)) return [];
+
+    const packageJson = JSON.parse(
+      fs.readFileSync(packageJsonPath, 'utf8'),
+    ) as {
+      imports?: Record<string, string | unknown>;
+    };
+    const rules: Array<SourceImportAliasRule> = [];
+
+    for (const [name, target] of Object.entries(packageJson.imports ?? {})) {
+      if (
+        !name.endsWith(`${POSIX_SEPARATOR}*`) ||
+        typeof target !== 'string' ||
+        !target.includes('*')
+      ) {
+        continue;
+      }
+      rules.push({
+        prefix: name.slice(0, -1),
+      });
+    }
+    return rules;
+  }
+
+  private toRelativeSpecifier(fromDir: string, file: string) {
+    const relative = path.relative(fromDir, file).split(path.sep).join('/');
+    return relative.startsWith('.') ? relative : `./${relative}`;
+  }
+
+  private createAutoImportRules(cssOptions: CssOptions) {
+    const rules: Array<AutoImportRule> = [];
+    for (const [packageName, dependency] of Object.entries(
+      cssOptions.cssDependencies ?? {},
+    )) {
+      const dependencyPaths = Array.isArray(dependency.component)
+        ? dependency.component
+        : [dependency.component].filter((value): value is string =>
+            Boolean(value),
+          );
+
+      for (const dependencyPath of dependencyPaths) {
+        rules.push({
           packageName,
           outputPattern: this.joinDependencySpecifier(
             packageName,
-            dependency.component,
+            dependencyPath,
           ),
-        };
-      });
+        });
+      }
+    }
+    return rules;
   }
 
-  private matchAutoImportRule(
+  private matchAutoImportRules(
     rules: Array<AutoImportRule>,
     importPath: string,
   ) {
+    const matches: Array<{
+      rule: AutoImportRule;
+      values: Array<string>;
+    }> = [];
+
     for (const rule of rules) {
       if (
         importPath !== rule.packageName &&
@@ -142,14 +254,12 @@ export class ModuleStyleImportCollector {
       ) {
         continue;
       }
-
-      return {
+      matches.push({
         rule,
         values: this.getImportPathValues(rule.packageName, importPath),
-      };
+      });
     }
-
-    return null;
+    return matches;
   }
 
   private getImportPathValues(packageName: string, importPath: string) {
@@ -166,18 +276,10 @@ export class ModuleStyleImportCollector {
     importedName: string,
   ) {
     const pathValues = [...values];
-
     return rule.outputPattern.replace(/\*\*|\*/g, (token) => {
       const matchedValue = pathValues.shift();
-
-      if (matchedValue) {
-        return matchedValue;
-      }
-
-      if (token === GLOBSTAR_TOKEN) {
-        return importedName;
-      }
-
+      if (matchedValue) return matchedValue;
+      if (token === GLOBSTAR_TOKEN) return importedName;
       return matchedValue ?? importedName;
     });
   }
@@ -189,7 +291,6 @@ export class ModuleStyleImportCollector {
     if (globstarIndex < 0) {
       return null;
     }
-
     const prefixParts = patternParts.slice(0, globstarIndex);
     const suffixParts = patternParts.slice(globstarIndex + 1);
     const importParts = importPath.split(POSIX_SEPARATOR);
@@ -197,7 +298,6 @@ export class ModuleStyleImportCollector {
     if (importParts.length < prefixParts.length) {
       return null;
     }
-
     for (let index = 0; index < prefixParts.length; index += 1) {
       const patternPart = prefixParts[index];
       if (patternPart === '*') continue;
@@ -205,7 +305,6 @@ export class ModuleStyleImportCollector {
         return null;
       }
     }
-
     return [...importParts, ...suffixParts].join(POSIX_SEPARATOR);
   }
 
@@ -222,18 +321,15 @@ export class ModuleStyleImportCollector {
     if (!importClause || importClause.isTypeOnly) {
       return [];
     }
-
     const names: Array<string> = [];
-
     if (importClause.name) {
       names.push(importClause.name.text);
     }
-
     const namedBindings = importClause.namedBindings;
+
     if (!namedBindings) {
       return names;
     }
-
     if (ts.isNamespaceImport(namedBindings)) {
       throw new Error(
         `Namespace import is not supported for CSS auto import: ${item.importPath}\n` +
@@ -241,12 +337,10 @@ export class ModuleStyleImportCollector {
           `File: ${file}`,
       );
     }
-
     for (const element of namedBindings.elements) {
       if (element.isTypeOnly) continue;
       names.push((element.propertyName ?? element.name).text);
     }
-
     return names;
   }
 }

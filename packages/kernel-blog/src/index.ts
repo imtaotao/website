@@ -23,8 +23,8 @@ export {
   BlogHomePage,
   createBlogTagNavigation,
   formatBlogDate,
-} from '#blog/pages/BlogHomePage/HomePage';
-export { BlogArticlePage } from '#blog/pages/BlogArticlePage/ArticlePage';
+} from '#blog/pages/BlogHomePage';
+export { BlogArticlePage } from '#blog/pages/BlogArticlePage';
 export type {
   BlogArticleDetail,
   BlogArticleFrontmatter,
@@ -39,11 +39,11 @@ export type { BlogTheme } from '#blog/components/BlogThemeToggle/BlogThemeToggle
 export type {
   BlogHomeArticle,
   BlogHomePageProps,
-} from '#blog/pages/BlogHomePage/HomePage';
+} from '#blog/pages/BlogHomePage';
 export type {
   BlogArticlePageProps,
   BlogArticleView,
-} from '#blog/pages/BlogArticlePage/ArticlePage';
+} from '#blog/pages/BlogArticlePage';
 export type { Heading } from '@website-kernel/markdown';
 
 const ARTICLE_ENTRY_FILENAME = 'index.mdx';

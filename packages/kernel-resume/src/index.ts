@@ -1,8 +1,8 @@
 export {
   exportElementToPdf,
   prepareElementForOfflineExport,
-} from '#resume/resumeExport';
-export { normalizeResumeModel } from '#resume/resumeParser';
+} from '#resume/exportPdf';
+export { normalizeResumeModel } from '#resume/parser';
 export { ResumeExportBar } from '#resume/components/ResumeExportBar';
 export { ResumeExperienceList } from '#resume/components/ResumeExperience';
 export { ResumeHeader } from '#resume/components/ResumeHeader';
@@ -12,8 +12,8 @@ export { ResumeShell } from '#resume/components/ResumeShell';
 export type { ResumeTheme } from '#resume/components/ResumeShell';
 export { ResumeSkills } from '#resume/components/ResumeSkills';
 export { ResumeSummary } from '#resume/components/ResumeSummary';
-export { ResumePageDesktop } from '#resume/pages/ResumePageDesktop';
-export { ResumePageMobile } from '#resume/pages/ResumePageMobile';
+export { ResumeMobile } from '#resume/pages/ResumeMobile';
+export { ResumeDesktop } from '#resume/pages/ResumeDesktop';
 export type {
   ResumeBasics,
   ResumeExperience,
@@ -24,5 +24,5 @@ export type {
   ResumeSchemaVersion,
   ResumeSkillGroup,
   ResumeSkillItem,
-} from '#resume/resumeParser';
-export type { ResumeImageAssets } from '#resume/components/ResumeAssets';
+} from '#resume/parser';
+export type { ResumeImageAssets } from '#resume/assets';

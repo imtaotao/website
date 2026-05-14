@@ -29,7 +29,7 @@ import {
   BLOG_TAG_QUERY_KEY,
   createBlogTagNavigation,
   formatBlogDate,
-} from '#blog/pages/BlogHomePage/HomePage';
+} from '#blog/pages/BlogHomePage';
 
 type BlogArticleHeading = {
   id: string;

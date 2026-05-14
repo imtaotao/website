@@ -7,7 +7,7 @@
 ### 博客页面与正文样式
 
 - `packages/kernel-blog/src/pages/BlogPage.css` 已按页面职责和组件职责拆分过一轮。
-- `BlogHomePage.css` / `BlogArticlePage.css` / `BlogArticleActions.css` / `BlogShared.css` 已分离。
+- `BlogHomePage/index.css` / `BlogArticlePage/index.css` / `BlogArticleActions.css` / `BlogShared.css` 已分离。
 - 博客首页 PC 端标题、标签、时间字号做过调整。
 - 博客首页外部链接文章标题增加了更淡的下划线提示。
 - Markdown 正文标题颜色已做分级区分，暗色主题下也补了一套更明显的层级颜色。

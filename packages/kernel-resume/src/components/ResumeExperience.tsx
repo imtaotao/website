@@ -1,9 +1,9 @@
 import { useCallback, useRef, useState } from 'react';
 import { CodeIcon, HomeIcon, RocketIcon } from '@radix-ui/react-icons';
 
-import { type ResumeExperience } from '#resume/resumeParser';
-import { copyToClipboard } from '#resume/components/ResumeClipboard';
-import type { ResumeImageAssets } from '#resume/components/ResumeAssets';
+import { type ResumeExperience } from '#resume/parser';
+import { copyToClipboard } from '#resume/clipboard';
+import type { ResumeImageAssets } from '#resume/assets';
 
 const formatRange = (startAt: string, endAt: string) => {
   const end = endAt === 'present' ? '至今' : endAt;

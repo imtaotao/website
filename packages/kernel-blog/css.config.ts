@@ -4,9 +4,9 @@ export const config: CssOptions = {
   sourceDir: 'src',
   outputDir: 'dist',
   cssDependencies: {
-    '@website-kernel': {
-      global: '/markdown/style.css',
-      component: '/*/es/components/**/style/index.css',
+    '@website-kernel/markdown': {
+      global: '/style.css',
+      component: ['/pages/**/style.css', '/components/**/style.css'],
     },
   },
 };

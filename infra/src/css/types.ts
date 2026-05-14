@@ -1,8 +1,8 @@
 export type CssDependencyGroup = {
   // 全局 CSS 依赖，会被合并进包级 dist/index.css。
   global?: string | Array<string>;
-  // 组件 CSS 自动引用规则，用于从组件 import 推导对应样式入口。
-  component?: string;
+  // 模块 CSS 自动引用规则，用于从 import 推导对应样式入口。
+  component?: string | Array<string>;
 };
 
 export interface CssOptions {

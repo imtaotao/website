@@ -1,5 +1,5 @@
-import { type ResumeModel } from '#resume/resumeParser';
-import { type ResumeImageAssets } from '#resume/components/ResumeAssets';
+import { type ResumeModel } from '#resume/parser';
+import { type ResumeImageAssets } from '#resume/assets';
 import { type ResumeTheme, ResumeShell } from '#resume/components/ResumeShell';
 import { ResumeHeader } from '#resume/components/ResumeHeader';
 import { ResumeSection } from '#resume/components/ResumeSection';
@@ -8,7 +8,7 @@ import { ResumeSkills } from '#resume/components/ResumeSkills';
 import { ResumeExperienceList } from '#resume/components/ResumeExperience';
 import { ResumeOpenSourceProjects } from '#resume/components/ResumeOpenSourceProjects';
 
-export function ResumePageMobile(props: {
+export function ResumeMobile(props: {
   model: ResumeModel;
   assets?: ResumeImageAssets;
   theme?: ResumeTheme;

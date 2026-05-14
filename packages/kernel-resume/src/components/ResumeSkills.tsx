@@ -1,4 +1,4 @@
-import { type ResumeSkillGroup } from '#resume/resumeParser';
+import { type ResumeSkillGroup } from '#resume/parser';
 
 const levelText = (level: number) => {
   const v = Math.max(1, Math.min(100, Math.round(level)));

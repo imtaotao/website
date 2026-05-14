@@ -24,7 +24,6 @@ export class StyleProcessor {
       name: IMPORT_AT_RULE,
       params: `"${specifier}"`,
     });
-
     if (root.nodes?.length) rule.raws.before = LINE_SEPARATOR;
     root.append(rule);
     root.raws.semicolon = true;
@@ -44,7 +43,6 @@ export class StyleProcessor {
     if (!fs.existsSync(cssPath)) {
       return '';
     }
-
     const normalizedPath = path.resolve(cssPath);
     if (seen.has(normalizedPath)) return '';
     seen.add(normalizedPath);
@@ -64,22 +62,18 @@ export class StyleProcessor {
         path.dirname(cssPath),
       );
       if (!importedPath) continue;
-
       const content = this.readStyleFile(importedPath, seen);
       if (!content.trim()) {
         rule.remove();
         continue;
       }
-
       rule.replaceWith(...(this.parse(content, importedPath).nodes ?? []));
     }
-
     return root.toString();
   }
 
   collectImportedStyleFiles(styleFiles: Array<string>) {
     const imported = new Set<string>();
-
     for (const styleFile of styleFiles) {
       const css = fs.readFileSync(styleFile, 'utf8');
       const root = this.parse(css, styleFile);
@@ -92,11 +86,9 @@ export class StyleProcessor {
         ) {
           return;
         }
-
         imported.add(path.resolve(path.dirname(styleFile), specifier));
       });
     }
-
     return imported;
   }
 
@@ -107,7 +99,6 @@ export class StyleProcessor {
       // Less support will plug into this branch before parsing once enabled.
       return postcss.parse(code, { from });
     }
-
     return postcss.parse(code, { from });
   }
 
@@ -129,12 +120,10 @@ export class StyleProcessor {
 
     const url = value.slice(4, end).trim();
     const quote = url[0];
-
     if (quote === '"' || quote === "'") {
       const quoteEnd = url.indexOf(quote, 1);
       return quoteEnd > 0 ? url.slice(1, quoteEnd) : null;
     }
-
     return url || null;
   }
 }

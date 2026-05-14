@@ -1,8 +1,8 @@
 import {
   type ResumeImageAssets,
   type ResumeModel,
-  ResumePageDesktop,
-  ResumePageMobile,
+  ResumeDesktop,
+  ResumeMobile,
 } from '@website-kernel/resume';
 import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
 import { useWebsiteTheme } from '@website-kernel/shared';
@@ -42,12 +42,10 @@ export default function ResumePage() {
   });
 
   if (isMobile) {
-    return (
-      <ResumePageMobile model={model} assets={resumeAssets} theme={theme} />
-    );
+    return <ResumeMobile model={model} assets={resumeAssets} theme={theme} />;
   }
   return (
-    <ResumePageDesktop
+    <ResumeDesktop
       model={model}
       assets={resumeAssets}
       theme={theme}

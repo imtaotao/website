@@ -1,10 +1,10 @@
 import path from 'node:path';
 import { createRequire } from 'node:module';
+import { POSIX_SEPARATOR } from '#infra/utils';
 import type {
   ModuleCssBuildConfig,
   ResolvedModuleCssBuildContext,
 } from '#infra/css/types';
-import { POSIX_SEPARATOR } from '#infra/utils';
 
 const NODE_MODULES_DIR = 'node_modules';
 
@@ -44,11 +44,10 @@ export class WorkspaceStyleResolver {
   toOutputStyleSpecifier(specifier: string, outRoot: string) {
     const parsed = this.parsePackageStyleSpecifier(specifier);
     if (!parsed) return specifier;
-
     const { packageName, stylePath } = parsed;
     const currentOutputFormat = path.basename(outRoot);
-
     const outputFormat = this.getStylePathOutputFormat(stylePath);
+
     if (outputFormat) {
       return [packageName, currentOutputFormat, outputFormat.path].join(
         POSIX_SEPARATOR,
@@ -62,13 +61,11 @@ export class WorkspaceStyleResolver {
     for (const format of this.config.output.outputFormats) {
       const prefix = `${format}${POSIX_SEPARATOR}`;
       if (!stylePath.startsWith(prefix)) continue;
-
       return {
         format,
         path: stylePath.slice(prefix.length),
       };
     }
-
     return null;
   }
 
@@ -81,7 +78,6 @@ export class WorkspaceStyleResolver {
       : parts.shift() ?? '';
 
     if (!packageName) return null;
-
     return {
       packageName,
       stylePath: parts.join(POSIX_SEPARATOR),

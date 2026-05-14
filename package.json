@@ -11,7 +11,6 @@
     "dev:packages": "pnpm --parallel --filter @website-kernel/* run dev",
     "build:packages": "pnpm --filter @website-kernel/* run build",
     "codex:blog-check": "node scripts/checkBlog.mjs",
-    "codex:blog-build-output": "node scripts/checkBlogBuildOutput.mjs",
     "format:md": "prettier --write --parser markdown \"AGENTS.md\" \"docs/codex/**/*.(md|mdx)\" \"blog/**/*.(md|mdx)\"",
     "format": "prettier --write --ignore-path .gitignore --parser typescript \"*.{js,mjs,cjs,ts,tsx}\" \"(app|infra|packages)/**/*.(t|j)s?(x)\" \"scripts/**/*.{js,mjs,ts}\""
   },
@@ -19,7 +18,8 @@
     "*.js": ["prettier --write"],
     "*.ts?(x)": ["prettier --parser=typescript --write"]
   },
-  "devDependencies": {
+  "dependencies": {
+    "@website/infra": "workspace:*",
     "@types/node": "^20.10.6",
     "@types/minimist": "^1.2.5",
     "tsx": "catalog:",

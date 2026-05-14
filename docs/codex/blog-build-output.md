@@ -33,11 +33,22 @@
         "default": "./dist/lib/index.js"
       }
     },
-    "./es/*": "./dist/es/*",
-    "./lib/*": "./dist/lib/*",
-    "./style/*": "./dist/es/style/*",
-    "./style.css": "./dist/es/style/index.css",
-    "./style/index.css": "./dist/es/style/index.css"
+    "./*/style.css": {
+      "import": "./dist/es/*/style/index.css",
+      "require": "./dist/lib/*/style/index.css",
+      "default": "./dist/es/*/style/index.css"
+    },
+    "./*": {
+      "import": {
+        "types": "./dist/es/*/index.d.ts",
+        "default": "./dist/es/*/index.js"
+      },
+      "require": {
+        "types": "./dist/lib/*/index.d.ts",
+        "default": "./dist/lib/*/index.js"
+      }
+    },
+    "./style.css": "./dist/index.css"
   },
   "files": ["dist"],
   "sideEffects": ["**/*.css"]
@@ -71,8 +82,8 @@
 - `src/tagHelpers.ts` -> `dist/{es,lib}/tagHelpers.js` + `tagHelpers.d.ts`
 - `src/tags.ts` -> `dist/{es,lib}/tags.js` + `tags.d.ts`
 - `src/components/BlogThemeToggle/BlogThemeToggle.tsx` -> `dist/{es,lib}/components/BlogThemeToggle/BlogThemeToggle.js` + `.d.ts`
-- `src/pages/BlogArticlePage/ArticlePage.tsx` -> `dist/{es,lib}/pages/BlogArticlePage/ArticlePage.js` + `.d.ts`
-- `src/pages/BlogHomePage/HomePage.tsx` -> `dist/{es,lib}/pages/BlogHomePage/HomePage.js` + `.d.ts`
+- `src/pages/BlogArticlePage/index.tsx` -> `dist/{es,lib}/pages/BlogArticlePage/index.js` + `.d.ts`
+- `src/pages/BlogHomePage/index.tsx` -> `dist/{es,lib}/pages/BlogHomePage/index.js` + `.d.ts`
 
 `src/__tests__/` 不属于发布产物契约。
 
@@ -83,31 +94,29 @@
 - `dist/es/<source-relative>.css`
 - `dist/lib/<source-relative>.css`
 
-同时，每个 CSS 文件所在目录会生成一个组件级样式入口：
+同时，有同级模块源码的 CSS 文件所在目录会生成一个模块级样式入口：
 
 - `dist/es/<source-css-dir>/style/index.css`
 - `dist/lib/<source-css-dir>/style/index.css`
 
-当前 blog 包的组件级样式入口包括：
+当前 blog 包的模块级样式入口包括：
 
 - `components/BlogThemeToggle/style/index.css`
 - `pages/BlogArticlePage/style/index.css`
 - `pages/BlogHomePage/style/index.css`
-- `pages/BlogPage/style/index.css`
-- `pages/BlogShared/style/index.css`
 
-这些组件级入口默认 import 同目录 CSS，例如：
+这些模块级入口默认 import 同目录 CSS，例如：
 
 ```text
-@import "../HomePage.css";
+@import "../index.css";
 ```
 
-`pages/BlogArticlePage/style/index.css` 还必须额外 import markdown 渲染器和 Lightbox 的样式：
+`pages/BlogArticlePage/style/index.css` 还必须额外 import markdown 渲染器和 Lightbox 的稳定样式入口：
 
 ```text
-@import "@website-kernel/markdown/es/components/Renderer/style/index.css";
-@import "@website-kernel/markdown/es/components/Lightbox/style/index.css";
-@import "../ArticlePage.css";
+@import "@website-kernel/markdown/components/Lightbox/style.css";
+@import "@website-kernel/markdown/components/Renderer/style.css";
+@import "../index.css";
 ```
 
 模块化总样式入口也需要同时存在：
@@ -118,36 +127,27 @@
 这两个文件保留对 markdown 总样式的 workspace import，并内联 blog 自身 CSS：
 
 ```text
-@import "@website-kernel/markdown/es/style/index.css";
-```
-
-`lib` 目录下的同名样式入口仍然指向当前格式目录对应路径，即：
-
-```text
-@import "@website-kernel/markdown/lib/style/index.css";
+@import "@website-kernel/markdown/style.css";
 ```
 
 ## 验证命令
 
-当前根命令：
+产物结构的通用能力由 `@website/infra` 的单元测试覆盖：
 
 ```shell
-pnpm codex:blog-build-output
+pnpm --filter @website/infra run test
 ```
 
-这个命令只检查现有产物结构，不会自动构建。典型流程是：
+涉及 blog 包产物调整时，再运行实际构建：
 
 ```shell
 pnpm --filter @website-kernel/blog run build
-pnpm codex:blog-build-output
 ```
 
-命令会检查：
+单元测试重点覆盖：
 
-- package 对外入口字段是否仍指向当前 `dist` 布局。
-- 根 bundle 是否存在。
-- `dist/es` 和 `dist/lib` 是否都有对应 `.js`、`.d.ts`、`.css`。
-- 每个 CSS 源文件是否都有组件级 `style/index.css`。
-- BlogArticlePage 的组件级样式入口是否保留 markdown 组件样式依赖。
-- `dist/{es,lib}/style/index.css` 是否保留 markdown 总样式依赖。
-- `dist/` 是否出现当前契约之外的额外文件。
+- PostCSS AST 解析 `@import`，并内联相对 CSS 依赖。
+- 同目录 CSS 和 JS 引用外部组件时生成模块级 `style/index.css`。
+- 支持具名导入、别名导入、deep import，以及 page/component 这类任意目录规则。
+- 禁止从包入口使用 namespace import 自动推导 CSS。
+- 通过 package exports 解析稳定的 `@scope/pkg/components/Button/style.css` 入口。

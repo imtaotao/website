@@ -7,9 +7,9 @@ import {
   MobileIcon,
   ReaderIcon,
 } from '@radix-ui/react-icons';
-import { type ResumeBasics } from '#resume/resumeParser';
-import { copyToClipboard } from '#resume/components/ResumeClipboard';
-import type { ResumeImageAssets } from '#resume/components/ResumeAssets';
+import { type ResumeBasics } from '#resume/parser';
+import { copyToClipboard } from '#resume/clipboard';
+import type { ResumeImageAssets } from '#resume/assets';
 
 const iconClassName = 'h-3.5 w-3.5 text-zinc-500';
 const socialIconClassName = 'h-4 w-4 text-zinc-500';
