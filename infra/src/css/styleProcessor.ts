@@ -36,6 +36,9 @@ export class StyleProcessor {
 
   appendStyleContent(target: Root, content: string, from: string) {
     const root = this.parse(content, from);
+    if (target.nodes?.length && root.nodes?.[0]) {
+      root.nodes[0].raws.before = LINE_SEPARATOR;
+    }
     target.append(...(root.nodes ?? []));
   }
 

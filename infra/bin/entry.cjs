@@ -5,6 +5,7 @@ const minimist = require('minimist');
 
 const commands = {
   'build-css': 'css/index.ts',
+  'check-blog': 'blog/check.ts',
 };
 
 const run = async (file, args) => {
@@ -33,6 +34,7 @@ if (argv.help || !command) {
   console.log('');
   console.log('Commands:');
   console.log('  build-css  Build package module CSS output');
+  console.log('  check-blog Check blog frontmatter and local assets');
   process.exit(argv.help ? 0 : 1);
 }
 

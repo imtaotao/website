@@ -285,27 +285,23 @@ export class ModuleStyleImportCollector {
   }
 
   private createDirectStyleSpecifier(rule: AutoImportRule, importPath: string) {
-    const patternParts = rule.outputPattern.split(POSIX_SEPARATOR);
-    const globstarIndex = patternParts.indexOf(GLOBSTAR_TOKEN);
-
-    if (globstarIndex < 0) {
+    const wildcardIndex = rule.outputPattern.indexOf('*');
+    if (wildcardIndex < 0) {
       return null;
     }
-    const prefixParts = patternParts.slice(0, globstarIndex);
-    const suffixParts = patternParts.slice(globstarIndex + 1);
-    const importParts = importPath.split(POSIX_SEPARATOR);
+    const wildcardLength = rule.outputPattern.startsWith(
+      GLOBSTAR_TOKEN,
+      wildcardIndex,
+    )
+      ? GLOBSTAR_TOKEN.length
+      : 1;
+    const prefix = rule.outputPattern.slice(0, wildcardIndex);
+    const suffix = rule.outputPattern.slice(wildcardIndex + wildcardLength);
 
-    if (importParts.length < prefixParts.length) {
+    if (!importPath.startsWith(prefix)) {
       return null;
     }
-    for (let index = 0; index < prefixParts.length; index += 1) {
-      const patternPart = prefixParts[index];
-      if (patternPart === '*') continue;
-      if (patternPart !== importParts[index]) {
-        return null;
-      }
-    }
-    return [...importParts, ...suffixParts].join(POSIX_SEPARATOR);
+    return `${importPath}${suffix}`;
   }
 
   private joinDependencySpecifier(packageName: string, dependencyPath: string) {

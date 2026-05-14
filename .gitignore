@@ -15,6 +15,7 @@ dist-ssr
 .corepack
 Microsoft
 dev/
+.pnpm-store/
 
 # Editor directories and files
 docs.md

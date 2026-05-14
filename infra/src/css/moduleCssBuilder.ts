@@ -32,19 +32,54 @@ export class ModuleCssBuilder {
 
     this.applyContext(context);
 
+    console.log(`[infra:css] build ${path.basename(context.packageRoot)}`);
+
     const sourceFiles = fileWalker(this.srcRoot);
     const styleFiles = this.getStyleFiles(sourceFiles);
     const moduleStyleImports = this.importCollector.collect(
       sourceFiles,
       cssOptions,
     );
-    this.writePackageStyles(styleFiles, cssOptions, context);
+    const outputs: Array<string> = [];
+    const packageStyle = this.writePackageStyles(
+      styleFiles,
+      cssOptions,
+      context,
+    );
+    if (packageStyle) outputs.push(packageStyle);
 
     for (const format of this.config.output.outputFormats) {
       const outRoot = path.join(context.packageRoot, context.outputDir, format);
       this.copyStyleFiles(styleFiles, outRoot);
-      this.writeEntryStyle(styleFiles, outRoot, cssOptions);
-      this.writeComponentStyleEntries(styleFiles, outRoot, moduleStyleImports);
+      const externalStyle = this.writeExternalStyle(outRoot, cssOptions);
+      const moduleStyle = this.writeModuleStyle(styleFiles, outRoot);
+      const entryStyle = this.writeEntryStyle(
+        outRoot,
+        externalStyle,
+        moduleStyle,
+      );
+
+      if (externalStyle) outputs.push(externalStyle);
+      if (moduleStyle) outputs.push(moduleStyle);
+      if (entryStyle) outputs.push(entryStyle);
+      outputs.push(
+        ...this.writeComponentStyleEntries(
+          styleFiles,
+          outRoot,
+          moduleStyleImports,
+        ),
+      );
+    }
+
+    console.log(
+      `[infra:css] ${styleFiles.length} source style file(s), ${outputs.length} output entry file(s)`,
+    );
+    for (const output of outputs) {
+      console.log(
+        `[infra:css] + ${toPosixPath(
+          path.relative(context.packageRoot, output),
+        )}`,
+      );
     }
   }
 
@@ -119,49 +154,85 @@ export class ModuleCssBuilder {
       }
     }
 
-    if (!root.nodes?.length) return;
+    if (!root.nodes?.length) return null;
 
     fs.mkdirSync(path.join(context.packageRoot, context.outputDir), {
       recursive: true,
     });
-    fs.writeFileSync(
-      path.join(
-        context.packageRoot,
-        context.outputDir,
-        this.config.output.indexCssFile,
-      ),
-      this.styleProcessor.stringify(root),
+    const target = path.join(
+      context.packageRoot,
+      context.outputDir,
+      this.config.output.indexCssFile,
     );
+    fs.writeFileSync(target, this.styleProcessor.stringify(root));
+    return target;
   }
 
   private writeEntryStyle(
-    styleFiles: Array<string>,
     outRoot: string,
-    buildConfig: CssOptions,
+    externalStyle: string | null,
+    moduleStyle: string | null,
   ) {
     const target = path.join(
       outRoot,
       this.config.output.styleDir,
       this.config.output.indexCssFile,
     );
+    const root = this.styleProcessor.createRoot();
+    const styleDir = path.dirname(target);
+
+    for (const style of [externalStyle, moduleStyle]) {
+      if (!style) continue;
+      this.styleProcessor.appendImportRule(
+        root,
+        this.toRelativeImportSpecifier(styleDir, style),
+      );
+    }
+    if (!root.nodes?.length) return null;
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, this.styleProcessor.stringify(root));
+    return target;
+  }
+
+  private writeModuleStyle(styleFiles: Array<string>, outRoot: string) {
+    const target = path.join(
+      outRoot,
+      this.config.output.styleDir,
+      this.config.output.moduleCssFile,
+    );
     const seen = new Set<string>();
     const root = this.styleProcessor.createRoot();
 
-    for (const specifier of this.getGlobalStyleDependencies(buildConfig)) {
-      this.styleProcessor.appendImportRule(
-        root,
-        this.resolver.toOutputStyleSpecifier(specifier, outRoot),
-      );
-    }
     for (const styleFile of styleFiles) {
       const content = this.styleProcessor.readStyleFile(styleFile, seen);
       if (content.trim()) {
         this.styleProcessor.appendStyleContent(root, content, styleFile);
       }
     }
-    if (!root.nodes?.length) return;
+    if (!root.nodes?.length) return null;
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.writeFileSync(target, this.styleProcessor.stringify(root));
+    return target;
+  }
+
+  private writeExternalStyle(outRoot: string, buildConfig: CssOptions) {
+    const target = path.join(
+      outRoot,
+      this.config.output.styleDir,
+      this.config.output.externalCssFile,
+    );
+    const root = this.styleProcessor.createRoot();
+
+    for (const specifier of this.getGlobalStyleDependencies(buildConfig)) {
+      this.styleProcessor.appendImportRule(
+        root,
+        this.resolver.toExternalStyleSpecifier(specifier, outRoot),
+      );
+    }
+    if (!root.nodes?.length) return null;
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, this.styleProcessor.stringify(root));
+    return target;
   }
 
   private getGlobalStyleDependencies(buildConfig: CssOptions) {
@@ -202,6 +273,7 @@ export class ModuleCssBuilder {
     const sourceDirs = Array.from(
       new Set([...styleFilesByDir.keys(), ...moduleStyleImports.keys()]),
     );
+    const outputs: Array<string> = [];
 
     for (const sourceDir of sourceDirs) {
       if (sourceDir === '.') continue;
@@ -213,17 +285,19 @@ export class ModuleCssBuilder {
         this.config.output.styleDir,
       );
       const target = path.join(styleDir, this.config.output.indexCssFile);
+      const moduleStyleSpecifiers = this.getModuleStyleSpecifiers(
+        moduleStyleImports.get(sourceDir) ?? [],
+        styleDir,
+      );
+      const dirStyleSpecifiers = this.getDirStyleSpecifiers(
+        dirStyleFiles,
+        importedStyleFiles,
+        styleDir,
+        outRoot,
+      );
       const sourceStyleSpecifiers = [
-        ...this.getModuleStyleSpecifiers(
-          moduleStyleImports.get(sourceDir) ?? [],
-          styleDir,
-        ),
-        ...this.getDirStyleSpecifiers(
-          dirStyleFiles,
-          importedStyleFiles,
-          styleDir,
-          outRoot,
-        ),
+        ...moduleStyleSpecifiers,
+        ...dirStyleSpecifiers,
       ];
       const root = this.styleProcessor.createRoot();
       const seen = new Set<string>();
@@ -243,7 +317,9 @@ export class ModuleCssBuilder {
       }
       fs.mkdirSync(styleDir, { recursive: true });
       fs.writeFileSync(target, this.styleProcessor.stringify(root));
+      outputs.push(target);
     }
+    return outputs;
   }
 
   private groupStyleFilesByDir(styleFiles: Array<string>) {
@@ -285,5 +361,10 @@ export class ModuleCssBuilder {
           ),
         ),
       );
+  }
+
+  private toRelativeImportSpecifier(fromDir: string, file: string) {
+    const relative = toPosixPath(path.relative(fromDir, file));
+    return relative.startsWith('.') ? relative : `./${relative}`;
   }
 }

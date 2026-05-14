@@ -6,7 +6,7 @@ export const config: CssOptions = {
   cssDependencies: {
     '@website-kernel/markdown': {
       global: '/style.css',
-      component: ['/pages/**/style.css', '/components/**/style.css'],
+      component: ['/pages/**.css', '/components/**.css'],
     },
   },
 };

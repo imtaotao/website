@@ -47,7 +47,7 @@ describe('ModuleCssBuilder', () => {
           cssDependencies: {
             '@scope/ui': {
               global: '/style.css',
-              component: ['/pages/**/style.css', '/components/**/style.css'],
+              component: ['/pages/**.css', '/components/**.css'],
             },
           },
         };
@@ -61,7 +61,7 @@ describe('ModuleCssBuilder', () => {
       `,
     );
     writeFile('node_modules/@scope/ui/tokens.css', '.token { color: green; }');
-    writeFile('node_modules/@scope/ui/components/Button/style.css', '');
+    writeFile('node_modules/@scope/ui/components/Button.css', '');
     writeFile(
       'source/components/Card/index.tsx',
       `
@@ -100,20 +100,29 @@ describe('ModuleCssBuilder', () => {
     expect(readFile('output/es/components/Card/index.css')).toContain('.card');
     expect(readFile('output/lib/components/Card/index.css')).toContain('.card');
     expect(readFile('output/es/components/Card/style/index.css')).toBe(
-      '@import "@scope/ui/components/Button/style.css";\n' +
+      '@import "@scope/ui/components/Button.css";\n' +
         '@import "../../Badge/style/index.css";\n' +
         '@import "../index.css";\n',
     );
     expect(readFile('output/lib/components/Card/style/index.css')).toBe(
-      '@import "@scope/ui/components/Button/style.css";\n' +
+      '@import "@scope/ui/components/Button.css";\n' +
         '@import "../../Badge/style/index.css";\n' +
         '@import "../index.css";\n',
     );
+    expect(readFile('output/es/style/external.css')).toBe(
+      '@import "@scope/ui/external.css";\n',
+    );
     expect(readFile('output/es/style/index.css')).toContain(
-      '@import "@scope/ui/style.css";',
+      '@import "./external.css";',
+    );
+    expect(readFile('output/es/style/index.css')).toContain(
+      '@import "./module.css";',
+    );
+    expect(readFile('output/es/style/module.css')).toContain(
+      '.card { color: red; }',
     );
     expect(readFile('output/lib/style/index.css')).toContain(
-      '@import "@scope/ui/style.css";',
+      '@import "./external.css";',
     );
     expect(
       fs.existsSync(
@@ -138,16 +147,21 @@ describe('ModuleCssBuilder', () => {
       `,
     );
     writeFile('node_modules/@scope/ui/es/style/index.css', '.esm {}');
+    writeFile('node_modules/@scope/ui/lib/style/index.css', '.cjs {}');
     writeFile('source/index.css', '.local {}');
 
     await createBuilder().build();
 
-    expect(readFile('output/es/style/index.css')).toContain(
-      '@import "@scope/ui/es/style/index.css";',
+    expect(readFile('output/es/style/external.css')).toBe(
+      '@import "@scope/ui/es/style/external.css";\n',
     );
-    expect(readFile('output/lib/style/index.css')).toContain(
-      '@import "@scope/ui/lib/style/index.css";',
+    expect(readFile('output/lib/style/external.css')).toBe(
+      '@import "@scope/ui/lib/style/external.css";\n',
     );
+    expect(readFile('output/es/style/index.css')).toBe(
+      '@import "./external.css";\n@import "./module.css";\n',
+    );
+    expect(readFile('output/es/style/module.css')).toBe('.local {}\n');
   });
 
   test('builds same-package module CSS entries without cssDependencies', async () => {

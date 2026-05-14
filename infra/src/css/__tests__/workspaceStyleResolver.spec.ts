@@ -61,7 +61,7 @@ describe('WorkspaceStyleResolver', () => {
       JSON.stringify({
         name: '@scope/ui',
         exports: {
-          './*/style.css': {
+          './*.css': {
             import: './dist/es/*/style/index.css',
             require: './dist/lib/*/style/index.css',
             default: './dist/es/*/style/index.css',
@@ -72,9 +72,7 @@ describe('WorkspaceStyleResolver', () => {
 
     expect(
       fs.realpathSync(
-        resolver.resolveStyleDependency(
-          '@scope/ui/components/Button/style.css',
-        ),
+        resolver.resolveStyleDependency('@scope/ui/components/Button.css'),
       ),
     ).toBe(fs.realpathSync(styleFile));
   });
@@ -105,5 +103,22 @@ describe('WorkspaceStyleResolver', () => {
     expect(
       resolver.toOutputStyleSpecifier('@scope/ui/style.css', outRoot),
     ).toBe('@scope/ui/style.css');
+  });
+
+  test('rewrites package style entry specifiers to external style entries', () => {
+    const outRoot = path.join(tempRoot, 'dist/lib');
+
+    expect(
+      resolver.toExternalStyleSpecifier('@scope/ui/style.css', outRoot),
+    ).toBe('@scope/ui/external.css');
+    expect(
+      resolver.toExternalStyleSpecifier(
+        '@scope/ui/es/style/index.css',
+        outRoot,
+      ),
+    ).toBe('@scope/ui/lib/style/external.css');
+    expect(
+      resolver.toExternalStyleSpecifier('katex/dist/katex.min.css', outRoot),
+    ).toBe('katex/dist/katex.min.css');
   });
 });

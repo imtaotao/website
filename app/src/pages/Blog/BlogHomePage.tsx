@@ -1,4 +1,6 @@
-import { BlogHomePage as KernelBlogHomePage } from '@website-kernel/blog';
+import { BlogHomePage as KernelBlogHomePage } from '@website-kernel/blog/pages/BlogHomePage';
+import '@website-kernel/blog/pages/BlogHomePage.css';
+import '@website-kernel/blog/external.css';
 
 import { getBlogArticles, getBlogTagSummaries } from '#app/lib/blog';
 import { usePageMeta } from '#app/lib/pageMeta';

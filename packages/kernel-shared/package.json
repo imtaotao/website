@@ -22,11 +22,6 @@
         "default": "./dist/lib/index.js"
       }
     },
-    "./*/style.css": {
-      "import": "./dist/es/*/style/index.css",
-      "require": "./dist/lib/*/style/index.css",
-      "default": "./dist/es/*/style/index.css"
-    },
     "./*": {
       "import": {
         "types": "./dist/es/*/index.d.ts",
@@ -37,7 +32,21 @@
         "default": "./dist/lib/*/index.js"
       }
     },
-    "./style.css": "./dist/index.css"
+    "./*.css": {
+      "import": "./dist/es/*/style/index.css",
+      "require": "./dist/lib/*/style/index.css",
+      "default": "./dist/es/*/style/index.css"
+    },
+    "./style.css": {
+      "import": "./dist/es/style/index.css",
+      "require": "./dist/lib/style/index.css",
+      "default": "./dist/es/style/index.css"
+    },
+    "./external.css": {
+      "import": "./dist/es/style/external.css",
+      "require": "./dist/lib/style/external.css",
+      "default": "./dist/es/style/external.css"
+    }
   },
   "main": "./dist/lib/index.js",
   "module": "./dist/es/index.js",

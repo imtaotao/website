@@ -7,6 +7,7 @@ import type {
 } from '#infra/css/types';
 
 const NODE_MODULES_DIR = 'node_modules';
+const PACKAGE_STYLE_FILE = 'style.css';
 
 export class WorkspaceStyleResolver {
   private readonly require: ReturnType<typeof createRequire>;
@@ -52,6 +53,37 @@ export class WorkspaceStyleResolver {
       return [packageName, currentOutputFormat, outputFormat.path].join(
         POSIX_SEPARATOR,
       );
+    }
+
+    return specifier;
+  }
+
+  toExternalStyleSpecifier(specifier: string, outRoot: string) {
+    const parsed = this.parsePackageStyleSpecifier(specifier);
+    if (!parsed) return specifier;
+    const { packageName, stylePath } = parsed;
+    const currentOutputFormat = path.basename(outRoot);
+    const outputFormat = this.getStylePathOutputFormat(stylePath);
+
+    if (stylePath === PACKAGE_STYLE_FILE) {
+      return [packageName, this.config.output.externalCssFile].join(
+        POSIX_SEPARATOR,
+      );
+    }
+
+    if (
+      outputFormat &&
+      outputFormat.path ===
+        [this.config.output.styleDir, this.config.output.indexCssFile].join(
+          POSIX_SEPARATOR,
+        )
+    ) {
+      return [
+        packageName,
+        currentOutputFormat,
+        this.config.output.styleDir,
+        this.config.output.externalCssFile,
+      ].join(POSIX_SEPARATOR);
     }
 
     return specifier;

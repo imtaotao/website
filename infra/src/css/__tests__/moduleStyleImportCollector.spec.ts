@@ -9,7 +9,7 @@ import type { WorkspaceStyleResolver } from '#infra/css/workspaceStyleResolver';
 const cssOptions: CssOptions = {
   cssDependencies: {
     '@scope/ui': {
-      component: ['/pages/**/style.css', '/components/**/style.css'],
+      component: ['/pages/**.css', '/components/**.css'],
     },
   },
 };
@@ -57,14 +57,14 @@ describe('ModuleStyleImportCollector', () => {
         } from '@scope/ui';
       `,
     );
-    writeStyleDependency('@scope/ui/components/Button/style.css');
-    writeStyleDependency('@scope/ui/components/Dialog/style.css');
+    writeStyleDependency('@scope/ui/components/Button.css');
+    writeStyleDependency('@scope/ui/components/Dialog.css');
 
     const entries = collector.collect([file], cssOptions);
 
     expect(entries.get('pages/Article')).toEqual([
-      '@scope/ui/components/Button/style.css',
-      '@scope/ui/components/Dialog/style.css',
+      '@scope/ui/components/Button.css',
+      '@scope/ui/components/Dialog.css',
     ]);
   });
 
@@ -75,18 +75,18 @@ describe('ModuleStyleImportCollector', () => {
         import { Button } from '@scope/ui';
       `,
     );
-    writeStyleDependency('@scope/ui/components/Button/style.css');
+    writeStyleDependency('@scope/ui/components/Button.css');
 
     const entries = collector.collect([file], {
       cssDependencies: {
         '@scope/ui': {
-          component: '/components/**/style.css',
+          component: '/components/**.css',
         },
       },
     });
 
     expect(entries.get('pages/Article')).toEqual([
-      '@scope/ui/components/Button/style.css',
+      '@scope/ui/components/Button.css',
     ]);
   });
 
@@ -99,12 +99,12 @@ describe('ModuleStyleImportCollector', () => {
         } from '@scope/ui';
       `,
     );
-    writeStyleDependency('@scope/ui/components/Button/style.css');
+    writeStyleDependency('@scope/ui/components/Button.css');
 
     const entries = collector.collect([file], cssOptions);
 
     expect(entries.get('pages/Article')).toEqual([
-      '@scope/ui/components/Button/style.css',
+      '@scope/ui/components/Button.css',
     ]);
   });
 
@@ -115,12 +115,12 @@ describe('ModuleStyleImportCollector', () => {
         import { Button as PrimaryButton } from '@scope/ui/components/Button';
       `,
     );
-    writeStyleDependency('@scope/ui/components/Button/style.css');
+    writeStyleDependency('@scope/ui/components/Button.css');
 
     const entries = collector.collect([file], cssOptions);
 
     expect(entries.get('pages/Article')).toEqual([
-      '@scope/ui/components/Button/style.css',
+      '@scope/ui/components/Button.css',
     ]);
   });
 
@@ -131,12 +131,12 @@ describe('ModuleStyleImportCollector', () => {
         import { DashboardPage } from '@scope/ui';
       `,
     );
-    writeStyleDependency('@scope/ui/pages/DashboardPage/style.css');
+    writeStyleDependency('@scope/ui/pages/DashboardPage.css');
 
     const entries = collector.collect([file], cssOptions);
 
     expect(entries.get('routes/App')).toEqual([
-      '@scope/ui/pages/DashboardPage/style.css',
+      '@scope/ui/pages/DashboardPage.css',
     ]);
   });
 
@@ -147,12 +147,12 @@ describe('ModuleStyleImportCollector', () => {
         import { DashboardPage } from '@scope/ui/pages/DashboardPage';
       `,
     );
-    writeStyleDependency('@scope/ui/pages/DashboardPage/style.css');
+    writeStyleDependency('@scope/ui/pages/DashboardPage.css');
 
     const entries = collector.collect([file], cssOptions);
 
     expect(entries.get('routes/App')).toEqual([
-      '@scope/ui/pages/DashboardPage/style.css',
+      '@scope/ui/pages/DashboardPage.css',
     ]);
   });
 
@@ -163,12 +163,12 @@ describe('ModuleStyleImportCollector', () => {
         import * as DashboardPage from '@scope/ui/pages/DashboardPage';
       `,
     );
-    writeStyleDependency('@scope/ui/pages/DashboardPage/style.css');
+    writeStyleDependency('@scope/ui/pages/DashboardPage.css');
 
     const entries = collector.collect([file], cssOptions);
 
     expect(entries.get('routes/App')).toEqual([
-      '@scope/ui/pages/DashboardPage/style.css',
+      '@scope/ui/pages/DashboardPage.css',
     ]);
   });
 
@@ -179,12 +179,12 @@ describe('ModuleStyleImportCollector', () => {
         import * as Button from '@scope/ui/components/Button';
       `,
     );
-    writeStyleDependency('@scope/ui/components/Button/style.css');
+    writeStyleDependency('@scope/ui/components/Button.css');
 
     const entries = collector.collect([file], cssOptions);
 
     expect(entries.get('pages/Article')).toEqual([
-      '@scope/ui/components/Button/style.css',
+      '@scope/ui/components/Button.css',
     ]);
   });
 
@@ -309,7 +309,7 @@ describe('ModuleStyleImportCollector', () => {
         import '@scope/ui';
       `,
     );
-    writeStyleDependency('@scope/ui/components/Button/style.css');
+    writeStyleDependency('@scope/ui/components/Button.css');
 
     const entries = collector.collect([file], cssOptions);
 
@@ -329,8 +329,8 @@ describe('ModuleStyleImportCollector', () => {
         import { Dialog } from '@scope/ui';
       `,
     );
-    writeStyleDependency('@scope/ui/components/Button/style.css');
-    writeStyleDependency('@scope/ui/components/Dialog/style.css');
+    writeStyleDependency('@scope/ui/components/Button.css');
+    writeStyleDependency('@scope/ui/components/Dialog.css');
 
     const entries = collector.collect(
       [sourceFile, declarationFile],

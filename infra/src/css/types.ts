@@ -41,6 +41,10 @@ export interface ModuleCssBuildOutputConfig {
   styleDir: string;
   // CSS 入口文件名，例如 style/index.css 和 dist/index.css 里的 index.css。
   indexCssFile: string;
+  // 外部 CSS 入口文件名，例如 style/external.css。
+  externalCssFile: string;
+  // 当前包 CSS 入口文件名，例如 style/module.css。
+  moduleCssFile: string;
 }
 
 export interface ModuleCssBuildConfig {

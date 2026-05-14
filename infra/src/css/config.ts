@@ -9,6 +9,8 @@ export const moduleCssBuildConfig: ModuleCssBuildConfig = {
   output: {
     styleDir: 'style',
     indexCssFile: 'index.css',
+    moduleCssFile: 'module.css',
+    externalCssFile: 'external.css',
     outputFormats: ['es', 'lib'],
   },
   cssConfigFile: 'css.config.ts',

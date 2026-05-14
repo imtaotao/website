@@ -29,16 +29,14 @@
 - `pnpm dev:packages`
 - `pnpm build:packages`
 - `pnpm codex:blog-check`
-- `pnpm codex:blog-build-output`
 - `pnpm format`
 - `pnpm format:md`
 
 ## Codex 辅助脚本
 
-辅助脚本优先用 `pnpm` 命令调用，不要直接复制脚本逻辑到临时命令里。内容和校验类脚本放在 `scripts/`，构建基础设施放在 `infra/`。
+辅助脚本优先用 `pnpm` 命令调用，不要直接复制脚本逻辑到临时命令里。构建和仓库辅助能力统一放在 `infra/`。
 
 - `pnpm codex:blog-check`：检查根目录 `blog/` 下文章的 frontmatter、slug 唯一性和本地图片资源引用。
-- `pnpm codex:blog-build-output`：检查 `@website-kernel/blog` 当前 `dist` 产物结构是否符合文档契约。
 
 ## 常见修改入口
 

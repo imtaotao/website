@@ -1,8 +1,10 @@
-import { BlogArticlePage as KernelBlogArticlePage } from '@website-kernel/blog';
 import { useParams } from 'react-router';
+import { BlogArticlePage as KernelBlogArticlePage } from '@website-kernel/blog/pages/BlogArticlePage';
+import '@website-kernel/blog/pages/BlogArticlePage.css';
+import '@website-kernel/blog/external.css';
 
-import { getBlogArticleBySlug, resolveBlogAssetUrl } from '#app/lib/blog';
 import { usePageMeta } from '#app/lib/pageMeta';
+import { getBlogArticleBySlug, resolveBlogAssetUrl } from '#app/lib/blog';
 
 const BLOG_BGM_URL = '/bgm.mp3';
 
