@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import { slash, uniq } from 'aidly';
 import {
   blogTagMap,
   normalizeBlogArticleFrontmatter,
@@ -101,7 +102,7 @@ const normalizeBlogTag = (tag: string): string => {
 };
 
 const normalizeBlogTags = (tags: Array<string>): Array<string> => {
-  return Array.from(new Set(tags.map(normalizeBlogTag)));
+  return uniq(tags.map(normalizeBlogTag));
 };
 
 const getBlogTagMeta = (tag: string) => {
@@ -109,8 +110,8 @@ const getBlogTagMeta = (tag: string) => {
 };
 
 const toArticleAssetKey = (articlePath: string, assetPath: string) => {
-  const normalizedArticlePath = articlePath.replace(/\\/g, '/');
-  const normalizedAssetPath = assetPath.replace(/\\/g, '/');
+  const normalizedArticlePath = slash(articlePath);
+  const normalizedAssetPath = slash(assetPath);
   const articleDir = normalizedArticlePath.slice(
     0,
     normalizedArticlePath.lastIndexOf('/'),
@@ -144,9 +145,11 @@ const buildBlogArticles = () => {
         module.frontmatter,
         sourcePath,
       );
-      const articleDir = sourcePath
-        .replace(/\\/g, '/')
-        .slice(0, sourcePath.replace(/\\/g, '/').lastIndexOf('/'));
+      const normalizedSourcePath = slash(sourcePath);
+      const articleDir = normalizedSourcePath.slice(
+        0,
+        normalizedSourcePath.lastIndexOf('/'),
+      );
       const coverUrl = resolveArticleCover(sourcePath, frontmatter.cover);
       const normalizedTags: Array<string> = normalizeBlogTags(frontmatter.tags);
 

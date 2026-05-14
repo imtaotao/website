@@ -64,6 +64,7 @@
   "dependencies": {
     "@mdx-js/react": "^3.1.1",
     "@radix-ui/react-icons": "catalog:",
+    "aidly": "catalog:",
     "highlight.js": "^11.11.1",
     "katex": "^0.16.45",
     "react-twitter-widgets": "catalog:"

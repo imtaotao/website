@@ -58,6 +58,9 @@
   "sideEffects": [
     "**/*.css"
   ],
+  "dependencies": {
+    "aidly": "catalog:"
+  },
   "peerDependencies": {
     "react": "catalog:",
     "tailwindcss": "catalog:"

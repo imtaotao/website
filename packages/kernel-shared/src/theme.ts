@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { isBrowser } from 'aidly';
 
 export type WebsiteTheme = 'light' | 'dark';
 
@@ -17,12 +18,12 @@ function getDefaultWebsiteTheme() {
 }
 
 function hasStoredWebsiteThemePreference() {
-  if (typeof window === 'undefined') return false;
+  if (!isBrowser) return false;
   return window.localStorage.getItem(WEBSITE_THEME_PREFERENCE_KEY) === 'true';
 }
 
 export function readStoredWebsiteTheme() {
-  if (typeof window === 'undefined') return getDefaultWebsiteTheme();
+  if (!isBrowser) return getDefaultWebsiteTheme();
   if (!hasStoredWebsiteThemePreference()) return getDefaultWebsiteTheme();
 
   const storedTheme = window.localStorage.getItem(WEBSITE_THEME_STORAGE_KEY);
@@ -30,7 +31,7 @@ export function readStoredWebsiteTheme() {
 }
 
 export function writeStoredWebsiteTheme(theme: WebsiteTheme) {
-  if (typeof window === 'undefined') return;
+  if (!isBrowser) return;
 
   window.localStorage.setItem(WEBSITE_THEME_STORAGE_KEY, theme);
   window.localStorage.setItem(WEBSITE_THEME_PREFERENCE_KEY, 'true');

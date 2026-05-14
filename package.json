@@ -23,6 +23,7 @@
     "@types/node": "^20.10.6",
     "@types/minimist": "^1.2.5",
     "tsx": "catalog:",
+    "aidly": "catalog:",
     "execa": "catalog:",
     "tsdown": "catalog:",
     "minimist": "catalog:",

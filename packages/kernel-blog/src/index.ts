@@ -1,3 +1,4 @@
+import { slash } from 'aidly';
 import { blogTagMap } from '#blog/tags';
 import { createBlogTagSummaries } from '#blog/tagHelpers';
 import {
@@ -96,7 +97,7 @@ const isVisibleArticle = (
 };
 
 const getArticleDirFromSourcePath = (sourcePath: string) => {
-  const normalized = sourcePath.replace(/\\/g, '/');
+  const normalized = slash(sourcePath);
   const lastSlash = normalized.lastIndexOf('/');
   if (lastSlash === -1) {
     return '.';
@@ -128,7 +129,7 @@ const createBlogContent = (options?: BlogContentOptions) => {
   const modules = resolveArticleSourceModules(options);
 
   const entries = Object.entries(modules).filter(([sourcePath]) =>
-    sourcePath.replace(/\\/g, '/').endsWith(`/${ARTICLE_ENTRY_FILENAME}`),
+    slash(sourcePath).endsWith(`/${ARTICLE_ENTRY_FILENAME}`),
   );
 
   const articleBySlug = new Map<string, BlogArticleDetail>();

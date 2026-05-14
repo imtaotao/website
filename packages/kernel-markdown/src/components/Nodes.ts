@@ -1,14 +1,15 @@
 import { isValidElement, type ReactNode } from 'react';
+import { isArray, isNil, isString } from 'aidly';
 
 type MediaElementType = {
   __markdownMediaElement?: boolean;
 };
 
 const toNodeArray = (children: ReactNode) => {
-  const list = Array.isArray(children) ? children : [children];
+  const list = isArray(children) ? children : [children];
   return list.filter((item) => {
-    if (item == null || typeof item === 'boolean') return false;
-    if (typeof item === 'string') return item.trim().length > 0;
+    if (isNil(item) || typeof item === 'boolean') return false;
+    if (isString(item)) return item.trim().length > 0;
     return true;
   });
 };

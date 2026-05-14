@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { isArray } from 'aidly';
 import { StyleProcessor } from '#infra/css/styleProcessor';
 import { ModuleStyleImportCollector } from '#infra/css/moduleStyleImportCollector';
 import type {
@@ -242,7 +243,7 @@ export class ModuleCssBuilder {
     for (const [packageName, dependency] of Object.entries(
       buildConfig.cssDependencies ?? {},
     )) {
-      const globalDependencies = Array.isArray(dependency.global)
+      const globalDependencies = isArray(dependency.global)
         ? dependency.global
         : [dependency.global].filter((value): value is string =>
             Boolean(value),

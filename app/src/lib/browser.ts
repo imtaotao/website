@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { isBrowser } from 'aidly';
 
 export async function copyToClipboard(text: string): Promise<boolean> {
   if (!text) return false;
@@ -32,7 +33,7 @@ export function useIsMobile(breakpointPx: number = 768): boolean {
     [breakpointPx],
   );
   const [isMobile, setIsMobile] = useState(() => {
-    if (typeof window === 'undefined') return false;
+    if (!isBrowser) return false;
     return window.matchMedia(query).matches;
   });
 

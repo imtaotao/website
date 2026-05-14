@@ -64,6 +64,7 @@
   "dependencies": {
     "@website-kernel/markdown": "workspace:*",
     "@radix-ui/react-icons": "catalog:",
+    "aidly": "catalog:",
     "yaml": "catalog:"
   },
   "peerDependencies": {

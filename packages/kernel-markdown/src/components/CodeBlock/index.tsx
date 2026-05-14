@@ -1,5 +1,6 @@
 import { useEffect, useState, type ComponentProps } from 'react';
 import hljs from 'highlight.js';
+import { isArray } from 'aidly';
 
 import { copyToClipboard } from '#markdown/components/Clipboard';
 
@@ -76,9 +77,7 @@ export const MdxPre = (
     return () => window.clearTimeout(timer);
   }, [copyStatus]);
 
-  const child = Array.isArray(props.children)
-    ? props.children[0]
-    : props.children;
+  const child = isArray(props.children) ? props.children[0] : props.children;
 
   if (child && typeof child === 'object' && 'props' in (child as any)) {
     const codeProps = (child as any).props as {

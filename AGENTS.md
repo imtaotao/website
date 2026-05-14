@@ -19,6 +19,7 @@
 - 这个项目只有最外层的一个 `tsconfig.json`，app 和 packages 里面的包都不要有自己的 `tsconfig.json`。
 - 简历相关实现，以 `docs/codex/` 下文档为准。
 - icon 优先从 `@radix-ui/react-icons` 这个依赖里面获取，如果没有的话再自己创建 svg 图标，然后 icon 不要独立为一行。
+- 常见 runtime 工具函数优先使用 `aidly`，例如 `isNil`、`isArray`、`isString`、`isPlainObject`、`isBrowser`、`uniq`、`slash`、`jsonParse`、`jsonStringify` 等；但不要为了使用工具库牺牲语义，比如持久化时间戳仍优先使用 `Date.now()`。
 
 ## 常用命令
 

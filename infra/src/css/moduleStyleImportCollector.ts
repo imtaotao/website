@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import ts from 'typescript';
+import { isArray } from 'aidly';
 import type { CssOptions } from '#infra/css/types';
 import type { WorkspaceStyleResolver } from '#infra/css/workspaceStyleResolver';
 import {
@@ -219,7 +220,7 @@ export class ModuleStyleImportCollector {
     for (const [packageName, dependency] of Object.entries(
       cssOptions.cssDependencies ?? {},
     )) {
-      const dependencyPaths = Array.isArray(dependency.component)
+      const dependencyPaths = isArray(dependency.component)
         ? dependency.component
         : [dependency.component].filter((value): value is string =>
             Boolean(value),

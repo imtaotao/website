@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
+import { isPlainObject } from 'aidly';
 import { type ResumeOpenSourceProject } from '#resume/parser';
 
 const pickPrimaryLink = (p: ResumeOpenSourceProject) => {
@@ -48,13 +49,12 @@ const loadStarCache = () => {
     const raw = window.localStorage.getItem('resume:github-stars:v1');
     if (!raw) return { ts: 0, map: {} as Record<string, number> };
     const parsed = JSON.parse(raw) as unknown;
-    if (!parsed || typeof parsed !== 'object') return { ts: 0, map: {} };
+    if (!isPlainObject(parsed)) return { ts: 0, map: {} };
     const anyParsed = parsed as { ts?: unknown; map?: unknown };
     const ts = typeof anyParsed.ts === 'number' ? anyParsed.ts : 0;
-    const map =
-      anyParsed.map && typeof anyParsed.map === 'object'
-        ? (anyParsed.map as Record<string, number>)
-        : {};
+    const map = isPlainObject(anyParsed.map)
+      ? (anyParsed.map as Record<string, number>)
+      : {};
     return { ts, map };
   } catch {
     return { ts: 0, map: {} as Record<string, number> };

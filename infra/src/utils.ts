@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { slash } from 'aidly';
 
 export const POSIX_SEPARATOR = '/';
 export const IMPORT_LIST_SEPARATOR = ',';
@@ -44,7 +45,7 @@ export function fileWalker(dir: string): Array<string> {
 }
 
 export function toPosixPath(value: string) {
-  return value.split(path.sep).join(POSIX_SEPARATOR);
+  return slash(value);
 }
 
 export function removeExtension(file: string) {

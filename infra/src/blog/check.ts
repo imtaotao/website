@@ -1,5 +1,6 @@
 import { dirname, join, normalize, relative } from 'node:path';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { isNil } from 'aidly';
 
 type BlogIssue = {
   file: string;
@@ -122,7 +123,7 @@ const checkLocalAsset = (file: string, rawAssetPath: string) => {
 };
 
 const compactIssues = (issues: Array<BlogIssue | null>) => {
-  return issues.filter((issue): issue is BlogIssue => Boolean(issue));
+  return issues.filter((issue): issue is BlogIssue => !isNil(issue));
 };
 
 const checkArticle = (

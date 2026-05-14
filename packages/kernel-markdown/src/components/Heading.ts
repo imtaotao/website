@@ -1,9 +1,10 @@
+import { isArray, isNil } from 'aidly';
 import type { Heading } from '#markdown/components/Types';
 
 export function flattenText(node: unknown): string {
-  if (node == null) return '';
+  if (isNil(node)) return '';
   if (typeof node === 'string' || typeof node === 'number') return String(node);
-  if (Array.isArray(node)) return node.map(flattenText).join('');
+  if (isArray(node)) return node.map(flattenText).join('');
   if (typeof node === 'object' && 'props' in (node as any)) {
     return flattenText((node as any).props?.children);
   }

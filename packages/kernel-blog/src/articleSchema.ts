@@ -1,14 +1,15 @@
 import { parse } from 'yaml';
+import { isArray, isNil, isPlainObject, isString, uniq } from 'aidly';
 import type { BlogArticleFrontmatter } from '#blog/articleTypes';
 
 const FRONTMATTER_BOUNDARY = '---';
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  return isPlainObject(value);
 };
 
 const asString = (value: unknown) => {
-  return typeof value === 'string' ? value.trim() : '';
+  return isString(value) ? value.trim() : '';
 };
 
 const assertRequiredText = (
@@ -24,14 +25,11 @@ const assertRequiredText = (
 };
 
 const normalizeTags = (value: unknown, sourcePath: string) => {
-  if (!Array.isArray(value)) {
+  if (!isArray(value)) {
     throw new Error(`Field "tags" must be an array in ${sourcePath}.`);
   }
 
-  const tags = value
-    .map((item) => asString(item))
-    .filter(Boolean)
-    .filter((item, index, items) => items.indexOf(item) === index);
+  const tags = uniq(value.map((item) => asString(item)).filter(Boolean));
 
   if (!tags.length) {
     throw new Error(
@@ -43,7 +41,7 @@ const normalizeTags = (value: unknown, sourcePath: string) => {
 };
 
 const normalizeCover = (value: unknown, sourcePath: string) => {
-  if (value == null) return undefined;
+  if (isNil(value)) return undefined;
   const cover = asString(value);
   if (!cover) {
     throw new Error(
@@ -54,7 +52,7 @@ const normalizeCover = (value: unknown, sourcePath: string) => {
 };
 
 const normalizeCoverPosition = (value: unknown, sourcePath: string) => {
-  if (value == null) return undefined;
+  if (isNil(value)) return undefined;
   const coverPosition = asString(value);
   if (!coverPosition) {
     throw new Error(
@@ -65,7 +63,7 @@ const normalizeCoverPosition = (value: unknown, sourcePath: string) => {
 };
 
 const normalizeExternalUrl = (value: unknown, sourcePath: string) => {
-  if (value == null) return undefined;
+  if (isNil(value)) return undefined;
   const externalUrl = asString(value);
   if (!externalUrl) {
     throw new Error(
@@ -92,7 +90,7 @@ const normalizeBoolean = (
   fieldName: 'hidden',
   sourcePath: string,
 ) => {
-  if (value == null) return undefined;
+  if (isNil(value)) return undefined;
   if (typeof value !== 'boolean') {
     throw new Error(`Field "${fieldName}" must be a boolean in ${sourcePath}.`);
   }
@@ -100,9 +98,9 @@ const normalizeBoolean = (
 };
 
 const normalizeBgm = (value: unknown, sourcePath: string) => {
-  if (value == null) return undefined;
+  if (isNil(value)) return undefined;
   if (typeof value === 'boolean') return value;
-  if (typeof value === 'string') {
+  if (isString(value)) {
     const bgm = value.trim();
     if (!bgm) {
       throw new Error(
@@ -130,7 +128,7 @@ const assertDateString = (
 };
 
 const normalizeSummary = (value: unknown, sourcePath: string) => {
-  if (value == null) return undefined;
+  if (isNil(value)) return undefined;
   const summary = asString(value);
   if (!summary) {
     throw new Error(

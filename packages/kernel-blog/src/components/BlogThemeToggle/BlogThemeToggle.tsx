@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
+import { isBrowser } from 'aidly';
 
 export type BlogTheme = 'light' | 'dark';
 
@@ -17,12 +18,12 @@ const getDefaultBlogTheme = () => {
 };
 
 const hasStoredBlogThemePreference = () => {
-  if (typeof window === 'undefined') return false;
+  if (!isBrowser) return false;
   return window.localStorage.getItem(BLOG_THEME_PREFERENCE_KEY) === 'true';
 };
 
 const readStoredBlogTheme = () => {
-  if (typeof window === 'undefined') return getDefaultBlogTheme();
+  if (!isBrowser) return getDefaultBlogTheme();
   if (!hasStoredBlogThemePreference()) return getDefaultBlogTheme();
 
   const storedTheme = window.localStorage.getItem(BLOG_THEME_STORAGE_KEY);

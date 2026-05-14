@@ -5,6 +5,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from 'react';
+import { isArray, isNil, isString } from 'aidly';
 
 import type { StepProps, StepsProps } from '#markdown/components/Types';
 
@@ -39,10 +40,10 @@ export function MdxSteps(props: StepsProps) {
 
 export function MdxStep(props: StepProps) {
   const { title, markerColor, markerTextColor, children, className } = props;
-  const lines = Array.isArray(children) ? children : [children];
+  const lines = isArray(children) ? children : [children];
   const content = lines.filter(
     (line): line is Exclude<ReactNode, boolean | null | undefined> =>
-      line !== undefined && line !== null && line !== false,
+      !isNil(line) && line !== false,
   );
   const style = createMarkerStyle(markerColor, markerTextColor);
 
@@ -95,7 +96,7 @@ type AutoStepGroup = {
 
 function createStepChildren(children: ReactNode): ReactNode {
   const nodes = Children.toArray(children).filter((node) => {
-    if (typeof node !== 'string') return true;
+    if (!isString(node)) return true;
     return node.trim().length > 0;
   });
 

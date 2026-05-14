@@ -1,3 +1,5 @@
+import { isArray, isPlainObject, isString } from 'aidly';
+
 export type ResumeSchemaVersion = 1;
 
 export type ResumeLink = {
@@ -117,11 +119,11 @@ export type ResumeModelInput = {
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  return isPlainObject(value);
 };
 
 const asString = (value: unknown) => {
-  return typeof value === 'string' ? value : undefined;
+  return isString(value) ? value : undefined;
 };
 
 const asText = (value: unknown) => {
@@ -131,8 +133,8 @@ const asText = (value: unknown) => {
 };
 
 const asStringArray = (value: unknown) => {
-  if (!Array.isArray(value)) return [];
-  return value.filter((v): v is string => typeof v === 'string');
+  if (!isArray(value)) return [];
+  return value.filter(isString);
 };
 
 const clampInt = (
@@ -190,7 +192,7 @@ export function normalizeResumeModel(input: ResumeModelInput) {
   const root = isRecord(input) ? input : {};
 
   const basicsRaw = isRecord(root.basics) ? root.basics : {};
-  const linksRaw = Array.isArray(basicsRaw.links) ? basicsRaw.links : [];
+  const linksRaw = isArray(basicsRaw.links) ? basicsRaw.links : [];
   const links: Array<ResumeLink> = linksRaw
     .map((v) => {
       if (!isRecord(v)) return undefined;
@@ -214,12 +216,12 @@ export function normalizeResumeModel(input: ResumeModelInput) {
 
   const summary = asStringArray(root.summary);
 
-  const skillsRaw = Array.isArray(root.skills) ? root.skills : [];
+  const skillsRaw = isArray(root.skills) ? root.skills : [];
   const skills: Array<ResumeSkillGroup> = skillsRaw
     .map((group) => {
       if (!isRecord(group)) return undefined;
       const category = asString(group.category) ?? '';
-      const itemsRaw = Array.isArray(group.items) ? group.items : [];
+      const itemsRaw = isArray(group.items) ? group.items : [];
       const items: Array<ResumeSkillItem> = itemsRaw
         .map((item) => {
           if (!isRecord(item)) return undefined;
@@ -233,13 +235,13 @@ export function normalizeResumeModel(input: ResumeModelInput) {
     })
     .filter((v): v is ResumeSkillGroup => Boolean(v));
 
-  const openSourceProjectsIntro = Array.isArray(root.openSourceProjectsIntro)
+  const openSourceProjectsIntro = isArray(root.openSourceProjectsIntro)
     ? asStringArray(root.openSourceProjectsIntro)
     : asStringArray(root.projectsIntro);
 
-  const projectsRaw = Array.isArray(root.openSourceProjects)
+  const projectsRaw = isArray(root.openSourceProjects)
     ? root.openSourceProjects
-    : Array.isArray(root.projects)
+    : isArray(root.projects)
     ? root.projects
     : [];
 
@@ -256,7 +258,7 @@ export function normalizeResumeModel(input: ResumeModelInput) {
           ? Math.max(0, Math.round(p.stars))
           : undefined;
 
-      const rawLinks = Array.isArray(p.links) ? p.links : [];
+      const rawLinks = isArray(p.links) ? p.links : [];
       const links: Array<ResumeLink> = rawLinks
         .map((v) => {
           if (!isRecord(v)) return undefined;
@@ -276,9 +278,7 @@ export function normalizeResumeModel(input: ResumeModelInput) {
     })
     .filter((v): v is ResumeOpenSourceProject => Boolean(v));
 
-  const experiencesRaw = Array.isArray(root.experiences)
-    ? root.experiences
-    : [];
+  const experiencesRaw = isArray(root.experiences) ? root.experiences : [];
   const experiences: Array<ResumeExperience> = experiencesRaw
     .map((exp): ResumeExperience | undefined => {
       if (!isRecord(exp)) return undefined;
