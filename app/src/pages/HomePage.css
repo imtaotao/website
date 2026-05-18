@@ -32,7 +32,7 @@
   color: var(--home-text);
 }
 
-.home-shell[data-home-theme='dark'] {
+:root[data-wk-theme='dark'] .home-shell {
   --home-bg: #0f1117;
   --home-bg-image:
     radial-gradient(
@@ -133,7 +133,7 @@
     --home-bg-image: none;
   }
 
-  .home-shell[data-home-theme='dark'] {
+  :root[data-wk-theme='dark'] .home-shell {
     --home-bg: #000000;
     --home-bg-image: none;
   }

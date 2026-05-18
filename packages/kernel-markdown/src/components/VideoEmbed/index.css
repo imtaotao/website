@@ -193,12 +193,12 @@
   background: var(--markdown-panel-bg);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-prose-video-embed-play {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-prose-video-embed-play {
   background: rgba(17, 24, 39, 0.9);
   color: #ffffff;
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-prose-video-embed--inline {
   background: linear-gradient(
       135deg,

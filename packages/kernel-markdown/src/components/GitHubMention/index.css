@@ -194,34 +194,34 @@
   line-height: 1.2;
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-prose-github-mention {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-prose-github-mention {
   background: rgba(255, 255, 255, 0.08);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-prose-github-mention:hover {
   background: rgba(255, 255, 255, 0.12);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-prose-github-hover-card {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-prose-github-hover-card {
   --markdown-github-hover-card-fill: #1a1d21;
   --markdown-github-hover-card-border: rgba(255, 255, 255, 0.1);
   background: var(--markdown-github-hover-card-fill);
   box-shadow: 0 20px 46px rgba(0, 0, 0, 0.28);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-prose-github-hover-card::before {
   background: var(--markdown-github-hover-card-fill);
   box-shadow: -4px -4px 14px rgba(0, 0, 0, 0.12);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-prose-github-hover-card-meta-item {
   background: rgba(255, 255, 255, 0.08);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-prose-github-hover-card-error {
   color: #fda29b;
 }

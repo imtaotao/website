@@ -17,7 +17,7 @@
   background: var(--blog-bg);
 }
 
-.blog-shell[data-blog-theme='light'] .blog-article-page {
+:root:not([data-wk-theme='dark']) .blog-shell .blog-article-page {
   background: #ffffff;
 }
 
@@ -160,7 +160,7 @@
   line-height: 1.72;
 }
 
-.blog-shell[data-blog-theme='dark'] .blog-meta-item {
+:root[data-wk-theme='dark'] .blog-shell .blog-meta-item {
   color: #bbbbbb;
 }
 

@@ -1,6 +1,6 @@
 import { type ResumeModel } from '#resume/parser';
 import { type ResumeImageAssets } from '#resume/assets';
-import { type ResumeTheme, ResumeShell } from '#resume/components/ResumeShell';
+import { ResumeShell } from '#resume/components/ResumeShell';
 import { ResumeHeader } from '#resume/components/ResumeHeader';
 import { ResumeSection } from '#resume/components/ResumeSection';
 import { ResumeSummary } from '#resume/components/ResumeSummary';
@@ -11,12 +11,11 @@ import { ResumeOpenSourceProjects } from '#resume/components/ResumeOpenSourcePro
 export function ResumeMobile(props: {
   model: ResumeModel;
   assets?: ResumeImageAssets;
-  theme?: ResumeTheme;
 }) {
   const { model } = props;
 
   return (
-    <ResumeShell paged={false} theme={props.theme}>
+    <ResumeShell paged={false}>
       <ResumeHeader basics={model.basics} assets={props.assets} />
 
       <ResumeSection title="简介" decorated={false}>

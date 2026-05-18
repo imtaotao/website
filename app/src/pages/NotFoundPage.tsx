@@ -1,10 +1,7 @@
 import { Link } from 'react-router';
-import { useWebsiteTheme } from '@website-kernel/shared';
 import { usePageMeta } from '#app/lib/pageMeta';
 
 export default function NotFoundPage() {
-  const { theme } = useWebsiteTheme();
-
   usePageMeta({
     title: '页面不存在',
     description: '这个页面不存在，返回首页或继续浏览博客。',
@@ -12,7 +9,7 @@ export default function NotFoundPage() {
   });
 
   return (
-    <main className="app__notFound" data-app-theme={theme}>
+    <main className="app__notFound">
       <div className="app__notFoundInner">
         <p className="app__notFoundKicker">404</p>
         <h1 className="app__notFoundTitle">页面不存在</h1>

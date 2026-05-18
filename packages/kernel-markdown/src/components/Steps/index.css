@@ -124,12 +124,12 @@
   margin-bottom: 0;
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-step::before {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-step::before {
   background: var(--markdown-step-marker-bg, #f3f4f6);
   color: var(--markdown-step-marker-color, #111827);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-step::after {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-step::after {
   background: rgba(255, 255, 255, 0.16);
 }
 

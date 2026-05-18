@@ -1,0 +1,5 @@
+.resume-root {
+  --resume-toolbar-action: rgba(63, 63, 70, 0.68);
+  --resume-toolbar-action-hover: rgba(24, 24, 27, 0.92);
+  --resume-toolbar-hint: rgb(113 113 122);
+}

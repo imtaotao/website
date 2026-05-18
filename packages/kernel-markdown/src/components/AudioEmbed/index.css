@@ -380,7 +380,7 @@
   display: none;
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-prose-audio-embed {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-prose-audio-embed {
   border-color: rgba(134, 239, 172, 0.18);
   background: linear-gradient(
       135deg,
@@ -390,7 +390,7 @@
     var(--markdown-surface-tint);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-prose-audio-embed--inline {
   background: linear-gradient(
       135deg,
@@ -400,7 +400,7 @@
     rgba(134, 239, 172, 0.06);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-prose-audio-embed-player {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-prose-audio-embed-player {
   border-color: rgba(134, 239, 172, 0.22);
   background: linear-gradient(
       180deg,
@@ -410,27 +410,27 @@
     rgba(134, 239, 172, 0.08);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-prose-audio-embed-progress {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-prose-audio-embed-progress::before {
   background: linear-gradient(90deg, #34d399, #86efac);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-prose-audio-embed-status {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-prose-audio-embed-status {
   background: rgba(134, 239, 172, 0.12);
   color: #86efac;
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-prose-audio-embed-kind-icon {
   color: #86efac;
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-prose-audio-embed-wave
   span {
   background-color: #86efac;

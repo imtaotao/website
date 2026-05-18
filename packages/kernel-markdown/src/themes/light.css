@@ -1,0 +1,47 @@
+.markdown-shell {
+  --markdown-body-font: var(--site-font-body, system-ui, sans-serif);
+  --markdown-title-font: var(--site-font-title, system-ui, sans-serif);
+  --markdown-code-font: 'SFMono-Regular', 'SF Mono', Menlo, Consolas,
+    'Liberation Mono', monospace;
+  --markdown-surface: rgba(15, 23, 42, 0.06);
+  --markdown-surface-soft: rgba(15, 23, 42, 0.045);
+  --markdown-surface-tint: rgba(15, 23, 42, 0.03);
+  --markdown-text-strong: #111827;
+  --markdown-text: rgba(17, 24, 39, 0.88);
+  --markdown-text-soft: rgba(31, 41, 55, 0.72);
+  --markdown-text-faint: rgba(31, 41, 55, 0.52);
+  --markdown-line: rgba(15, 23, 42, 0.11);
+  --markdown-line-strong: rgba(15, 23, 42, 0.18);
+  --markdown-accent: #2563eb;
+  --markdown-accent-2: #059669;
+  --markdown-accent-2-soft: rgba(5, 150, 105, 0.1);
+  --markdown-focus-ring: rgba(37, 99, 235, 0.34);
+  --markdown-panel-bg: rgba(255, 255, 255, 0.98);
+  --markdown-cover-bg: #e5e7eb;
+  --markdown-image-bg: var(--markdown-code-block-bg);
+  --markdown-floating-bg: rgba(255, 255, 255, 0.96);
+  --markdown-lightbox-bg: rgba(248, 250, 252, 0.94);
+  --markdown-code-block-bg: #f6f6f7;
+  --markdown-code-block-border: rgba(60, 60, 67, 0.12);
+  --markdown-code-line-highlight: rgba(60, 60, 67, 0.1);
+  --markdown-code-meta-border: transparent;
+  --markdown-code-lang-bg: transparent;
+  --markdown-code-lang-color: rgba(60, 60, 67, 0.56);
+  --markdown-code-text: #24292e;
+  --markdown-code-muted: #6a737d;
+  --markdown-code-keyword: #d73a49;
+  --markdown-code-string: #032f62;
+  --markdown-code-number: #005cc5;
+  --markdown-code-title: #6f42c1;
+  --markdown-code-comment: #6a737d;
+  --markdown-code-attr: #005cc5;
+  --markdown-code-symbol: #e36209;
+  --markdown-code-deletion: #b31d28;
+  --markdown-code-addition: #22863a;
+  --markdown-heading-1: #111827;
+  --markdown-heading-2: #1f2937;
+  --markdown-heading-3: #374151;
+  --markdown-heading-4: #4b5563;
+  --markdown-heading-5: #6b7280;
+  --markdown-heading-6: #9ca3af;
+}

@@ -1,6 +1,6 @@
 import { useEffect, useState, type ComponentProps } from 'react';
-import hljs from 'highlight.js';
 import { isArray } from 'aidly';
+import hljs from 'highlight.js';
 
 import { copyToClipboard } from '#markdown/components/Clipboard';
 

@@ -550,13 +550,13 @@
   color: #b45309;
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-english-cards {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-english-cards {
   border-color: rgba(255, 255, 255, 0.18);
   background: #111318;
   box-shadow: 0 16px 38px rgba(0, 0, 0, 0.42);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-english-card {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-english-card {
   --markdown-english-card-accent: #9cb9dd;
   --markdown-english-card-bg: #171d26;
   --markdown-english-card-border: rgba(156, 185, 221, 0.12);
@@ -567,103 +567,103 @@
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-english-card-head,
-.markdown-shell[data-markdown-theme='dark'] .markdown-english-card-actions {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-english-card-head,
+:root[data-wk-theme='dark'] .markdown-shell .markdown-english-card-actions {
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-english-cards-mode,
-.markdown-shell[data-markdown-theme='dark'] .markdown-english-card-reveal,
-.markdown-shell[data-markdown-theme='dark'] .markdown-english-card-speak,
-.markdown-shell[data-markdown-theme='dark'] .markdown-english-card-collapse {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-english-cards-mode,
+:root[data-wk-theme='dark'] .markdown-shell .markdown-english-card-reveal,
+:root[data-wk-theme='dark'] .markdown-shell .markdown-english-card-speak,
+:root[data-wk-theme='dark'] .markdown-shell .markdown-english-card-collapse {
   border-color: rgba(255, 255, 255, 0.18);
   background: #242832;
   color: var(--markdown-text-strong);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-english-card-part {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-english-card-part {
   color: var(--markdown-english-card-accent);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-english-card-link {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-english-card-link {
   border-color: rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.045);
   color: var(--markdown-english-card-accent);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-english-card-link:hover {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-english-card-link:hover {
   border-color: rgba(156, 185, 221, 0.18);
   background: rgba(255, 255, 255, 0.07);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-english-card-detail-items
   span {
   border-color: rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.045);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-english-card-resource-card {
   border-color: rgba(255, 255, 255, 0.1);
   background: #1a1d21;
   box-shadow: 0 16px 38px rgba(0, 0, 0, 0.36);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-english-card-resource-card::after {
   border-color: rgba(255, 255, 255, 0.1);
   background: #1a1d21;
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-english-card-openapi {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-english-card-openapi {
   border-color: rgba(156, 185, 221, 0.12);
   background: rgba(96, 165, 250, 0.055);
   color: #c0d2e8;
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-english-card-openapi--error {
   border-color: rgba(248, 113, 113, 0.2);
   background: rgba(248, 113, 113, 0.08);
   color: #fca5a5;
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-english-card-section {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-english-card-section {
   border-color: var(--markdown-english-card-section-border);
   background: var(--markdown-english-card-section-bg);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-english-card-section--translation {
   background: var(--markdown-english-card-section-strong-bg);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-english-card-practice {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-english-card-practice {
   border-color: var(--markdown-english-card-section-border);
   background: var(--markdown-english-card-section-strong-bg);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-english-card-practice-input {
   border-color: rgba(255, 255, 255, 0.18);
   background: #101319;
   color: var(--markdown-text-strong);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-english-card-practice-check {
   border-color: var(--markdown-english-card-section-border);
   background: var(--markdown-english-card-section-bg);
   color: var(--markdown-english-card-accent);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-english-card-practice-result--correct {
   color: #86efac;
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-english-card-practice-result--incorrect {
   color: #fcd34d;
 }

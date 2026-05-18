@@ -1,0 +1,5 @@
+:root[data-wk-theme='dark'] .resume-root {
+  --resume-toolbar-action: rgba(244, 244, 245, 0.64);
+  --resume-toolbar-action-hover: rgba(255, 255, 255, 0.94);
+  --resume-toolbar-hint: rgba(228, 228, 231, 0.62);
+}

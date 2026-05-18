@@ -8,8 +8,6 @@ import {
   useState,
 } from 'react';
 
-export type ResumeTheme = 'light' | 'dark';
-
 type KeepTogetherRangePx = {
   topPx: number;
   bottomPx: number;
@@ -150,10 +148,8 @@ export const ResumeShell = forwardRef<
     children: ReactNode;
     topBar?: ReactNode;
     paged?: boolean;
-    theme?: ResumeTheme;
   }
 >(function ResumeShell(props, ref) {
-  const theme = props.theme ?? 'light';
   const paged = props.paged ?? true;
   const A4_RATIO = 297 / 210;
   const PAGE_GAP_PX = 28;
@@ -260,7 +256,7 @@ export const ResumeShell = forwardRef<
   };
 
   return (
-    <div className="resume-root text-zinc-900" data-resume-theme={theme}>
+    <div className="resume-root text-zinc-900">
       {props.topBar ? (
         <div
           data-export-hide="true"

@@ -66,26 +66,26 @@
   margin-top: 0.22rem;
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-fancy-list {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-fancy-list {
   border-color: rgba(96, 165, 250, 0.22);
   background: rgba(37, 99, 235, 0.12);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-fancy-list-block-title {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-fancy-list-block-title {
   color: #93c5fd;
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-fancy-list-item
   + .markdown-fancy-list-item::before {
   background: rgba(96, 165, 250, 0.2);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-fancy-list-item-title {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-fancy-list-item-title {
   color: #93c5fd;
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-fancy-list-item-line {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-fancy-list-item-line {
   color: rgba(219, 234, 254, 0.82);
 }
 

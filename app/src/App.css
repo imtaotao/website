@@ -164,8 +164,8 @@ body:has(.blog-shell--home) {
     );
 }
 
-body:has(.home-shell[data-home-theme='dark']),
-body:has(.blog-shell--home[data-blog-theme='dark']) {
+:root[data-wk-theme='dark'] body:has(.home-shell),
+:root[data-wk-theme='dark'] body:has(.blog-shell--home) {
   background-color: #0f1117;
   background-image:
     radial-gradient(
@@ -191,9 +191,7 @@ body:has(.blog-shell):not(:has(.blog-shell--home)) {
   background-image: none;
 }
 
-body:has(.blog-shell[data-blog-theme='dark']):not(
-    :has(.blog-shell--home[data-blog-theme='dark'])
-  ) {
+:root[data-wk-theme='dark'] body:has(.blog-shell):not(:has(.blog-shell--home)) {
   background-color: #000000;
   background-image: none;
 }
@@ -223,7 +221,7 @@ body:has(.resume-root) {
     );
 }
 
-body:has(.resume-root[data-resume-theme='dark']) {
+:root[data-wk-theme='dark'] body:has(.resume-root) {
   background-color: #0f1117;
   background-image:
     radial-gradient(
@@ -264,7 +262,7 @@ body:has(.app__notFound) {
     );
 }
 
-body:has(.app__notFound[data-app-theme='dark']) {
+:root[data-wk-theme='dark'] body:has(.app__notFound) {
   background-color: #0f1117;
   background-image:
     radial-gradient(
@@ -450,8 +448,8 @@ body:has(.app__notFound[data-app-theme='dark']) {
     background-image: none;
   }
 
-  body:has(.home-shell[data-home-theme='dark']),
-  body:has(.blog-shell--home[data-blog-theme='dark']) {
+  :root[data-wk-theme='dark'] body:has(.home-shell),
+  :root[data-wk-theme='dark'] body:has(.blog-shell--home) {
     background-color: #000000;
     background-image: none;
   }
@@ -461,13 +459,13 @@ body:has(.app__notFound[data-app-theme='dark']) {
     background-image: none;
   }
 
-  body:has(.app__notFound[data-app-theme='dark']) {
+  :root[data-wk-theme='dark'] body:has(.app__notFound) {
     background-color: #000000;
     background-image: none;
   }
 }
 
-.app__notFound[data-app-theme="dark"] {
+:root[data-wk-theme='dark'] .app__notFound {
   --not-found-bg: #0f1117;
   --not-found-bg-image:
     radial-gradient(
@@ -543,7 +541,7 @@ body:has(.app__notFound[data-app-theme='dark']) {
     --not-found-bg-image: none;
   }
 
-  .app__notFound[data-app-theme="dark"] {
+  :root[data-wk-theme='dark'] .app__notFound {
     --not-found-bg: #000000;
     --not-found-bg-image: none;
   }

@@ -44,13 +44,12 @@ export default function ResumePage() {
   });
 
   if (isMobile) {
-    return <ResumeMobile model={model} assets={resumeAssets} theme={theme} />;
+    return <ResumeMobile model={model} assets={resumeAssets} />;
   }
   return (
     <ResumeDesktop
       model={model}
       assets={resumeAssets}
-      theme={theme}
       topBarExtra={
         <button
           type="button"

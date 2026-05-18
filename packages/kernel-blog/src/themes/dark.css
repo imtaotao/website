@@ -1,0 +1,62 @@
+:root[data-wk-theme='dark'] .blog-shell {
+  --blog-bg: #000000;
+  --blog-bg-image: none;
+  --blog-surface: rgba(255, 255, 255, 0.06);
+  --blog-surface-soft: rgba(255, 255, 255, 0.045);
+  --blog-surface-tint: rgba(255, 255, 255, 0.03);
+  --blog-text-strong: #f3f4f6;
+  --blog-text: rgba(255, 255, 255, 0.86);
+  --blog-text-soft: rgba(255, 255, 255, 0.68);
+  --blog-text-faint: rgba(255, 255, 255, 0.52);
+  --blog-line: rgba(255, 255, 255, 0.11);
+  --blog-line-strong: rgba(255, 255, 255, 0.18);
+  --blog-year-stroke: rgba(255, 255, 255, 0.22);
+  --blog-year-opacity: 0.3;
+  --blog-accent: #7dd3fc;
+  --blog-accent-soft: rgba(125, 211, 252, 0.16);
+  --blog-color-gray: #9ca3af;
+  --blog-color-blue: #87bcdd;
+  --blog-color-green: #8bcea3;
+  --blog-color-cyan: #7bccd8;
+  --blog-color-orange: #e0ad79;
+  --blog-color-red: #de9ea1;
+  --blog-color-purple: #b7a9e0;
+  --blog-color-pink: #dda1bf;
+  --blog-accent-2: #86efac;
+  --blog-accent-2-soft: rgba(134, 239, 172, 0.12);
+  --blog-focus-ring: rgba(122, 162, 247, 0.5);
+  --blog-panel-bg: rgba(28, 31, 36, 0.98);
+  --blog-cover-bg: #111317;
+  --blog-cover-gradient-start: rgba(15, 17, 23, 0);
+  --blog-cover-gradient-mid: rgba(15, 17, 23, 0.68);
+  --blog-image-bg: #0d121b;
+  --blog-code-block-bg: #151d29;
+  --blog-code-block-border: rgba(255, 255, 255, 0.06);
+  --blog-code-line-highlight: rgba(0, 0, 0, 0.36);
+  --blog-code-meta-border: transparent;
+  --blog-code-lang-bg: transparent;
+  --blog-code-lang-color: rgba(235, 235, 245, 0.38);
+  --blog-code-text: #c9d1d9;
+  --blog-code-muted: #8b949e;
+  --blog-code-keyword: #ff7b72;
+  --blog-code-string: #a5d6ff;
+  --blog-code-number: #79c0ff;
+  --blog-code-title: #d2a8ff;
+  --blog-code-comment: #8b949e;
+  --blog-code-attr: #79c0ff;
+  --blog-code-symbol: #ffa657;
+  --blog-code-deletion: #ffdcd7;
+  --blog-code-addition: #aff5b4;
+  --blog-floating-bg: rgba(29, 32, 37, 0.96);
+  --blog-lightbox-bg: rgba(3, 7, 12, 0.92);
+  --blog-bgm-ripple-core: color-mix(in srgb, var(--blog-bg) 64%, #22c55e 36%);
+  --blog-bgm-ripple-mid: color-mix(in srgb, var(--blog-bg) 80%, #4ade80 20%);
+  --blog-bgm-ripple-ring: color-mix(in srgb, var(--blog-bg) 88%, #86efac 12%);
+}
+
+@media (max-width: 767px) {
+  :root[data-wk-theme='dark'] .blog-shell--home {
+    --blog-bg: #000000;
+    --blog-bg-image: none;
+  }
+}

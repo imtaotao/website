@@ -5,7 +5,7 @@
   background: rgba(15, 23, 42, 0.035);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-poem {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-poem {
   background: rgba(255, 255, 255, 0.04);
 }
 
@@ -58,7 +58,7 @@
   text-align: center;
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-poem-preface {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-poem-preface {
   border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 

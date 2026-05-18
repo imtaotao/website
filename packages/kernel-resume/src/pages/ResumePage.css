@@ -1,3 +1,6 @@
+@import "../themes/light.css";
+@import "../themes/dark.css";
+
 .resume-root {
   font-family: var(
     --site-font-body,
@@ -70,7 +73,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: rgba(63, 63, 70, 0.68);
+  color: var(--resume-toolbar-action);
   font-family: var(--site-font-body, Inter, system-ui, sans-serif);
   font-size: 0.9rem;
   font-weight: 500;
@@ -80,7 +83,7 @@
 }
 
 .resume-toolbar-action:hover {
-  color: rgba(24, 24, 27, 0.92);
+  color: var(--resume-toolbar-action-hover);
 }
 
 .resume-toolbar-action:disabled {
@@ -104,22 +107,14 @@
 
 .resume-toolbar-hint {
   width: 13rem;
-  color: rgb(113 113 122);
+  color: var(--resume-toolbar-hint);
   font-size: 11px;
   font-weight: 500;
 }
 
-.resume-root[data-resume-theme='dark'] .resume-toolbar-action {
-  color: rgba(244, 244, 245, 0.64);
-}
-
-.resume-root[data-resume-theme='dark'] .resume-toolbar-action:hover {
-  color: rgba(255, 255, 255, 0.94);
-}
-
-.resume-root[data-resume-theme='dark'] .resume-toolbar-hint,
-.resume-root[data-resume-theme='dark'] .resume-toolbar-progress .text-zinc-600 {
-  color: rgba(228, 228, 231, 0.62) !important;
+:root[data-wk-theme='dark'] .resume-root .resume-toolbar-hint,
+:root[data-wk-theme='dark'] .resume-root .resume-toolbar-progress .text-zinc-600 {
+  color: var(--resume-toolbar-hint) !important;
 }
 
 /* 移动端优先使用系统字体：避免加载体积很大的自定义字体资源 */

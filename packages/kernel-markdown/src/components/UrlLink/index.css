@@ -40,11 +40,11 @@
   white-space: nowrap;
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-prose-url-link {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-prose-url-link {
   background: rgba(255, 255, 255, 0.08);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-prose-url-link:hover {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-prose-url-link:hover {
   background: rgba(255, 255, 255, 0.12);
 }
 

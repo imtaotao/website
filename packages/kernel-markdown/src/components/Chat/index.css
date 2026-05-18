@@ -5,7 +5,7 @@
   background: rgba(15, 23, 42, 0.035);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-chat {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-chat {
   background: rgba(255, 255, 255, 0.04);
 }
 
@@ -130,7 +130,7 @@
   background: rgba(255, 255, 255, 0.78);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-chat-bubble {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-chat-bubble {
   background: rgba(24, 24, 27, 0.96);
 }
 
@@ -154,83 +154,83 @@
   border-right: 3px solid rgba(37, 99, 235, 0.28);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-chat-item--avatar-assistant
   .markdown-chat-bubble {
   background: rgba(5, 150, 105, 0.18);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-chat-item--avatar-assistant
   .markdown-chat-avatar {
   background: rgba(125, 211, 252, 0.18);
   color: #b9e6ff;
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-chat-item--left
   .markdown-chat-bubble {
   border-left-color: rgba(52, 211, 153, 0.24);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-chat-item--avatar-sparkles
   .markdown-chat-avatar {
   background: rgba(192, 132, 252, 0.18);
   color: #e9d5ff;
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-chat-item--avatar-cat
   .markdown-chat-avatar {
   background: rgba(251, 146, 60, 0.18);
   color: #fed7aa;
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-chat-item--avatar-idea
   .markdown-chat-avatar {
   background: rgba(250, 204, 21, 0.18);
   color: #fde68a;
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-chat-item--avatar-book
   .markdown-chat-avatar {
   background: rgba(56, 189, 248, 0.18);
   color: #bae6fd;
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-chat-item--avatar-moon
   .markdown-chat-avatar {
   background: rgba(129, 140, 248, 0.18);
   color: #c7d2fe;
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-chat-item--avatar-system
   .markdown-chat-bubble {
   background: rgba(38, 38, 42, 0.96);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-chat-item--avatar-system
   .markdown-chat-avatar,
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-chat-item--avatar-user
   .markdown-chat-avatar {
   background: rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.82);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-chat-item--avatar-user
   .markdown-chat-bubble {
   background: rgba(37, 99, 235, 0.18);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-chat-item--right
   .markdown-chat-bubble {
   border-right-color: rgba(96, 165, 250, 0.34);

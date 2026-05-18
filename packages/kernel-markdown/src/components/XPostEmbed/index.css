@@ -66,19 +66,19 @@
   animation: markdown-x-post-loading 1.2s ease-in-out infinite;
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-prose-x-post-embed-widget
   .twitter-tweet.twitter-tweet-rendered {
   border-radius: 13px !important;
   overflow: hidden !important;
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-prose-x-post-embed-loading-bar {
   background: rgba(255, 255, 255, 0.06);
 }
 
-.markdown-shell[data-markdown-theme='dark']
+:root[data-wk-theme='dark'] .markdown-shell
   .markdown-prose-x-post-embed-loading-bar::before {
   background: linear-gradient(
     90deg,

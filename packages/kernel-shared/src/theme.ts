@@ -9,6 +9,11 @@ const DEFAULT_WEBSITE_THEME: WebsiteTheme = 'light';
 
 const WEBSITE_THEME_CHANGE_EVENT = 'website-theme-change';
 
+const applyWebsiteThemeAttribute = (theme: WebsiteTheme) => {
+  if (!isBrowser) return;
+  document.documentElement.dataset.wkTheme = theme;
+};
+
 export function isWebsiteTheme(value: string | null): value is WebsiteTheme {
   return value === 'light' || value === 'dark';
 }
@@ -33,6 +38,7 @@ export function readStoredWebsiteTheme() {
 export function writeStoredWebsiteTheme(theme: WebsiteTheme) {
   if (!isBrowser) return;
 
+  applyWebsiteThemeAttribute(theme);
   window.localStorage.setItem(WEBSITE_THEME_STORAGE_KEY, theme);
   window.localStorage.setItem(WEBSITE_THEME_PREFERENCE_KEY, 'true');
   window.dispatchEvent(
@@ -43,13 +49,20 @@ export function writeStoredWebsiteTheme(theme: WebsiteTheme) {
 }
 
 export function useWebsiteTheme() {
-  const [theme, setThemeState] = useState<WebsiteTheme>(readStoredWebsiteTheme);
+  const [theme, setThemeState] = useState<WebsiteTheme>(() => {
+    const initialTheme = readStoredWebsiteTheme();
+    applyWebsiteThemeAttribute(initialTheme);
+    return initialTheme;
+  });
 
   useEffect(() => {
     const syncTheme = () => {
-      setThemeState(readStoredWebsiteTheme());
+      const nextTheme = readStoredWebsiteTheme();
+      applyWebsiteThemeAttribute(nextTheme);
+      setThemeState(nextTheme);
     };
 
+    syncTheme();
     window.addEventListener('storage', syncTheme);
     window.addEventListener(WEBSITE_THEME_CHANGE_EVENT, syncTheme);
 
@@ -60,6 +73,7 @@ export function useWebsiteTheme() {
   }, []);
 
   const setTheme = (nextTheme: WebsiteTheme) => {
+    applyWebsiteThemeAttribute(nextTheme);
     setThemeState(nextTheme);
     writeStoredWebsiteTheme(nextTheme);
   };

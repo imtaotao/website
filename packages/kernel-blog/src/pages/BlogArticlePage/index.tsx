@@ -24,7 +24,6 @@ import {
 } from '@website-kernel/markdown';
 
 import type { BlogArticleFrontmatter } from '#blog/articleTypes';
-import { useBlogTheme } from '#blog/components/BlogThemeToggle/BlogThemeToggle';
 import {
   BLOG_TAG_QUERY_KEY,
   createBlogTagNavigation,
@@ -88,7 +87,6 @@ function BlogBgmSpeakerIcon(props: SVGProps<SVGSVGElement>) {
 }
 
 export function BlogArticlePage(props: BlogArticlePageProps) {
-  const blogTheme = useBlogTheme();
   const { slug = '' } = useParams();
   const [searchParams] = useSearchParams();
   const article = props.getArticleBySlug(slug, {
@@ -445,11 +443,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
 
   if (!article) {
     return (
-      <main
-        className="blog-shell markdown-shell"
-        data-blog-theme={blogTheme.theme}
-        data-markdown-theme={blogTheme.theme}
-      >
+      <main className="blog-shell markdown-shell">
         <div className="blog-page blog-empty-state">
           <p>{COPY.articleMissing}</p>
           <Link to="/blog" className="blog-subtle-link">
@@ -461,12 +455,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   }
 
   return (
-    <main
-      ref={articleRef}
-      className="blog-shell markdown-shell"
-      data-blog-theme={blogTheme.theme}
-      data-markdown-theme={blogTheme.theme}
-    >
+    <main ref={articleRef} className="blog-shell markdown-shell">
       <article
         className={`blog-article-page${
           article.coverUrl ? ' blog-article-page--with-cover' : ''

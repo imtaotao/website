@@ -90,37 +90,37 @@
   --markdown-callout-shadow: rgba(239, 68, 68, 0.08);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-callout {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-callout {
   --markdown-callout-bg: rgba(96, 165, 250, 0.08);
   --markdown-callout-border: rgba(96, 165, 250, 0.22);
   --markdown-callout-shadow: transparent;
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-callout--note {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-callout--note {
   --markdown-callout-accent: #93c5fd;
   --markdown-callout-bg: rgba(96, 165, 250, 0.08);
   --markdown-callout-border: rgba(147, 197, 253, 0.22);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-callout--tip {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-callout--tip {
   --markdown-callout-accent: #86efac;
   --markdown-callout-bg: rgba(74, 222, 128, 0.08);
   --markdown-callout-border: rgba(134, 239, 172, 0.2);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-callout--warning {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-callout--warning {
   --markdown-callout-accent: #fbbf24;
   --markdown-callout-bg: rgba(251, 191, 36, 0.09);
   --markdown-callout-border: rgba(251, 191, 36, 0.24);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-callout--success {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-callout--success {
   --markdown-callout-accent: #86efac;
   --markdown-callout-bg: rgba(74, 222, 128, 0.08);
   --markdown-callout-border: rgba(134, 239, 172, 0.2);
 }
 
-.markdown-shell[data-markdown-theme='dark'] .markdown-callout--error {
+:root[data-wk-theme='dark'] .markdown-shell .markdown-callout--error {
   --markdown-callout-accent: #fca5a5;
   --markdown-callout-bg: rgba(248, 113, 113, 0.08);
   --markdown-callout-border: rgba(252, 165, 165, 0.22);

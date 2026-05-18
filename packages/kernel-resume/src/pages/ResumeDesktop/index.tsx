@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { type ResumeModel } from '#resume/parser';
 import { exportElementToPdf } from '#resume/exportPdf';
 import type { ResumeImageAssets } from '#resume/assets';
-import { type ResumeTheme, ResumeShell } from '#resume/components/ResumeShell';
+import { ResumeShell } from '#resume/components/ResumeShell';
 import { ResumeExportBar } from '#resume/components/ResumeExportBar';
 import { ResumeHeader } from '#resume/components/ResumeHeader';
 import { ResumeSection } from '#resume/components/ResumeSection';
@@ -14,7 +14,6 @@ import { ResumeOpenSourceProjects } from '#resume/components/ResumeOpenSourcePro
 export function ResumeDesktop(props: {
   model: ResumeModel;
   assets?: ResumeImageAssets;
-  theme?: ResumeTheme;
   topBarExtra?: ReactNode;
 }) {
   const { model } = props;
@@ -111,7 +110,6 @@ export function ResumeDesktop(props: {
 
       <ResumeShell
         ref={exportRef}
-        theme={props.theme}
         topBar={
           <div className="resume-toolbar">
             <ResumeExportBar

@@ -168,10 +168,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
   };
 
   return (
-    <main
-      className="blog-shell blog-shell--home"
-      data-blog-theme={blogTheme.theme}
-    >
+    <main className="blog-shell blog-shell--home">
       <header
         className="blog-page blog-home-header blog-enter"
         style={getEnterStyle(120)}
