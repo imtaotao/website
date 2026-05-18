@@ -25,11 +25,14 @@
     "tsx": "catalog:",
     "execa": "catalog:",
     "aidly": "catalog:",
-    "vitest": "catalog:",
     "postcss": "catalog:",
     "chokidar": "catalog:",
     "minimist": "catalog:",
     "typescript": "catalog:",
     "tailwindcss": "catalog:"
+  },
+  "devDependencies": {
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }

@@ -1,15 +1,30 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import type { HotUpdateOptions, ModuleNode, Plugin, ViteDevServer } from 'vite';
 import {
   ModuleCssGraph,
   type ModuleCssGraphOptions,
 } from '#infra/css/core/index';
+import { WebsiteKernelCssHmr } from '#infra/css/vite/hmr';
 
 const WORKSPACE_FILE = 'pnpm-workspace.yaml';
 const VIRTUAL_ID_PREFIX = 'virtual:website-kernel-css:';
 const RESOLVED_VIRTUAL_ID_PREFIX = '\0website-kernel-css:';
+const BROWSER_VIRTUAL_ID_PREFIX = 'website-kernel-css:';
 
 const stripQuery = (id: string) => id.split('?')[0];
+
+const toResolvedVirtualId = (id: string) => {
+  if (id.startsWith(RESOLVED_VIRTUAL_ID_PREFIX)) {
+    return id;
+  }
+  if (id.startsWith(BROWSER_VIRTUAL_ID_PREFIX)) {
+    return `${RESOLVED_VIRTUAL_ID_PREFIX}${id.slice(
+      BROWSER_VIRTUAL_ID_PREFIX.length,
+    )}`;
+  }
+  return null;
+};
 
 const findWorkspaceRoot = (startDir: string) => {
   let current = path.resolve(startDir);
@@ -29,6 +44,7 @@ const createModuleCssGraph = (
 ) => {
   const workspaceRoot =
     options.workspaceRoot ?? findWorkspaceRoot(viteRoot) ?? process.cwd();
+
   return new ModuleCssGraph({
     ...options,
     workspaceRoot,
@@ -36,22 +52,21 @@ const createModuleCssGraph = (
 };
 
 const invalidateVirtualModules = (
-  server: {
-    moduleGraph: {
-      invalidateModule: (module: unknown) => void;
-      getModuleById: (id: string) => unknown;
-    };
-  },
+  server: Pick<ViteDevServer, 'moduleGraph'>,
   graph: ModuleCssGraph,
 ) => {
+  const modules: Array<ModuleNode> = [];
   for (const packageName of graph.getKernelPackageNames()) {
     for (const entry of ['style.css', 'external.css', 'module.css']) {
       const module = server.moduleGraph.getModuleById(
         `${RESOLVED_VIRTUAL_ID_PREFIX}${packageName}/${entry}`,
       );
-      if (module) server.moduleGraph.invalidateModule(module);
+      if (!module) continue;
+      server.moduleGraph.invalidateModule(module);
+      modules.push(module);
     }
   }
+  return modules;
 };
 
 export type WebsiteKernelCssPluginOptions = Partial<
@@ -71,6 +86,8 @@ export function websiteKernelCssPlugin(
     return graph;
   };
 
+  const hmr = new WebsiteKernelCssHmr(getGraph);
+
   return {
     name: 'website-kernel-css',
     apply: 'serve',
@@ -83,6 +100,8 @@ export function websiteKernelCssPlugin(
     resolveId(id: string) {
       const graph = getGraph();
       const cleanId = stripQuery(id);
+      const resolvedVirtualId = toResolvedVirtualId(cleanId);
+      if (resolvedVirtualId) return resolvedVirtualId;
       if (cleanId.startsWith(VIRTUAL_ID_PREFIX)) {
         return `${RESOLVED_VIRTUAL_ID_PREFIX}${cleanId.slice(
           VIRTUAL_ID_PREFIX.length,
@@ -102,45 +121,50 @@ export function websiteKernelCssPlugin(
 
       const result = await graph.createKernelCssCode(parsed);
       for (const file of result.watchFiles) {
+        hmr.trackVirtualCssDependency(file, id);
         this.addWatchFile?.(file);
       }
       return result.code;
     },
 
-    configureServer(server: {
-      watcher: {
-        add: (paths: string | Array<string>) => void;
-        on: (event: string, listener: (file: string) => void) => void;
-      };
-      ws: {
-        send: (payload: { type: string }) => void;
-      };
-      moduleGraph: {
-        invalidateModule: (module: unknown) => void;
-        getModuleById: (id: string) => unknown;
-      };
-    }) {
+    configureServer(server: ViteDevServer) {
       const graph = getGraph();
+      hmr.installFullReloadGuard(server);
       server.watcher.add(graph.getWatchRoots());
 
-      const handleGraphChange = (file: string) => {
-        if (!graph.isKernelSourceGraphFile(file)) return;
-
+      const invalidateCssGraph = (file: string) => {
+        if (!graph.isKernelSourceGraphFile(file)) return false;
         invalidateVirtualModules(server, graph);
+        return true;
+      };
+
+      const reloadCssGraph = (file: string) => {
+        if (!invalidateCssGraph(file)) return;
         server.ws.send({ type: 'full-reload' });
       };
 
-      server.watcher.on('add', handleGraphChange);
-      server.watcher.on('unlink', handleGraphChange);
-      server.watcher.on('change', (file) => {
-        if (file.endsWith('.ts') || file.endsWith('.tsx')) {
-          handleGraphChange(file);
+      const handleSourceAddOrUnlink = (file: string) => {
+        if (graph.isStyleFile(file)) {
+          invalidateCssGraph(file);
           return;
         }
+        reloadCssGraph(file);
+      };
+
+      server.watcher.on('add', handleSourceAddOrUnlink);
+      server.watcher.on('unlink', handleSourceAddOrUnlink);
+      server.watcher.on('change', (file) => {
         if (graph.isCssConfigFile(file)) {
-          handleGraphChange(file);
+          reloadCssGraph(file);
         }
       });
     },
-  };
+
+    hotUpdate: {
+      order: 'pre',
+      handler(context: HotUpdateOptions) {
+        return hmr.handleStyleHotUpdate(context);
+      },
+    },
+  } satisfies Plugin;
 }

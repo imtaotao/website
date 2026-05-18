@@ -155,6 +155,10 @@ export class ModuleCssGraph {
     return file.endsWith(this.config.cssConfigFile);
   }
 
+  isStyleFile(file: string) {
+    return Boolean(this.config.styleExtensions[path.extname(file)]);
+  }
+
   getKernelPackageNames() {
     const packagesRoot = path.join(this.workspaceRoot, 'packages');
     if (!fs.existsSync(packagesRoot)) return [];
@@ -319,12 +323,26 @@ export class ModuleCssGraph {
       moduleStyleSpecifiers.push(result);
     }
 
-    const ownStyleSpecifiers = (styleFilesByDir.get(sourceModuleDir) ?? [])
-      .filter((styleFile) => !importedStyleFiles.has(path.resolve(styleFile)))
-      .map(toFsSpecifier);
+    const ownStyleFiles = (styleFilesByDir.get(sourceModuleDir) ?? []).filter(
+      (styleFile) => !importedStyleFiles.has(path.resolve(styleFile)),
+    );
+    const root = context.styleProcessor.createRoot();
+    const seen = new Set<string>();
+
+    for (const ownStyleFile of ownStyleFiles) {
+      const content = context.styleProcessor.readStyleFile(ownStyleFile, seen);
+      if (content.trim()) {
+        context.styleProcessor.appendStyleContent(root, content, ownStyleFile);
+      }
+    }
+    const ownStyleCode = root.nodes?.length
+      ? context.styleProcessor.stringify(root)
+      : '';
 
     return mergeLoadResults(...moduleStyleResults, {
-      code: createImportCode([...moduleStyleSpecifiers, ...ownStyleSpecifiers]),
+      code: [createImportCode(moduleStyleSpecifiers), ownStyleCode]
+        .filter((code) => code.trim())
+        .join('\n'),
       watchFiles: [
         context.configPath,
         ...styleFiles,

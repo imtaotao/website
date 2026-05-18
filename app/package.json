@@ -28,22 +28,22 @@
     "tailwindcss": "^4.2.4"
   },
   "devDependencies": {
-    "@mdx-js/rollup": "^3.1.1",
+    "@website/infra": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@mdx-js/rollup": "^3.1.1",
     "@vitejs/plugin-react": "^6.0.1",
-    "@website/infra": "workspace:*",
+    "rimraf": "catalog:",
+    "vite": "catalog:",
+    "yaml": "catalog:",
+    "typescript": "catalog:",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
     "remark-frontmatter": "^5.0.0",
     "remark-mdx-frontmatter": "^5.2.0",
-    "vite-tsconfig-paths": "^6.1.1",
-    "rimraf": "catalog:",
-    "typescript": "catalog:",
-    "vite": "^8.0.2",
-    "yaml": "catalog:"
+    "vite-tsconfig-paths": "^6.1.1"
   }
 }
