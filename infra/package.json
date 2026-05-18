@@ -17,10 +17,11 @@
     "@types/minimist": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "tsx": "catalog:",
+    "execa": "catalog:",
     "aidly": "catalog:",
     "vitest": "catalog:",
     "postcss": "catalog:",
-    "execa": "catalog:",
+    "chokidar": "catalog:",
     "minimist": "catalog:",
     "typescript": "catalog:",
     "tailwindcss": "catalog:"

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "author": "chentao.arthur",
   "scripts": {
-    "dev": "tsdown --watch",
+    "dev": "tsdown --watch & infra build-css --watch",
     "build": "rimraf dist && tsdown && infra build-css",
     "typecheck": "tsc --noEmit --skipLibCheck"
   },

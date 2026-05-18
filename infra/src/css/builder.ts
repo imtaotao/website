@@ -1,14 +1,17 @@
 import { ModuleCssBuilder } from '#infra/css/production/moduleCssBuilder';
+import { ModuleCssWatcher } from '#infra/css/production/moduleCssWatcher';
 
 const shouldWatch =
   process.argv.includes('--watch') || process.argv.includes('-w');
 
-const builder = new ModuleCssBuilder({
+const context = {
   packageRoot: process.cwd(),
-});
+};
 
 if (shouldWatch) {
-  await builder.watch();
+  const watcher = new ModuleCssWatcher(context);
+  await watcher.watch();
 } else {
+  const builder = new ModuleCssBuilder(context);
   await builder.build();
 }

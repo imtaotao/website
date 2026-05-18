@@ -84,81 +84,6 @@ export class ModuleCssBuilder {
     }
   }
 
-  async watch() {
-    let timer: ReturnType<typeof setTimeout> | null = null;
-    let isBuilding = false;
-    let shouldRebuild = false;
-    let watchers: Array<fs.FSWatcher> = [];
-
-    const closeWatchers = () => {
-      for (const watcher of watchers) {
-        watcher.close();
-      }
-      watchers = [];
-    };
-    const refreshWatchers = async () => {
-      closeWatchers();
-      const cssOptions = await this.loadCssOptions({ cacheBust: true });
-      const context = this.createBuildContext(cssOptions);
-      const sourceRoot = path.join(context.packageRoot, context.sourceDir);
-      const configPath = path.join(
-        context.packageRoot,
-        this.config.cssConfigFile,
-      );
-
-      if (fs.existsSync(sourceRoot)) {
-        watchers.push(this.createWatcher(sourceRoot, scheduleBuild, true));
-      }
-      if (fs.existsSync(configPath)) {
-        watchers.push(this.createWatcher(configPath, scheduleBuild));
-      }
-    };
-    const rebuild = async () => {
-      if (isBuilding) {
-        shouldRebuild = true;
-        return;
-      }
-      isBuilding = true;
-      try {
-        await this.build({ cacheBust: true });
-        await refreshWatchers();
-      } catch (error) {
-        console.error(error);
-      } finally {
-        isBuilding = false;
-        if (shouldRebuild) {
-          shouldRebuild = false;
-          scheduleBuild();
-        }
-      }
-    };
-    function scheduleBuild() {
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(() => {
-        timer = null;
-        void rebuild();
-      }, 80);
-    }
-
-    await rebuild();
-    console.log('[infra:css] watch mode ready');
-
-    const close = () => {
-      if (timer) clearTimeout(timer);
-      closeWatchers();
-    };
-    process.once('SIGINT', () => {
-      close();
-      process.exit(0);
-    });
-    process.once('SIGTERM', () => {
-      close();
-      process.exit(0);
-    });
-
-    await new Promise(() => {});
-  }
-
   private getStyleFiles(files: Array<string>) {
     return files.filter((file) =>
       Boolean(this.config.styleExtensions[path.extname(file)]),
@@ -440,17 +365,5 @@ export class ModuleCssBuilder {
   private toRelativeImportSpecifier(fromDir: string, file: string) {
     const relative = toPosixPath(path.relative(fromDir, file));
     return relative.startsWith('.') ? relative : `./${relative}`;
-  }
-
-  private createWatcher(
-    target: string,
-    onChange: () => void,
-    recursive = false,
-  ) {
-    try {
-      return fs.watch(target, { recursive }, onChange);
-    } catch {
-      return fs.watch(target, onChange);
-    }
   }
 }
