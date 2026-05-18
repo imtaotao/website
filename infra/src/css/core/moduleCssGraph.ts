@@ -1,9 +1,24 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { isArray } from 'aidly';
 import { moduleCssBuildConfig } from '#infra/css/core/config';
 import { loadCssOptions } from '#infra/css/core/cssOptions';
 import { ModuleStyleImportCollector } from '#infra/css/core/moduleStyleImportCollector';
+import {
+  normalizeCssFileKey,
+  toCssFsSpecifier,
+  toCssWatchPath,
+} from '#infra/css/core/path';
+import {
+  createImportCode,
+  EXTERNAL_ENTRY,
+  getGlobalStyleDependencies,
+  groupStyleFilesByDir,
+  KERNEL_PACKAGE_PREFIX,
+  MODULE_ENTRY,
+  parsePackageStyleSpecifier,
+  removeCssExtension,
+  STYLE_ENTRY,
+} from '#infra/css/core/styleEntry';
 import { StyleProcessor } from '#infra/css/core/styleProcessor';
 import type {
   CssOptions,
@@ -11,12 +26,7 @@ import type {
   ResolvedModuleCssBuildContext,
 } from '#infra/css/core/types';
 import { WorkspaceStyleResolver } from '#infra/css/core/workspaceStyleResolver';
-import { fileWalker, getSourceModuleDir, toPosixPath } from '#infra/utils';
-
-const KERNEL_PACKAGE_PREFIX = '@website-kernel/';
-const STYLE_ENTRY = 'style.css';
-const EXTERNAL_ENTRY = 'external.css';
-const MODULE_ENTRY = 'module.css';
+import { fileWalker, toPosixPath } from '#infra/utils';
 
 type KernelCssContext = {
   cssOptions: CssOptions;
@@ -26,68 +36,6 @@ type KernelCssContext = {
   resolver: WorkspaceStyleResolver;
   sourceRoot: string;
   styleProcessor: StyleProcessor;
-};
-
-const groupStyleFilesByDir = (
-  sourceRoot: string,
-  styleFiles: Array<string>,
-) => {
-  const styleFilesByDir = new Map<string, Array<string>>();
-  for (const styleFile of styleFiles) {
-    const sourceRelative = path.relative(sourceRoot, styleFile);
-    const sourceDir = getSourceModuleDir(sourceRelative);
-    const values = styleFilesByDir.get(sourceDir) ?? [];
-    values.push(styleFile);
-    styleFilesByDir.set(sourceDir, values);
-  }
-  return styleFilesByDir;
-};
-
-const getGlobalStyleDependencies = (cssOptions: CssOptions) => {
-  const dependencies: Array<string> = [];
-  for (const [packageName, dependency] of Object.entries(
-    cssOptions.cssDependencies ?? {},
-  )) {
-    const globalDependencies = isArray(dependency.global)
-      ? dependency.global
-      : [dependency.global].filter((value): value is string => Boolean(value));
-
-    for (const globalDependency of globalDependencies) {
-      dependencies.push(joinDependencySpecifier(packageName, globalDependency));
-    }
-  }
-  return dependencies;
-};
-
-const parsePackageStyleSpecifier = (specifier: string) => {
-  if (specifier.startsWith('.')) return null;
-
-  const parts = specifier.split('/');
-  const packageName = specifier.startsWith('@')
-    ? `${parts.shift() ?? ''}/${parts.shift() ?? ''}`
-    : parts.shift() ?? '';
-  if (!packageName) return null;
-
-  return {
-    packageName,
-    stylePath: parts.join('/'),
-  };
-};
-
-const joinDependencySpecifier = (
-  packageName: string,
-  dependencyPath: string,
-) => {
-  if (!dependencyPath) return packageName;
-  return dependencyPath.startsWith('/')
-    ? `${packageName}${dependencyPath}`
-    : `${packageName}/${dependencyPath}`;
-};
-
-const createImportCode = (specifiers: Array<string>) => {
-  return Array.from(new Set(specifiers))
-    .map((specifier) => `@import "${specifier}";`)
-    .join('\n');
 };
 
 const mergeLoadResults = (...results: Array<KernelCssLoadResult>) => {
@@ -100,14 +48,6 @@ const mergeLoadResults = (...results: Array<KernelCssLoadResult>) => {
       new Set(results.flatMap((result) => result.watchFiles)),
     ),
   };
-};
-
-const toFsSpecifier = (file: string) => {
-  return `/@fs/${toPosixPath(path.resolve(file))}`;
-};
-
-const removeCssExtension = (cssPath: string) => {
-  return cssPath.slice(0, -path.extname(cssPath).length);
 };
 
 export interface ModuleCssGraphOptions {
@@ -132,7 +72,7 @@ export class ModuleCssGraph {
 
   constructor(options: ModuleCssGraphOptions) {
     this.config = options.config ?? moduleCssBuildConfig;
-    this.workspaceRoot = path.resolve(options.workspaceRoot);
+    this.workspaceRoot = normalizeCssFileKey(options.workspaceRoot);
   }
 
   parseKernelCssId(id: string) {
@@ -140,19 +80,22 @@ export class ModuleCssGraph {
   }
 
   isKernelSourceGraphFile(file: string) {
-    if (!file.includes(`${path.sep}packages${path.sep}kernel-`)) {
+    const normalizedFile = normalizeCssFileKey(file);
+    if (!normalizedFile.includes('/packages/kernel-')) {
       return false;
     }
-    if (file.endsWith(this.config.cssConfigFile)) return true;
-    if (file.endsWith('.ts') || file.endsWith('.tsx')) return true;
+    if (normalizedFile.endsWith(this.config.cssConfigFile)) return true;
+    if (normalizedFile.endsWith('.ts') || normalizedFile.endsWith('.tsx')) {
+      return true;
+    }
 
     return Object.keys(this.config.styleExtensions).some((extension) =>
-      file.endsWith(extension),
+      normalizedFile.endsWith(extension),
     );
   }
 
   isCssConfigFile(file: string) {
-    return file.endsWith(this.config.cssConfigFile);
+    return normalizeCssFileKey(file).endsWith(this.config.cssConfigFile);
   }
 
   isStyleFile(file: string) {
@@ -174,8 +117,8 @@ export class ModuleCssGraph {
   getWatchRoots() {
     const packagesRoot = path.join(this.workspaceRoot, 'packages');
     return [
-      path.join(packagesRoot, 'kernel-*', 'src'),
-      path.join(packagesRoot, 'kernel-*', this.config.cssConfigFile),
+      toCssWatchPath(packagesRoot, 'kernel-*', 'src'),
+      toCssWatchPath(packagesRoot, 'kernel-*', this.config.cssConfigFile),
     ];
   }
 
@@ -370,7 +313,7 @@ export class ModuleCssGraph {
     const outputStyleEntry = path.resolve(sourceStyleDir, specifier);
     const styleEntrySuffix = `${path.sep}${this.config.output.styleDir}${path.sep}${this.config.output.indexCssFile}`;
     if (!outputStyleEntry.endsWith(styleEntrySuffix)) {
-      return toFsSpecifier(outputStyleEntry);
+      return toCssFsSpecifier(outputStyleEntry);
     }
 
     const sourceModuleDir = path.relative(

@@ -1,6 +1,8 @@
+import vm from 'node:vm';
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { createRequire } from 'node:module';
 import ts from 'typescript';
 import type { CssOptions } from '#infra/css/core/types';
 
@@ -16,21 +18,29 @@ const importCssOptionsModule = async (configPath: string, href: string) => {
 };
 
 const importTranspiledCssOptionsModule = async (configPath: string) => {
-  const source = fs.readFileSync(configPath, 'utf8');
+  const normalizedConfigPath = path.resolve(configPath);
+  const source = fs.readFileSync(normalizedConfigPath, 'utf8');
   const output = ts.transpileModule(source, {
     compilerOptions: {
-      module: ts.ModuleKind.ESNext,
+      esModuleInterop: true,
+      module: ts.ModuleKind.CommonJS,
       target: ts.ScriptTarget.ES2020,
     },
-    fileName: configPath,
+    fileName: normalizedConfigPath,
   });
-  const code = `${output.outputText}\n//# sourceURL=${
-    pathToFileURL(configPath).href
-  }`;
-  const href = `data:text/javascript;base64,${Buffer.from(code).toString(
-    'base64',
-  )}`;
-  return (await import(href)) as Record<string, unknown>;
+  const module = { exports: {} as Record<string, unknown> };
+  const dirname = path.dirname(normalizedConfigPath);
+  const require = createRequire(normalizedConfigPath);
+
+  vm.runInNewContext(output.outputText, {
+    __dirname: dirname,
+    __filename: normalizedConfigPath,
+    exports: module.exports,
+    module,
+    require,
+  });
+
+  return module.exports;
 };
 
 const isUnknownTsExtensionError = (error: unknown) => {

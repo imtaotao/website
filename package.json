@@ -8,6 +8,7 @@
     "prepare": "husky",
     "dev": "pnpm --filter @website/app run dev",
     "build": "pnpm --filter @website/app run build",
+    "test": "pnpm -r --if-present test --passWithNoTests",
     "preview": "pnpm --filter @website/app run preview",
     "dev:packages": "pnpm --parallel --filter @website-kernel/* run dev",
     "build:packages": "pnpm --filter @website-kernel/* run build",
@@ -21,8 +22,8 @@
   },
   "dependencies": {
     "@website/infra": "workspace:*",
-    "@types/node": "^20.10.6",
-    "@types/minimist": "^1.2.5",
+    "@types/node": "catalog:",
+    "@types/minimist": "catalog:",
     "tsx": "catalog:",
     "aidly": "catalog:",
     "execa": "catalog:",

@@ -1,6 +1,5 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { isArray } from 'aidly';
 import { StyleProcessor } from '#infra/css/core/index';
 import { ModuleStyleImportCollector } from '#infra/css/core/index';
 import type {
@@ -10,9 +9,13 @@ import type {
   ResolvedModuleCssBuildContext,
 } from '#infra/css/core/index';
 import { moduleCssBuildConfig } from '#infra/css/core/index';
+import {
+  getGlobalStyleDependencies,
+  groupStyleFilesByDir,
+} from '#infra/css/core/styleEntry';
 import { loadCssOptions } from '#infra/css/core/index';
 import { WorkspaceStyleResolver } from '#infra/css/core/index';
-import { fileWalker, getSourceModuleDir, toPosixPath } from '#infra/utils';
+import { fileWalker, toPosixPath } from '#infra/utils';
 
 export class ModuleCssBuilder {
   private srcRoot: string;
@@ -135,7 +138,7 @@ export class ModuleCssBuilder {
     const seen = new Set<string>();
     const root = this.styleProcessor.createRoot();
 
-    for (const specifier of this.getGlobalStyleDependencies(buildConfig)) {
+    for (const specifier of getGlobalStyleDependencies(buildConfig)) {
       const cssPath = this.resolver.resolveStyleDependency(specifier);
       if (!cssPath) continue;
       const content = this.styleProcessor.readStyleFile(cssPath, seen);
@@ -220,7 +223,7 @@ export class ModuleCssBuilder {
     );
     const root = this.styleProcessor.createRoot();
 
-    for (const specifier of this.getGlobalStyleDependencies(buildConfig)) {
+    for (const specifier of getGlobalStyleDependencies(buildConfig)) {
       this.styleProcessor.appendImportRule(
         root,
         this.resolver.toExternalStyleSpecifier(specifier, outRoot),
@@ -234,39 +237,12 @@ export class ModuleCssBuilder {
     return target;
   }
 
-  private getGlobalStyleDependencies(buildConfig: CssOptions) {
-    const dependencies: Array<string> = [];
-    for (const [packageName, dependency] of Object.entries(
-      buildConfig.cssDependencies ?? {},
-    )) {
-      const globalDependencies = isArray(dependency.global)
-        ? dependency.global
-        : [dependency.global].filter((value): value is string =>
-            Boolean(value),
-          );
-
-      for (const globalDependency of globalDependencies) {
-        dependencies.push(
-          this.joinDependencySpecifier(packageName, globalDependency),
-        );
-      }
-    }
-    return dependencies;
-  }
-
-  private joinDependencySpecifier(packageName: string, dependencyPath: string) {
-    if (!dependencyPath) return packageName;
-    return dependencyPath.startsWith('/')
-      ? `${packageName}${dependencyPath}`
-      : `${packageName}/${dependencyPath}`;
-  }
-
   private writeComponentStyleEntries(
     styleFiles: Array<string>,
     outRoot: string,
     moduleStyleImports: Map<string, Array<string>>,
   ) {
-    const styleFilesByDir = this.groupStyleFilesByDir(styleFiles);
+    const styleFilesByDir = groupStyleFilesByDir(this.srcRoot, styleFiles);
     const importedStyleFiles =
       this.styleProcessor.collectImportedStyleFiles(styleFiles);
     const sourceDirs = Array.from(
@@ -319,18 +295,6 @@ export class ModuleCssBuilder {
       outputs.push(target);
     }
     return outputs;
-  }
-
-  private groupStyleFilesByDir(styleFiles: Array<string>) {
-    const styleFilesByDir = new Map<string, Array<string>>();
-    for (const styleFile of styleFiles) {
-      const sourceRelative = path.relative(this.srcRoot, styleFile);
-      const sourceDir = getSourceModuleDir(sourceRelative);
-      const values = styleFilesByDir.get(sourceDir) ?? [];
-      values.push(styleFile);
-      styleFilesByDir.set(sourceDir, values);
-    }
-    return styleFilesByDir;
   }
 
   private getModuleStyleSpecifiers(

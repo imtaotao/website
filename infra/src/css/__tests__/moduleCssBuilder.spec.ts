@@ -19,6 +19,25 @@ describe('ModuleCssBuilder', () => {
     return fs.readFileSync(path.join(tempRoot, relativePath), 'utf8');
   };
 
+  const listFiles = (relativePath: string) => {
+    const root = path.join(tempRoot, relativePath);
+    const files: Array<string> = [];
+
+    const walk = (dir: string) => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const file = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          walk(file);
+          continue;
+        }
+        files.push(path.relative(root, file).split(path.sep).join('/'));
+      }
+    };
+
+    walk(root);
+    return files.sort();
+  };
+
   beforeEach(() => {
     tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'infra-builder-'));
     writeFile('package.json', JSON.stringify({ name: 'fixture-package' }));
@@ -89,6 +108,25 @@ describe('ModuleCssBuilder', () => {
 
     await createBuilder().build();
 
+    expect(listFiles('output')).toEqual([
+      'es/components/Badge/index.css',
+      'es/components/Badge/style/index.css',
+      'es/components/Card/index.css',
+      'es/components/Card/style/index.css',
+      'es/components/Card/tokens.css',
+      'es/style/external.css',
+      'es/style/index.css',
+      'es/style/module.css',
+      'index.css',
+      'lib/components/Badge/index.css',
+      'lib/components/Badge/style/index.css',
+      'lib/components/Card/index.css',
+      'lib/components/Card/style/index.css',
+      'lib/components/Card/tokens.css',
+      'lib/style/external.css',
+      'lib/style/index.css',
+      'lib/style/module.css',
+    ]);
     expect(readFile('output/index.css')).toContain('.token { color: green; }');
     expect(readFile('output/index.css')).toContain(
       '.external { color: blue; }',

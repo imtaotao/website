@@ -6,6 +6,7 @@ import type {
   ViteDevServer,
 } from 'vite';
 import type { ModuleCssGraph } from '#infra/css/core/index';
+import { normalizeCssFileKey } from '#infra/css/core/path';
 
 // package CSS 的 HMR 不能直接走 Vite 原生 CSS 文件链路：
 // - 浏览器 import 的是 website-kernel-css:* 虚拟 CSS 模块，不是真实的
@@ -50,7 +51,7 @@ const addVirtualCssDependency = (
   file: string,
   virtualId: string,
 ) => {
-  const normalizedFile = path.resolve(file);
+  const normalizedFile = normalizeCssFileKey(file);
   const values =
     virtualIdsByDependency.get(normalizedFile) ?? new Set<string>();
   values.add(virtualId);
@@ -61,7 +62,9 @@ const getDependencyVirtualIds = (
   virtualIdsByDependency: VirtualIdsByDependency,
   file: string,
 ) => {
-  return Array.from(virtualIdsByDependency.get(path.resolve(file)) ?? []);
+  return Array.from(
+    virtualIdsByDependency.get(normalizeCssFileKey(file)) ?? [],
+  );
 };
 
 const getDependencyVirtualModules = (
@@ -172,7 +175,7 @@ export class WebsiteKernelCssHmr {
 
   private isDuplicateUpdate(file: string) {
     const now = Date.now();
-    const normalizedFile = path.resolve(file);
+    const normalizedFile = normalizeCssFileKey(file);
     const lastUpdateTime = this.lastUpdateTimes.get(normalizedFile) ?? 0;
     const isDuplicate = now - lastUpdateTime < DUPLICATE_UPDATE_IGNORE_MS;
 

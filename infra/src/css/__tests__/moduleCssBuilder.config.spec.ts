@@ -1,5 +1,58 @@
-import { describe, expect, test } from 'vitest';
-import { resolveCssOptionsModule } from '#infra/css/core/index';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { afterEach, beforeEach, describe, expect, test } from 'vitest';
+import { loadCssOptions, resolveCssOptionsModule } from '#infra/css/core/index';
+
+describe('loadCssOptions', () => {
+  let tempRoot: string;
+
+  const writeFile = (relativePath: string, content: string) => {
+    const file = path.join(tempRoot, relativePath);
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, content);
+    return file;
+  };
+
+  beforeEach(() => {
+    tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'infra-css-options-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tempRoot, { recursive: true, force: true });
+  });
+
+  test('loads TypeScript css config without dynamic data url import', async () => {
+    writeFile(
+      'css.config.ts',
+      `
+        import type { CssOptions } from '@website/infra/css';
+
+        export const config: CssOptions = {
+          sourceDir: 'source',
+          outputDir: 'output',
+          cssDependencies: {
+            katex: {
+              global: '/dist/katex.min.css',
+            },
+          },
+        };
+      `,
+    );
+
+    await expect(
+      loadCssOptions(tempRoot, 'css.config.ts', { cacheBust: true }),
+    ).resolves.toEqual({
+      sourceDir: 'source',
+      outputDir: 'output',
+      cssDependencies: {
+        katex: {
+          global: '/dist/katex.min.css',
+        },
+      },
+    });
+  });
+});
 
 describe('resolveCssOptionsModule', () => {
   test('reads config from direct named export', () => {
@@ -13,44 +66,6 @@ describe('resolveCssOptionsModule', () => {
     ).toEqual({
       sourceDir: 'src',
       outputDir: 'dist',
-    });
-  });
-
-  test('reads config from default export wrapper', () => {
-    expect(
-      resolveCssOptionsModule({
-        default: {
-          config: {
-            sourceDir: 'src',
-            outputDir: 'dist',
-          },
-        },
-      }),
-    ).toEqual({
-      sourceDir: 'src',
-      outputDir: 'dist',
-    });
-  });
-
-  test('reads config from module.exports wrapper', () => {
-    expect(
-      resolveCssOptionsModule({
-        'module.exports': {
-          config: {
-            cssDependencies: {
-              katex: {
-                global: '/dist/katex.min.css',
-              },
-            },
-          },
-        },
-      }),
-    ).toEqual({
-      cssDependencies: {
-        katex: {
-          global: '/dist/katex.min.css',
-        },
-      },
     });
   });
 
