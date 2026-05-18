@@ -4,7 +4,7 @@ const path = require('node:path');
 const minimist = require('minimist');
 
 const commands = {
-  'build-css': 'css/index.ts',
+  'build-css': 'css/builder.ts',
   'check-blog': 'blog/check.ts',
 };
 
@@ -33,7 +33,7 @@ if (argv.help || !command) {
   console.log('Usage: infra <command>');
   console.log('');
   console.log('Commands:');
-  console.log('  build-css  Build package module CSS output');
+  console.log('  build-css  Build package module CSS output, supports --watch');
   console.log('  check-blog Check blog frontmatter and local assets');
   process.exit(argv.help ? 0 : 1);
 }

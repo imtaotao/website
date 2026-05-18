@@ -1,6 +1,5 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
 import { isArray } from 'aidly';
 import { StyleProcessor } from '#infra/css/styleProcessor';
 import { ModuleStyleImportCollector } from '#infra/css/moduleStyleImportCollector';
@@ -11,31 +10,9 @@ import type {
   ResolvedModuleCssBuildContext,
 } from '#infra/css/types';
 import { moduleCssBuildConfig } from '#infra/css/config';
+import { loadCssOptions } from '#infra/css/cssOptions';
 import { WorkspaceStyleResolver } from '#infra/css/workspaceStyleResolver';
 import { fileWalker, getSourceModuleDir, toPosixPath } from '#infra/utils';
-
-export function resolveCssOptionsModule(module: Record<string, unknown>) {
-  const candidates = [
-    module,
-    asRecord(module.default),
-    asRecord(module['module.exports']),
-  ];
-  for (const candidate of candidates) {
-    if (!candidate) continue;
-    const config = asRecord(candidate.config);
-    if (config) {
-      return config as CssOptions;
-    }
-  }
-  return {};
-}
-
-function asRecord(value: unknown) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    return null;
-  }
-  return value as Record<string, unknown>;
-}
 
 export class ModuleCssBuilder {
   private srcRoot: string;
@@ -50,8 +27,8 @@ export class ModuleCssBuilder {
     this.applyContext(this.createBuildContext({}));
   }
 
-  async build() {
-    const cssOptions = await this.loadCssOptions();
+  async build(options: { cacheBust?: boolean } = {}) {
+    const cssOptions = await this.loadCssOptions(options);
     const context = this.createBuildContext(cssOptions);
 
     this.applyContext(context);
@@ -107,22 +84,93 @@ export class ModuleCssBuilder {
     }
   }
 
+  async watch() {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    let isBuilding = false;
+    let shouldRebuild = false;
+    let watchers: Array<fs.FSWatcher> = [];
+
+    const closeWatchers = () => {
+      for (const watcher of watchers) {
+        watcher.close();
+      }
+      watchers = [];
+    };
+    const refreshWatchers = async () => {
+      closeWatchers();
+      const cssOptions = await this.loadCssOptions({ cacheBust: true });
+      const context = this.createBuildContext(cssOptions);
+      const sourceRoot = path.join(context.packageRoot, context.sourceDir);
+      const configPath = path.join(
+        context.packageRoot,
+        this.config.cssConfigFile,
+      );
+
+      if (fs.existsSync(sourceRoot)) {
+        watchers.push(this.createWatcher(sourceRoot, scheduleBuild, true));
+      }
+      if (fs.existsSync(configPath)) {
+        watchers.push(this.createWatcher(configPath, scheduleBuild));
+      }
+    };
+    const rebuild = async () => {
+      if (isBuilding) {
+        shouldRebuild = true;
+        return;
+      }
+      isBuilding = true;
+      try {
+        await this.build({ cacheBust: true });
+        await refreshWatchers();
+      } catch (error) {
+        console.error(error);
+      } finally {
+        isBuilding = false;
+        if (shouldRebuild) {
+          shouldRebuild = false;
+          scheduleBuild();
+        }
+      }
+    };
+    function scheduleBuild() {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        timer = null;
+        void rebuild();
+      }, 80);
+    }
+
+    await rebuild();
+    console.log('[infra:css] watch mode ready');
+
+    const close = () => {
+      if (timer) clearTimeout(timer);
+      closeWatchers();
+    };
+    process.once('SIGINT', () => {
+      close();
+      process.exit(0);
+    });
+    process.once('SIGTERM', () => {
+      close();
+      process.exit(0);
+    });
+
+    await new Promise(() => {});
+  }
+
   private getStyleFiles(files: Array<string>) {
     return files.filter((file) =>
       Boolean(this.config.styleExtensions[path.extname(file)]),
     );
   }
 
-  private async loadCssOptions() {
-    const configPath = path.join(
+  private async loadCssOptions(options: { cacheBust?: boolean } = {}) {
+    return loadCssOptions(
       this.context.packageRoot,
       this.config.cssConfigFile,
+      options,
     );
-    if (!fs.existsSync(configPath)) {
-      return {};
-    }
-    const module = await import(pathToFileURL(configPath).href);
-    return resolveCssOptionsModule(module);
   }
 
   private createBuildContext(cssOptions: CssOptions) {
@@ -392,5 +440,17 @@ export class ModuleCssBuilder {
   private toRelativeImportSpecifier(fromDir: string, file: string) {
     const relative = toPosixPath(path.relative(fromDir, file));
     return relative.startsWith('.') ? relative : `./${relative}`;
+  }
+
+  private createWatcher(
+    target: string,
+    onChange: () => void,
+    recursive = false,
+  ) {
+    try {
+      return fs.watch(target, { recursive }, onChange);
+    } catch {
+      return fs.watch(target, onChange);
+    }
   }
 }
