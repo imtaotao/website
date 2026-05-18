@@ -4,7 +4,7 @@
 
 .markdown-fancy-list-block-title {
   margin: 0 0 0.58rem;
-  color: #1d4ed8;
+  color: var(--markdown-fancy-list-title);
   font-family: var(--markdown-title-font);
   font-size: 0.98rem;
   font-weight: 650;
@@ -14,9 +14,9 @@
 .markdown-fancy-list {
   display: grid;
   gap: 0;
-  border: 1px solid rgba(37, 99, 235, 0.14);
+  border: 1px solid var(--markdown-fancy-list-border);
   border-radius: 14px;
-  background: rgba(59, 130, 246, 0.045);
+  background: var(--markdown-fancy-list-bg);
 }
 
 .markdown-fancy-list-item {
@@ -35,7 +35,7 @@
   left: 1.2rem;
   right: 1.2rem;
   height: 1px;
-  background: rgba(37, 99, 235, 0.16);
+  background: var(--markdown-fancy-list-divider);
 }
 
 .markdown-fancy-list-item-body {
@@ -44,7 +44,7 @@
 
 .markdown-fancy-list-item-title {
   margin: 0;
-  color: #1d4ed8;
+  color: var(--markdown-fancy-list-title);
   font-family: var(--markdown-title-font);
   font-size: 0.94rem;
   font-weight: 620;
@@ -57,36 +57,13 @@
 
 .markdown-fancy-list-item-line {
   margin: 0;
-  color: rgba(30, 64, 175, 0.86);
+  color: var(--markdown-fancy-list-line);
   font-size: 0.92rem;
   line-height: 1.72;
 }
 
 .markdown-fancy-list-item-line + .markdown-fancy-list-item-line {
   margin-top: 0.22rem;
-}
-
-:root[data-wk-theme='dark'] .markdown-shell .markdown-fancy-list {
-  border-color: rgba(96, 165, 250, 0.22);
-  background: rgba(37, 99, 235, 0.12);
-}
-
-:root[data-wk-theme='dark'] .markdown-shell .markdown-fancy-list-block-title {
-  color: #93c5fd;
-}
-
-:root[data-wk-theme='dark'] .markdown-shell
-  .markdown-fancy-list-item
-  + .markdown-fancy-list-item::before {
-  background: rgba(96, 165, 250, 0.2);
-}
-
-:root[data-wk-theme='dark'] .markdown-shell .markdown-fancy-list-item-title {
-  color: #93c5fd;
-}
-
-:root[data-wk-theme='dark'] .markdown-shell .markdown-fancy-list-item-line {
-  color: rgba(219, 234, 254, 0.82);
 }
 
 @media (max-width: 767px) {

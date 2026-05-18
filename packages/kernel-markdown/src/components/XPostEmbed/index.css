@@ -37,7 +37,7 @@
   height: 12px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.05);
+  background: var(--markdown-x-post-loading-bg);
 }
 
 .markdown-prose-x-post-embed-loading-bar--long {
@@ -56,36 +56,14 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.22) 50%,
-    transparent 100%
-  );
+  background: var(--markdown-x-post-loading-shine);
   transform: translateX(-100%);
   animation: markdown-x-post-loading 1.2s ease-in-out infinite;
 }
 
-:root[data-wk-theme='dark'] .markdown-shell
-  .markdown-prose-x-post-embed-widget
-  .twitter-tweet.twitter-tweet-rendered {
+.markdown-prose-x-post-embed-widget .twitter-tweet.twitter-tweet-rendered {
   border-radius: 13px !important;
   overflow: hidden !important;
-}
-
-:root[data-wk-theme='dark'] .markdown-shell
-  .markdown-prose-x-post-embed-loading-bar {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-:root[data-wk-theme='dark'] .markdown-shell
-  .markdown-prose-x-post-embed-loading-bar::before {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.14) 50%,
-    transparent 100%
-  );
 }
 
 @keyframes markdown-x-post-loading {

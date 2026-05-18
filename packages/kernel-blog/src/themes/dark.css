@@ -52,6 +52,28 @@
   --blog-bgm-ripple-core: color-mix(in srgb, var(--blog-bg) 64%, #22c55e 36%);
   --blog-bgm-ripple-mid: color-mix(in srgb, var(--blog-bg) 80%, #4ade80 20%);
   --blog-bgm-ripple-ring: color-mix(in srgb, var(--blog-bg) 88%, #86efac 12%);
+  --blog-home-tag: rgba(255, 255, 255, 0.38);
+  --blog-home-tag-active: rgba(255, 255, 255, 0.84);
+  --blog-home-tag-hover: rgba(255, 255, 255, 0.72);
+  --blog-home-avatar-accent: #e0ad79;
+  --blog-home-avatar-shadow: 0 18px 44px rgba(0, 0, 0, 0.22);
+  --blog-home-avatar-status-shadow: 0 8px 18px rgba(134, 239, 172, 0.18);
+  --blog-timeline-dot-2: #8bcea3;
+  --blog-timeline-dot-2-soft: rgba(139, 206, 163, 0.12);
+  --blog-timeline-dot-3: #e0ad79;
+  --blog-timeline-dot-3-soft: rgba(224, 173, 121, 0.14);
+  --blog-timeline-dot-4: #b7a9e0;
+  --blog-timeline-dot-4-soft: rgba(183, 169, 224, 0.14);
+  --blog-timeline-dot-5: #dda1bf;
+  --blog-timeline-dot-5-soft: rgba(221, 161, 191, 0.13);
+  --blog-index-date: rgba(255, 255, 255, 0.52);
+  --blog-index-title: rgba(255, 255, 255, 0.72);
+  --blog-index-title-hover: rgba(255, 255, 255, 0.9);
+  --blog-index-title-decoration: color-mix(
+    in srgb,
+    currentColor 38%,
+    transparent
+  );
 }
 
 @media (max-width: 767px) {

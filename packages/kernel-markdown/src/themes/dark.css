@@ -40,4 +40,198 @@
   --markdown-heading-4: #cbd5e1;
   --markdown-heading-5: #94a3b8;
   --markdown-heading-6: #64748b;
+  --markdown-audio-border: rgba(134, 239, 172, 0.18);
+  --markdown-audio-border-hover: rgba(134, 239, 172, 0.22);
+  --markdown-audio-bg: linear-gradient(
+      135deg,
+      rgba(134, 239, 172, 0.09),
+      transparent 62%
+    ),
+    var(--markdown-surface-tint);
+  --markdown-audio-bg-hover: var(--markdown-audio-bg);
+  --markdown-audio-inline-bg: linear-gradient(
+      135deg,
+      rgba(134, 239, 172, 0.11),
+      transparent 58%
+    ),
+    rgba(134, 239, 172, 0.06);
+  --markdown-audio-visual-bg: rgba(134, 239, 172, 0.1);
+  --markdown-audio-fallback-bg: radial-gradient(
+      circle at 50% 22%,
+      rgba(134, 239, 172, 0.22),
+      transparent 34%
+    ),
+    rgba(134, 239, 172, 0.08);
+  --markdown-audio-accent: #86efac;
+  --markdown-audio-player-border: rgba(134, 239, 172, 0.22);
+  --markdown-audio-player-bg: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04),
+      transparent 100%
+    ),
+    rgba(134, 239, 172, 0.08);
+  --markdown-audio-progress-bg: rgba(255, 255, 255, 0.1);
+  --markdown-audio-progress-fill: linear-gradient(90deg, #34d399, #86efac);
+  --markdown-audio-status-bg: rgba(134, 239, 172, 0.12);
+  --markdown-audio-status-color: #86efac;
+  --markdown-audio-error-bg: rgba(248, 113, 113, 0.1);
+  --markdown-audio-error-border: rgba(248, 113, 113, 0.28);
+  --markdown-audio-error-status-bg: rgba(248, 113, 113, 0.14);
+  --markdown-audio-error-status-color: #fca5a5;
+  --markdown-video-border: rgba(125, 211, 252, 0.2);
+  --markdown-video-border-hover: rgba(125, 211, 252, 0.24);
+  --markdown-video-inline-bg: linear-gradient(
+      135deg,
+      rgba(135, 188, 221, 0.11),
+      transparent 58%
+    ),
+    rgba(135, 188, 221, 0.06);
+  --markdown-video-fallback-bg: linear-gradient(
+      135deg,
+      rgba(125, 211, 252, 0.09),
+      transparent 52%
+    ),
+    linear-gradient(315deg, rgba(134, 239, 172, 0.08), transparent 56%),
+    var(--markdown-image-bg);
+  --markdown-video-play-bg: rgba(17, 24, 39, 0.9);
+  --markdown-video-play-color: #ffffff;
+  --markdown-video-play-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+  --markdown-video-link-border: rgba(135, 188, 221, 0.24);
+  --markdown-video-link-border-hover: rgba(135, 188, 221, 0.32);
+  --markdown-video-link-bg: rgba(135, 188, 221, 0.08);
+  --markdown-video-link-bg-hover: rgba(135, 188, 221, 0.12);
+  --markdown-video-link-icon: #bae6fd;
+  --markdown-media-popover-shadow: 0 18px 40px rgba(0, 0, 0, 0.34);
+  --markdown-step-marker-bg: #f3f4f6;
+  --markdown-step-marker-color: #111827;
+  --markdown-step-line: rgba(255, 255, 255, 0.16);
+  --markdown-callout-note-accent: #93c5fd;
+  --markdown-callout-note-bg: rgba(96, 165, 250, 0.08);
+  --markdown-callout-note-border: rgba(147, 197, 253, 0.22);
+  --markdown-callout-note-shadow: transparent;
+  --markdown-callout-tip-accent: #86efac;
+  --markdown-callout-tip-bg: rgba(74, 222, 128, 0.08);
+  --markdown-callout-tip-border: rgba(134, 239, 172, 0.2);
+  --markdown-callout-tip-shadow: transparent;
+  --markdown-callout-warning-accent: #fbbf24;
+  --markdown-callout-warning-bg: rgba(251, 191, 36, 0.09);
+  --markdown-callout-warning-border: rgba(251, 191, 36, 0.24);
+  --markdown-callout-warning-shadow: transparent;
+  --markdown-callout-success-accent: var(--markdown-callout-tip-accent);
+  --markdown-callout-success-bg: var(--markdown-callout-tip-bg);
+  --markdown-callout-success-border: var(--markdown-callout-tip-border);
+  --markdown-callout-success-shadow: var(--markdown-callout-tip-shadow);
+  --markdown-callout-error-accent: #fca5a5;
+  --markdown-callout-error-bg: rgba(248, 113, 113, 0.08);
+  --markdown-callout-error-border: rgba(252, 165, 165, 0.22);
+  --markdown-callout-error-shadow: transparent;
+  --markdown-fancy-list-title: #93c5fd;
+  --markdown-fancy-list-border: rgba(96, 165, 250, 0.22);
+  --markdown-fancy-list-bg: rgba(37, 99, 235, 0.12);
+  --markdown-fancy-list-divider: rgba(96, 165, 250, 0.2);
+  --markdown-fancy-list-line: rgba(219, 234, 254, 0.82);
+  --markdown-english-cards-border: rgba(255, 255, 255, 0.18);
+  --markdown-english-cards-bg: #111318;
+  --markdown-english-cards-shadow: 0 16px 38px rgba(0, 0, 0, 0.42);
+  --markdown-english-control-border: rgba(255, 255, 255, 0.18);
+  --markdown-english-control-bg: #242832;
+  --markdown-english-control-border-hover: rgba(156, 185, 221, 0.18);
+  --markdown-english-control-bg-hover: rgba(255, 255, 255, 0.07);
+  --markdown-english-control-color-hover: var(--markdown-text-strong);
+  --markdown-english-card-accent: #9cb9dd;
+  --markdown-english-card-bg: #171d26;
+  --markdown-english-card-border: rgba(156, 185, 221, 0.12);
+  --markdown-english-card-section-bg: rgba(255, 255, 255, 0.045);
+  --markdown-english-card-section-strong-bg: rgba(96, 165, 250, 0.055);
+  --markdown-english-card-section-border: rgba(156, 185, 221, 0.12);
+  --markdown-english-card-shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
+  --markdown-english-card-divider: rgba(255, 255, 255, 0.08);
+  --markdown-english-card-translation-border: var(
+    --markdown-english-card-section-border
+  );
+  --markdown-english-card-openapi-border: rgba(156, 185, 221, 0.12);
+  --markdown-english-card-openapi-bg: rgba(96, 165, 250, 0.055);
+  --markdown-english-card-openapi-color: #c0d2e8;
+  --markdown-english-card-openapi-error-border: rgba(248, 113, 113, 0.2);
+  --markdown-english-card-openapi-error-bg: rgba(248, 113, 113, 0.08);
+  --markdown-english-card-openapi-error-color: #fca5a5;
+  --markdown-english-card-chip-border: rgba(255, 255, 255, 0.1);
+  --markdown-english-card-chip-bg: rgba(255, 255, 255, 0.045);
+  --markdown-english-card-meta-bg: rgba(255, 255, 255, 0.045);
+  --markdown-english-card-action-hover-bg: rgba(255, 255, 255, 0.07);
+  --markdown-english-card-link-bg: rgba(255, 255, 255, 0.045);
+  --markdown-english-card-link-bg-hover: rgba(255, 255, 255, 0.07);
+  --markdown-english-card-link-border-hover: rgba(156, 185, 221, 0.18);
+  --markdown-english-card-resource-bg: #1a1d21;
+  --markdown-english-card-resource-border: rgba(255, 255, 255, 0.1);
+  --markdown-english-card-resource-shadow: 0 16px 38px rgba(0, 0, 0, 0.36);
+  --markdown-english-card-practice-input-border: rgba(255, 255, 255, 0.18);
+  --markdown-english-card-practice-input-bg: #101319;
+  --markdown-english-card-practice-input-focus-border: rgba(156, 185, 221, 0.22);
+  --markdown-english-card-practice-input-focus-shadow: 0 0 0 3px
+    rgba(156, 185, 221, 0.08);
+  --markdown-english-card-result-correct: #86efac;
+  --markdown-english-card-result-incorrect: #fcd34d;
+  --markdown-english-card-example-underline: color-mix(
+    in srgb,
+    var(--markdown-english-card-accent) 58%,
+    transparent
+  );
+  --markdown-chat-bg: rgba(255, 255, 255, 0.04);
+  --markdown-chat-avatar-bg: rgba(255, 255, 255, 0.1);
+  --markdown-chat-avatar-assistant-bg: rgba(125, 211, 252, 0.18);
+  --markdown-chat-avatar-assistant-color: #b9e6ff;
+  --markdown-chat-avatar-sparkles-bg: rgba(192, 132, 252, 0.18);
+  --markdown-chat-avatar-sparkles-color: #e9d5ff;
+  --markdown-chat-avatar-cat-bg: rgba(251, 146, 60, 0.18);
+  --markdown-chat-avatar-cat-color: #fed7aa;
+  --markdown-chat-avatar-idea-bg: rgba(250, 204, 21, 0.18);
+  --markdown-chat-avatar-idea-color: #fde68a;
+  --markdown-chat-avatar-book-bg: rgba(56, 189, 248, 0.18);
+  --markdown-chat-avatar-book-color: #bae6fd;
+  --markdown-chat-avatar-moon-bg: rgba(129, 140, 248, 0.18);
+  --markdown-chat-avatar-moon-color: #c7d2fe;
+  --markdown-chat-avatar-system-bg: rgba(255, 255, 255, 0.1);
+  --markdown-chat-avatar-user-bg: rgba(255, 255, 255, 0.1);
+  --markdown-chat-bubble-bg: rgba(24, 24, 27, 0.96);
+  --markdown-chat-bubble-assistant-bg: rgba(5, 150, 105, 0.18);
+  --markdown-chat-bubble-system-bg: rgba(38, 38, 42, 0.96);
+  --markdown-chat-bubble-user-bg: rgba(37, 99, 235, 0.18);
+  --markdown-chat-bubble-left-border: rgba(52, 211, 153, 0.24);
+  --markdown-chat-bubble-right-border: rgba(96, 165, 250, 0.34);
+  --markdown-github-pill-bg: rgba(255, 255, 255, 0.08);
+  --markdown-github-pill-bg-hover: rgba(255, 255, 255, 0.12);
+  --markdown-github-hover-card-fill: #1a1d21;
+  --markdown-github-hover-card-border: rgba(255, 255, 255, 0.1);
+  --markdown-github-hover-card-shadow: 0 20px 46px rgba(0, 0, 0, 0.28);
+  --markdown-github-hover-card-arrow-shadow: -4px -4px 14px rgba(0, 0, 0, 0.12);
+  --markdown-github-hover-card-meta-bg: rgba(255, 255, 255, 0.08);
+  --markdown-github-hover-card-error: #fda29b;
+  --markdown-poem-bg: rgba(255, 255, 255, 0.04);
+  --markdown-poem-divider: rgba(255, 255, 255, 0.08);
+  --markdown-summary-card-bg: rgba(255, 255, 255, 0.045);
+  --markdown-web-embed-border: rgba(125, 211, 252, 0.2);
+  --markdown-web-embed-bg: linear-gradient(
+      135deg,
+      rgba(125, 211, 252, 0.09),
+      transparent 58%
+    ),
+    rgba(255, 255, 255, 0.02);
+  --markdown-web-embed-shadow: 0 18px 38px rgba(0, 0, 0, 0.22);
+  --markdown-web-embed-hover-bg: rgba(125, 211, 252, 0.12);
+  --markdown-web-embed-title-hover: #bae6fd;
+  --markdown-web-embed-frame-bg: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04),
+      transparent 100%
+    ),
+    var(--markdown-panel-bg);
+  --markdown-web-embed-iframe-bg: #ffffff;
+  --markdown-x-post-loading-bg: rgba(255, 255, 255, 0.06);
+  --markdown-x-post-loading-shine: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.14) 50%,
+    transparent 100%
+  );
 }

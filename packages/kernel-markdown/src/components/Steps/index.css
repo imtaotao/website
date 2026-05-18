@@ -41,8 +41,8 @@
   width: 1.85rem;
   height: 1.85rem;
   border-radius: 999px;
-  background: var(--markdown-step-marker-bg, #111827);
-  color: var(--markdown-step-marker-color, #ffffff);
+  background: var(--markdown-step-marker-bg);
+  color: var(--markdown-step-marker-color);
   font-family: var(--markdown-code-font);
   font-size: 0.84rem;
   font-weight: 700;
@@ -56,7 +56,7 @@
   bottom: 0.2rem;
   left: 0.92rem;
   width: 1px;
-  background: var(--markdown-line-strong);
+  background: var(--markdown-step-line);
 }
 
 .markdown-step:last-child {
@@ -122,15 +122,6 @@
 
 .markdown-step-line > :last-child {
   margin-bottom: 0;
-}
-
-:root[data-wk-theme='dark'] .markdown-shell .markdown-step::before {
-  background: var(--markdown-step-marker-bg, #f3f4f6);
-  color: var(--markdown-step-marker-color, #111827);
-}
-
-:root[data-wk-theme='dark'] .markdown-shell .markdown-step::after {
-  background: rgba(255, 255, 255, 0.16);
 }
 
 @media (max-width: 767px) {

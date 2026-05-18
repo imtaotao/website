@@ -2,11 +2,7 @@
   margin: 1.8rem 0;
   padding: 1.4rem 1.5rem;
   border-radius: 14px;
-  background: rgba(15, 23, 42, 0.035);
-}
-
-:root[data-wk-theme='dark'] .markdown-shell .markdown-poem {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--markdown-poem-bg);
 }
 
 .markdown-poem-header {
@@ -47,7 +43,7 @@
   max-width: 28rem;
   margin: 0 auto 1.15rem;
   padding-bottom: 0.95rem;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid var(--markdown-poem-divider);
 }
 
 .markdown-poem-preface-line {
@@ -56,10 +52,6 @@
   font-size: 0.8rem;
   line-height: 1.72;
   text-align: center;
-}
-
-:root[data-wk-theme='dark'] .markdown-shell .markdown-poem-preface {
-  border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
 .markdown-poem-stanza {

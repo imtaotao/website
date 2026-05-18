@@ -44,4 +44,224 @@
   --markdown-heading-4: #4b5563;
   --markdown-heading-5: #6b7280;
   --markdown-heading-6: #9ca3af;
+  --markdown-audio-border: rgba(5, 150, 105, 0.22);
+  --markdown-audio-border-hover: rgba(5, 150, 105, 0.38);
+  --markdown-audio-bg: linear-gradient(
+      135deg,
+      rgba(5, 150, 105, 0.08),
+      transparent 62%
+    ),
+    var(--markdown-surface-tint);
+  --markdown-audio-bg-hover: linear-gradient(
+      135deg,
+      rgba(5, 150, 105, 0.1),
+      transparent 62%
+    ),
+    var(--markdown-surface-soft);
+  --markdown-audio-inline-bg: linear-gradient(
+      135deg,
+      rgba(5, 150, 105, 0.1),
+      transparent 58%
+    ),
+    rgba(5, 150, 105, 0.04);
+  --markdown-audio-visual-bg: rgba(5, 150, 105, 0.1);
+  --markdown-audio-fallback-bg: radial-gradient(
+      circle at 50% 22%,
+      rgba(5, 150, 105, 0.24),
+      transparent 34%
+    ),
+    rgba(5, 150, 105, 0.08);
+  --markdown-audio-accent: #059669;
+  --markdown-audio-player-border: rgba(5, 150, 105, 0.16);
+  --markdown-audio-player-bg: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.3),
+      transparent 100%
+    ),
+    rgba(5, 150, 105, 0.06);
+  --markdown-audio-toggle-bg: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --markdown-audio-toggle-playing-bg: linear-gradient(
+    135deg,
+    #059669 0%,
+    #047857 100%
+  );
+  --markdown-audio-toggle-loading-bg: linear-gradient(
+    135deg,
+    #34d399 0%,
+    #10b981 100%
+  );
+  --markdown-audio-toggle-error-bg: linear-gradient(
+    135deg,
+    #ef4444 0%,
+    #dc2626 100%
+  );
+  --markdown-audio-toggle-color: #ffffff;
+  --markdown-audio-toggle-shadow: 0 10px 24px rgba(5, 150, 105, 0.2);
+  --markdown-audio-toggle-shadow-hover: 0 12px 28px rgba(5, 150, 105, 0.24);
+  --markdown-audio-progress-bg: rgba(15, 23, 42, 0.08);
+  --markdown-audio-progress-fill: linear-gradient(90deg, #10b981, #34d399);
+  --markdown-audio-thumb-border: #ffffff;
+  --markdown-audio-thumb-bg: #059669;
+  --markdown-audio-thumb-shadow: 0 2px 8px rgba(5, 150, 105, 0.28);
+  --markdown-audio-status-bg: rgba(5, 150, 105, 0.1);
+  --markdown-audio-status-color: #047857;
+  --markdown-audio-error-bg: rgba(220, 38, 38, 0.08);
+  --markdown-audio-error-border: rgba(220, 38, 38, 0.24);
+  --markdown-audio-error-status-bg: rgba(220, 38, 38, 0.12);
+  --markdown-audio-error-status-color: #b91c1c;
+  --markdown-video-border: rgba(37, 99, 235, 0.18);
+  --markdown-video-border-hover: rgba(37, 99, 235, 0.3);
+  --markdown-video-inline-bg: linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.09),
+      transparent 58%
+    ),
+    rgba(37, 99, 235, 0.035);
+  --markdown-video-fallback-bg: linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.11),
+      transparent 52%
+    ),
+    linear-gradient(315deg, rgba(5, 150, 105, 0.12), transparent 56%),
+    var(--markdown-image-bg);
+  --markdown-video-play-bg: rgba(255, 255, 255, 0.92);
+  --markdown-video-play-color: #111827;
+  --markdown-video-play-shadow: 0 10px 24px rgba(15, 23, 42, 0.2);
+  --markdown-video-link-border: rgba(37, 99, 235, 0.24);
+  --markdown-video-link-border-hover: rgba(37, 99, 235, 0.4);
+  --markdown-video-link-bg: rgba(37, 99, 235, 0.07);
+  --markdown-video-link-bg-hover: rgba(37, 99, 235, 0.11);
+  --markdown-video-link-icon: #2563eb;
+  --markdown-media-popover-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
+  --markdown-step-marker-bg: #111827;
+  --markdown-step-marker-color: #ffffff;
+  --markdown-step-line: var(--markdown-line-strong);
+  --markdown-callout-note-accent: #2563eb;
+  --markdown-callout-note-bg: #f8fbff;
+  --markdown-callout-note-border: #bfdbfe;
+  --markdown-callout-note-shadow: rgba(37, 99, 235, 0.08);
+  --markdown-callout-tip-accent: #2f9461;
+  --markdown-callout-tip-bg: #f6fbf8;
+  --markdown-callout-tip-border: #bfe8d0;
+  --markdown-callout-tip-shadow: rgba(47, 148, 97, 0.08);
+  --markdown-callout-warning-accent: #d28a17;
+  --markdown-callout-warning-bg: #fffaf0;
+  --markdown-callout-warning-border: #f4d59c;
+  --markdown-callout-warning-shadow: rgba(210, 138, 23, 0.1);
+  --markdown-callout-success-accent: var(--markdown-callout-tip-accent);
+  --markdown-callout-success-bg: var(--markdown-callout-tip-bg);
+  --markdown-callout-success-border: var(--markdown-callout-tip-border);
+  --markdown-callout-success-shadow: var(--markdown-callout-tip-shadow);
+  --markdown-callout-error-accent: #ef4444;
+  --markdown-callout-error-bg: #fff7f7;
+  --markdown-callout-error-border: #fecaca;
+  --markdown-callout-error-shadow: rgba(239, 68, 68, 0.08);
+  --markdown-fancy-list-title: #1d4ed8;
+  --markdown-fancy-list-border: rgba(37, 99, 235, 0.14);
+  --markdown-fancy-list-bg: rgba(59, 130, 246, 0.045);
+  --markdown-fancy-list-divider: rgba(37, 99, 235, 0.16);
+  --markdown-fancy-list-line: rgba(30, 64, 175, 0.86);
+  --markdown-english-cards-border: rgba(15, 23, 42, 0.1);
+  --markdown-english-cards-bg: linear-gradient(180deg, #fbfbf8 0%, #f7f6f1 100%);
+  --markdown-english-cards-shadow: none;
+  --markdown-english-control-border: rgba(15, 23, 42, 0.12);
+  --markdown-english-control-bg: rgba(255, 255, 255, 0.72);
+  --markdown-english-control-border-hover: rgba(59, 111, 182, 0.24);
+  --markdown-english-control-bg-hover: rgba(232, 240, 252, 0.72);
+  --markdown-english-control-color-hover: #315f9d;
+  --markdown-english-card-accent: #3b6fb6;
+  --markdown-english-card-bg: rgba(255, 255, 255, 0.76);
+  --markdown-english-card-border: rgba(15, 23, 42, 0.1);
+  --markdown-english-card-section-bg: rgba(248, 250, 252, 0.62);
+  --markdown-english-card-section-strong-bg: rgba(239, 246, 255, 0.5);
+  --markdown-english-card-section-border: rgba(15, 23, 42, 0.075);
+  --markdown-english-card-shadow: none;
+  --markdown-english-card-divider: rgba(15, 23, 42, 0.07);
+  --markdown-english-card-translation-border: rgba(37, 99, 235, 0.14);
+  --markdown-english-card-openapi-border: rgba(59, 111, 182, 0.1);
+  --markdown-english-card-openapi-bg: rgba(232, 240, 252, 0.56);
+  --markdown-english-card-openapi-color: #315f9d;
+  --markdown-english-card-openapi-error-border: rgba(220, 38, 38, 0.16);
+  --markdown-english-card-openapi-error-bg: rgba(254, 242, 242, 0.64);
+  --markdown-english-card-openapi-error-color: #b91c1c;
+  --markdown-english-card-chip-border: rgba(15, 23, 42, 0.08);
+  --markdown-english-card-chip-bg: rgba(255, 255, 255, 0.5);
+  --markdown-english-card-meta-bg: rgba(15, 23, 42, 0.035);
+  --markdown-english-card-action-hover-bg: rgba(59, 111, 182, 0.08);
+  --markdown-english-card-link-bg: rgba(255, 255, 255, 0.52);
+  --markdown-english-card-link-bg-hover: rgba(255, 255, 255, 0.72);
+  --markdown-english-card-link-border-hover: rgba(59, 111, 182, 0.2);
+  --markdown-english-card-resource-bg: #ffffff;
+  --markdown-english-card-resource-border: rgba(15, 23, 42, 0.1);
+  --markdown-english-card-resource-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
+  --markdown-english-card-practice-input-border: rgba(15, 23, 42, 0.12);
+  --markdown-english-card-practice-input-bg: rgba(255, 255, 255, 0.84);
+  --markdown-english-card-practice-input-focus-border: rgba(59, 111, 182, 0.28);
+  --markdown-english-card-practice-input-focus-shadow: 0 0 0 3px
+    rgba(59, 111, 182, 0.08);
+  --markdown-english-card-result-correct: #15803d;
+  --markdown-english-card-result-incorrect: #b45309;
+  --markdown-english-card-example-underline: color-mix(
+    in srgb,
+    var(--markdown-english-card-accent) 58%,
+    transparent
+  );
+  --markdown-chat-bg: rgba(15, 23, 42, 0.035);
+  --markdown-chat-avatar-bg: rgba(15, 23, 42, 0.08);
+  --markdown-chat-avatar-assistant-bg: rgba(37, 99, 235, 0.12);
+  --markdown-chat-avatar-assistant-color: #2453b7;
+  --markdown-chat-avatar-sparkles-bg: rgba(168, 85, 247, 0.12);
+  --markdown-chat-avatar-sparkles-color: #7e22ce;
+  --markdown-chat-avatar-cat-bg: rgba(249, 115, 22, 0.12);
+  --markdown-chat-avatar-cat-color: #c2410c;
+  --markdown-chat-avatar-idea-bg: rgba(245, 158, 11, 0.14);
+  --markdown-chat-avatar-idea-color: #b45309;
+  --markdown-chat-avatar-book-bg: rgba(14, 165, 233, 0.12);
+  --markdown-chat-avatar-book-color: #0369a1;
+  --markdown-chat-avatar-moon-bg: rgba(99, 102, 241, 0.12);
+  --markdown-chat-avatar-moon-color: #4338ca;
+  --markdown-chat-avatar-system-bg: rgba(15, 23, 42, 0.1);
+  --markdown-chat-avatar-user-bg: rgba(15, 23, 42, 0.12);
+  --markdown-chat-bubble-bg: rgba(255, 255, 255, 0.78);
+  --markdown-chat-bubble-assistant-bg: rgba(5, 150, 105, 0.1);
+  --markdown-chat-bubble-system-bg: rgba(15, 23, 42, 0.06);
+  --markdown-chat-bubble-user-bg: rgba(37, 99, 235, 0.09);
+  --markdown-chat-bubble-left-border: rgba(5, 150, 105, 0.32);
+  --markdown-chat-bubble-right-border: rgba(37, 99, 235, 0.28);
+  --markdown-github-pill-bg: rgba(15, 23, 42, 0.06);
+  --markdown-github-pill-bg-hover: rgba(15, 23, 42, 0.09);
+  --markdown-github-hover-card-fill: #f6f6f7;
+  --markdown-github-hover-card-border: rgba(15, 23, 42, 0.08);
+  --markdown-github-hover-card-shadow: 0 18px 44px rgba(15, 23, 42, 0.14);
+  --markdown-github-hover-card-arrow-shadow: -4px -4px 12px
+    rgba(15, 23, 42, 0.03);
+  --markdown-github-hover-card-meta-bg: rgba(15, 23, 42, 0.06);
+  --markdown-github-hover-card-error: #b42318;
+  --markdown-poem-bg: rgba(15, 23, 42, 0.035);
+  --markdown-poem-divider: rgba(15, 23, 42, 0.08);
+  --markdown-summary-card-bg: rgba(15, 23, 42, 0.04);
+  --markdown-web-embed-border: rgba(14, 165, 233, 0.18);
+  --markdown-web-embed-bg: linear-gradient(
+      135deg,
+      rgba(14, 165, 233, 0.08),
+      transparent 58%
+    ),
+    var(--markdown-surface-tint);
+  --markdown-web-embed-shadow: 0 18px 38px rgba(15, 23, 42, 0.08);
+  --markdown-web-embed-hover-bg: rgba(14, 165, 233, 0.1);
+  --markdown-web-embed-title-hover: var(--markdown-accent);
+  --markdown-web-embed-frame-bg: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.12),
+      transparent 100%
+    ),
+    var(--markdown-panel-bg);
+  --markdown-web-embed-iframe-bg: #ffffff;
+  --markdown-x-post-loading-bg: rgba(15, 23, 42, 0.05);
+  --markdown-x-post-loading-shine: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 100%
+  );
 }
