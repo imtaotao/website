@@ -63,6 +63,10 @@ describe('ModuleCssBuilder', () => {
         export const config = {
           sourceDir: 'source',
           outputDir: 'output',
+          themes: {
+            light: './source/themes/light.css',
+            dark: './source/themes/dark.css',
+          },
           cssDependencies: {
             '@scope/ui': {
               global: '/style.css',
@@ -81,6 +85,11 @@ describe('ModuleCssBuilder', () => {
     );
     writeFile('node_modules/@scope/ui/tokens.css', '.token { color: green; }');
     writeFile('node_modules/@scope/ui/components/Button.css', '');
+    writeFile('source/themes/light.css', ':root { --color: white; }');
+    writeFile(
+      'source/themes/dark.css',
+      ':root[data-theme="dark"] { --color: black; }',
+    );
     writeFile(
       'source/components/Card/index.tsx',
       `
@@ -117,6 +126,8 @@ describe('ModuleCssBuilder', () => {
       'es/style/external.css',
       'es/style/index.css',
       'es/style/module.css',
+      'es/style/themes/dark.css',
+      'es/style/themes/light.css',
       'index.css',
       'lib/components/Badge/index.css',
       'lib/components/Badge/style/index.css',
@@ -126,7 +137,13 @@ describe('ModuleCssBuilder', () => {
       'lib/style/external.css',
       'lib/style/index.css',
       'lib/style/module.css',
+      'lib/style/themes/dark.css',
+      'lib/style/themes/light.css',
     ]);
+    expect(readFile('output/index.css')).toContain(':root { --color: white; }');
+    expect(readFile('output/index.css')).toContain(
+      ':root[data-theme="dark"] { --color: black; }',
+    );
     expect(readFile('output/index.css')).toContain('.token { color: green; }');
     expect(readFile('output/index.css')).toContain(
       '.external { color: blue; }',
@@ -150,15 +167,18 @@ describe('ModuleCssBuilder', () => {
     expect(readFile('output/es/style/external.css')).toBe(
       '@import "@scope/ui/external.css";\n',
     );
-    expect(readFile('output/es/style/index.css')).toContain(
-      '@import "./external.css";',
-    );
-    expect(readFile('output/es/style/index.css')).toContain(
-      '@import "./module.css";',
+    expect(readFile('output/es/style/index.css')).toBe(
+      '@import "./themes/light.css";\n' +
+        '@import "./themes/dark.css";\n' +
+        '@import "./external.css";\n' +
+        '@import "./module.css";\n',
     );
     expect(readFile('output/es/style/module.css')).toContain(
       '.card { color: red; }',
     );
+    expect(readFile('output/es/style/module.css')).not.toContain('--color');
+    expect(fs.existsSync(path.join(tempRoot, 'output/es/themes'))).toBe(false);
+    expect(fs.existsSync(path.join(tempRoot, 'output/lib/themes'))).toBe(false);
     expect(readFile('output/lib/style/index.css')).toContain(
       '@import "./external.css";',
     );

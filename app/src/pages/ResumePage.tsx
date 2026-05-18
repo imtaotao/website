@@ -4,9 +4,7 @@ import type { ResumeModel, ResumeImageAssets } from '@website-kernel/resume';
 import { ResumeMobile } from '@website-kernel/resume/pages/ResumeMobile';
 import { ResumeDesktop } from '@website-kernel/resume/pages/ResumeDesktop';
 
-import '@website-kernel/resume/external.css';
-import '@website-kernel/resume/pages/ResumeMobile.css';
-import '@website-kernel/resume/pages/ResumeDesktop.css';
+import '@website-kernel/resume/style.css';
 
 import { loadResumeModel } from '#app/lib/resume';
 import { useIsMobile } from '#app/lib/browser';

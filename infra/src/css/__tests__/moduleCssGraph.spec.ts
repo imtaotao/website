@@ -78,6 +78,58 @@ describe('ModuleCssGraph', () => {
     );
   });
 
+  test('creates dev style CSS with themes before module styles', async () => {
+    writeFile(
+      'packages/kernel-blog/css.config.ts',
+      `
+        import type { CssOptions } from '@website/infra/css';
+
+        export const config: CssOptions = {
+          sourceDir: 'src',
+          outputDir: 'dist',
+          themes: {
+            light: './src/themes/light.css',
+            dark: './src/themes/dark.css',
+          },
+        };
+      `,
+    );
+    writeFile(
+      'packages/kernel-blog/src/themes/light.css',
+      ':root { --bg: white; }',
+    );
+    writeFile(
+      'packages/kernel-blog/src/themes/dark.css',
+      ':root[data-wk-theme="dark"] { --bg: black; }',
+    );
+    writeFile(
+      'packages/kernel-blog/src/pages/BlogArticlePage.css',
+      '.article { background: var(--bg); }',
+    );
+
+    const graph = new ModuleCssGraph({
+      workspaceRoot: tempRoot,
+    });
+    const parsed = graph.parseKernelCssId('@website-kernel/blog/style.css');
+
+    const result = await graph.createKernelCssCode(parsed!);
+
+    expect(result.code.indexOf(':root { --bg: white; }')).toBeLessThan(
+      result.code.indexOf('.article { background: var(--bg); }'),
+    );
+    expect(result.code).toContain(
+      ':root[data-wk-theme="dark"] { --bg: black; }',
+    );
+    expect(result.code).not.toContain('src/themes/light.css');
+    expect(
+      await graph.createKernelCssCode(
+        graph.parseKernelCssId('@website-kernel/blog/themes/light.css')!,
+      ),
+    ).toMatchObject({
+      code: ':root { --bg: white; }\n',
+    });
+  });
+
   test('normalizes slash styles for kernel source graph checks and watch roots', () => {
     const graph = new ModuleCssGraph({
       workspaceRoot: 'C:\\repo\\website',

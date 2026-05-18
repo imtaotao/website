@@ -1,6 +1,3 @@
-@import "../themes/light.css";
-@import "../themes/dark.css";
-
 .resume-root {
   font-family: var(
     --site-font-body,

@@ -44,6 +44,11 @@
       "require": "./dist/lib/style/index.css",
       "default": "./dist/es/style/index.css"
     },
+    "./themes/*.css": {
+      "import": "./dist/es/style/themes/*.css",
+      "require": "./dist/lib/style/themes/*.css",
+      "default": "./dist/es/style/themes/*.css"
+    },
     "./external.css": {
       "import": "./dist/es/style/external.css",
       "require": "./dist/lib/style/external.css",

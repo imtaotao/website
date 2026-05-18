@@ -7,9 +7,4 @@ export const config: CssOptions = {
     light: './src/themes/light.css',
     dark: './src/themes/dark.css',
   },
-  cssDependencies: {
-    katex: {
-      global: '/dist/katex.min.css',
-    },
-  },
 };

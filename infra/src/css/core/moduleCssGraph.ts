@@ -11,13 +11,17 @@ import {
 import {
   createImportCode,
   EXTERNAL_ENTRY,
+  createStyleFileKey,
+  createStyleFileKeySet,
   getGlobalStyleDependencies,
   groupStyleFilesByDir,
   KERNEL_PACKAGE_PREFIX,
   MODULE_ENTRY,
   parsePackageStyleSpecifier,
   removeCssExtension,
+  resolveThemeStyleFiles,
   STYLE_ENTRY,
+  THEMES_ENTRY_PREFIX,
 } from '#infra/css/core/styleEntry';
 import { StyleProcessor } from '#infra/css/core/styleProcessor';
 import type {
@@ -132,15 +136,19 @@ export class ModuleCssGraph {
     }
 
     if (parsed.cssPath === STYLE_ENTRY) {
+      const themes = this.createThemeCssCode(context);
       const external = await this.createExternalCssCode(context);
       const module = this.createModuleCssCode(context);
-      return mergeLoadResults(external, module);
+      return mergeLoadResults(themes, external, module);
     }
     if (parsed.cssPath === EXTERNAL_ENTRY) {
       return this.createExternalCssCode(context);
     }
     if (parsed.cssPath === MODULE_ENTRY) {
       return this.createModuleCssCode(context);
+    }
+    if (parsed.cssPath.startsWith(THEMES_ENTRY_PREFIX)) {
+      return this.createThemeCssCode(context, parsed.cssPath);
     }
     return this.createSourceModuleCssCode(context, parsed.cssPath);
   }
@@ -203,8 +211,41 @@ export class ModuleCssGraph {
     );
   }
 
+  private createThemeCssCode(context: KernelCssContext, cssPath?: string) {
+    const themeFiles = this.getThemeStyleFiles(context);
+    const targetThemeName = cssPath
+      ? removeCssExtension(cssPath.slice(THEMES_ENTRY_PREFIX.length))
+      : null;
+    const root = context.styleProcessor.createRoot();
+    const watchFiles = [context.configPath, ...themeFiles.values()];
+
+    for (const [themeName, themeFile] of themeFiles) {
+      if (targetThemeName && themeName !== targetThemeName) continue;
+      const content = context.styleProcessor.readStyleFile(themeFile);
+      if (content.trim()) {
+        context.styleProcessor.appendStyleContent(root, content, themeFile);
+      }
+    }
+
+    return {
+      code: root.nodes?.length ? context.styleProcessor.stringify(root) : '',
+      watchFiles,
+    };
+  }
+
+  private getThemeStyleFiles(context: KernelCssContext) {
+    return resolveThemeStyleFiles(
+      context.cssOptions,
+      context.context.packageRoot,
+    );
+  }
+
   private createModuleCssCode(context: KernelCssContext) {
-    const styleFiles = this.getStyleFiles(context.sourceRoot);
+    const themeFiles = this.getThemeStyleFiles(context);
+    const themeFileKeys = createStyleFileKeySet(themeFiles.values());
+    const styleFiles = this.getStyleFiles(context.sourceRoot).filter(
+      (styleFile) => !themeFileKeys.has(createStyleFileKey(styleFile)),
+    );
     const root = context.styleProcessor.createRoot();
     const seen = new Set<string>();
 
@@ -226,7 +267,11 @@ export class ModuleCssGraph {
     cssPath: string,
   ) {
     const sourceModuleDir = removeCssExtension(cssPath);
-    const styleFiles = this.getStyleFiles(context.sourceRoot);
+    const themeFiles = this.getThemeStyleFiles(context);
+    const themeFileKeys = createStyleFileKeySet(themeFiles.values());
+    const styleFiles = this.getStyleFiles(context.sourceRoot).filter(
+      (styleFile) => !themeFileKeys.has(createStyleFileKey(styleFile)),
+    );
     const styleFilesByDir = groupStyleFilesByDir(
       context.sourceRoot,
       styleFiles,

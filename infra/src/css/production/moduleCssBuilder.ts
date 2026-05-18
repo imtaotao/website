@@ -10,8 +10,12 @@ import type {
 } from '#infra/css/core/index';
 import { moduleCssBuildConfig } from '#infra/css/core/index';
 import {
-  getGlobalStyleDependencies,
+  THEMES_DIR,
+  createStyleFileKey,
+  createStyleFileKeySet,
   groupStyleFilesByDir,
+  getGlobalStyleDependencies,
+  resolveThemeStyleFiles,
 } from '#infra/css/core/styleEntry';
 import { loadCssOptions } from '#infra/css/core/index';
 import { WorkspaceStyleResolver } from '#infra/css/core/index';
@@ -39,7 +43,11 @@ export class ModuleCssBuilder {
     console.log(`[infra:css] build ${path.basename(context.packageRoot)}`);
 
     const sourceFiles = fileWalker(this.srcRoot);
-    const styleFiles = this.getStyleFiles(sourceFiles);
+    const themeFiles = resolveThemeStyleFiles(cssOptions, context.packageRoot);
+    const themeFileKeys = createStyleFileKeySet(themeFiles.values());
+    const styleFiles = this.getStyleFiles(sourceFiles).filter(
+      (styleFile) => !themeFileKeys.has(createStyleFileKey(styleFile)),
+    );
     const moduleStyleImports = this.importCollector.collect(
       sourceFiles,
       cssOptions,
@@ -47,6 +55,7 @@ export class ModuleCssBuilder {
     const outputs: Array<string> = [];
     const packageStyle = this.writePackageStyles(
       styleFiles,
+      themeFiles,
       cssOptions,
       context,
     );
@@ -54,15 +63,19 @@ export class ModuleCssBuilder {
 
     for (const format of this.config.output.outputFormats) {
       const outRoot = path.join(context.packageRoot, context.outputDir, format);
+      this.cleanThemeStyles(outRoot);
       this.copyStyleFiles(styleFiles, outRoot);
+      const themeStyles = this.writeThemeStyles(themeFiles, outRoot);
       const externalStyle = this.writeExternalStyle(outRoot, cssOptions);
       const moduleStyle = this.writeModuleStyle(styleFiles, outRoot);
       const entryStyle = this.writeEntryStyle(
         outRoot,
+        themeStyles,
         externalStyle,
         moduleStyle,
       );
 
+      outputs.push(...themeStyles);
       if (externalStyle) outputs.push(externalStyle);
       if (moduleStyle) outputs.push(moduleStyle);
       if (entryStyle) outputs.push(entryStyle);
@@ -132,11 +145,19 @@ export class ModuleCssBuilder {
 
   private writePackageStyles(
     styleFiles: Array<string>,
+    themeFiles: Map<string, string>,
     buildConfig: CssOptions,
     context: ResolvedModuleCssBuildContext,
   ) {
     const seen = new Set<string>();
     const root = this.styleProcessor.createRoot();
+
+    for (const cssPath of themeFiles.values()) {
+      const content = this.styleProcessor.readStyleFile(cssPath, seen);
+      if (content.trim()) {
+        this.styleProcessor.appendStyleContent(root, content, cssPath);
+      }
+    }
 
     for (const specifier of getGlobalStyleDependencies(buildConfig)) {
       const cssPath = this.resolver.resolveStyleDependency(specifier);
@@ -170,6 +191,7 @@ export class ModuleCssBuilder {
 
   private writeEntryStyle(
     outRoot: string,
+    themeStyles: Array<string>,
     externalStyle: string | null,
     moduleStyle: string | null,
   ) {
@@ -181,7 +203,7 @@ export class ModuleCssBuilder {
     const root = this.styleProcessor.createRoot();
     const styleDir = path.dirname(target);
 
-    for (const style of [externalStyle, moduleStyle]) {
+    for (const style of [...themeStyles, externalStyle, moduleStyle]) {
       if (!style) continue;
       this.styleProcessor.appendImportRule(
         root,
@@ -192,6 +214,44 @@ export class ModuleCssBuilder {
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.writeFileSync(target, this.styleProcessor.stringify(root));
     return target;
+  }
+
+  private writeThemeStyles(themeFiles: Map<string, string>, outRoot: string) {
+    const outputs: Array<string> = [];
+    const themesDir = path.join(
+      outRoot,
+      this.config.output.styleDir,
+      THEMES_DIR,
+    );
+
+    for (const [themeName, cssPath] of themeFiles) {
+      const root = this.styleProcessor.createRoot();
+      const content = this.styleProcessor.readStyleFile(cssPath);
+      if (content.trim()) {
+        this.styleProcessor.appendStyleContent(root, content, cssPath);
+      }
+
+      const target = path.join(themesDir, `${themeName}.css`);
+      fs.mkdirSync(path.dirname(target), { recursive: true });
+      fs.writeFileSync(
+        target,
+        root.nodes?.length ? this.styleProcessor.stringify(root) : '',
+      );
+      outputs.push(target);
+    }
+
+    return outputs;
+  }
+
+  private cleanThemeStyles(outRoot: string) {
+    fs.rmSync(path.join(outRoot, THEMES_DIR), {
+      recursive: true,
+      force: true,
+    });
+    fs.rmSync(path.join(outRoot, this.config.output.styleDir, THEMES_DIR), {
+      recursive: true,
+      force: true,
+    });
   }
 
   private writeModuleStyle(styleFiles: Array<string>, outRoot: string) {

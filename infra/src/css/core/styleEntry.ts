@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { isArray } from 'aidly';
+import { normalizeCssFileKey } from '#infra/css/core/path';
 import type { CssOptions } from '#infra/css/core/types';
 import { getSourceModuleDir } from '#infra/utils';
 
@@ -7,6 +8,8 @@ export const KERNEL_PACKAGE_PREFIX = '@website-kernel/';
 export const STYLE_ENTRY = 'style.css';
 export const EXTERNAL_ENTRY = 'external.css';
 export const MODULE_ENTRY = 'module.css';
+export const THEMES_DIR = 'themes';
+export const THEMES_ENTRY_PREFIX = 'themes/';
 
 export type PackageStyleSpecifier = {
   packageName: string;
@@ -42,6 +45,32 @@ export const getGlobalStyleDependencies = (cssOptions: CssOptions) => {
     }
   }
   return dependencies;
+};
+
+export const getThemeStyleEntries = (cssOptions: CssOptions) => {
+  return Object.entries(cssOptions.themes ?? {}).map(([themeName, file]) => ({
+    themeName,
+    file,
+  }));
+};
+
+export const resolveThemeStyleFiles = (
+  cssOptions: CssOptions,
+  packageRoot: string,
+) => {
+  const themeFiles = new Map<string, string>();
+  for (const { themeName, file } of getThemeStyleEntries(cssOptions)) {
+    themeFiles.set(themeName, path.resolve(packageRoot, file));
+  }
+  return themeFiles;
+};
+
+export const createStyleFileKeySet = (styleFiles: Iterable<string>) => {
+  return new Set(Array.from(styleFiles, normalizeCssFileKey));
+};
+
+export const createStyleFileKey = (styleFile: string) => {
+  return normalizeCssFileKey(styleFile);
 };
 
 export const parsePackageStyleSpecifier = (

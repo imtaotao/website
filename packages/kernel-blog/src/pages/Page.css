@@ -1,6 +1,3 @@
-@import "../themes/light.css";
-@import "../themes/dark.css";
-
 @media (prefers-reduced-motion: reduce) {
   .blog-enter {
     opacity: 1;

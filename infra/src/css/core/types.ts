@@ -8,6 +8,8 @@ export type CssDependencyGroup = {
 export interface CssOptions {
   // 外部包 CSS 依赖配置，key 是包名前缀，value 是该包的样式依赖规则。
   cssDependencies?: Record<string, CssDependencyGroup>;
+  // 主题 CSS 入口，key 是主题名，value 是相对于当前包根目录的 CSS 文件路径。
+  themes?: Record<string, string>;
   // 源码目录，相对于当前包根目录。
   sourceDir?: string;
   // 构建产物目录，相对于当前包根目录。
