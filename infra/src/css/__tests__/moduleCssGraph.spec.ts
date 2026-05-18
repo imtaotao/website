@@ -1,27 +1,19 @@
-import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { ModuleCssGraph } from '#infra/css/core/index';
 import { normalizeCssFileKey } from '#infra/css/core/path';
+import { createCssTestFixture, type CssTestFixture } from './cssTestFixture';
 
 describe('ModuleCssGraph', () => {
-  let tempRoot: string;
-
-  const writeFile = (relativePath: string, content: string) => {
-    const file = path.join(tempRoot, relativePath);
-    fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, content);
-    return file;
-  };
+  let fixture: CssTestFixture;
 
   beforeEach(() => {
-    tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'infra-css-graph-'));
+    fixture = createCssTestFixture('infra-css-graph-');
     writeFile('pnpm-workspace.yaml', 'packages:\n  - packages/*\n');
   });
 
   afterEach(() => {
-    fs.rmSync(tempRoot, { recursive: true, force: true });
+    fixture.cleanup();
   });
 
   test('creates dev external CSS through recursive workspace kernel dependencies', async () => {
@@ -63,7 +55,7 @@ describe('ModuleCssGraph', () => {
     );
 
     const graph = new ModuleCssGraph({
-      workspaceRoot: tempRoot,
+      workspaceRoot: fixture.root,
     });
     const parsed = graph.parseKernelCssId('@website-kernel/blog/external.css');
 
@@ -72,12 +64,12 @@ describe('ModuleCssGraph', () => {
     expect(result.code).toBe('@import "katex/dist/katex.min.css";');
     expect(result.watchFiles).toContain(
       normalizeCssFileKey(
-        path.join(tempRoot, 'packages/kernel-blog/css.config.ts'),
+        path.join(fixture.root, 'packages/kernel-blog/css.config.ts'),
       ),
     );
     expect(result.watchFiles).toContain(
       normalizeCssFileKey(
-        path.join(tempRoot, 'packages/kernel-markdown/css.config.ts'),
+        path.join(fixture.root, 'packages/kernel-markdown/css.config.ts'),
       ),
     );
   });
@@ -153,7 +145,7 @@ describe('ModuleCssGraph', () => {
     );
 
     const graph = new ModuleCssGraph({
-      workspaceRoot: tempRoot,
+      workspaceRoot: fixture.root,
     });
     const parsed = graph.parseKernelCssId('@website-kernel/blog/style.css');
 
@@ -175,7 +167,7 @@ describe('ModuleCssGraph', () => {
     expect(result.code).not.toContain('src/themes/light.css');
     expect(result.watchFiles).toContain(
       normalizeCssFileKey(
-        path.join(tempRoot, 'packages/kernel-blog/css.config.ts'),
+        path.join(fixture.root, 'packages/kernel-blog/css.config.ts'),
       ),
     );
     const lightTheme = await graph.createKernelCssCode(
@@ -222,4 +214,94 @@ describe('ModuleCssGraph', () => {
       'C:/repo/website/packages/kernel-*/css.config.ts',
     ]);
   });
+
+  test('creates source module CSS with dependency modules before own styles', async () => {
+    writeFile(
+      'packages/kernel-blog/css.config.ts',
+      `
+        import type { CssOptions } from '@website/infra/css';
+
+        export const config: CssOptions = {
+          sourceDir: 'src',
+          outputDir: 'dist',
+          cssDependencies: {
+            '@website-kernel/markdown': {
+              global: '/style.css',
+              themes: {
+                light: '/themes/light.css',
+                dark: '/themes/dark.css',
+              },
+              component: ['/components/**.css'],
+            },
+          },
+        };
+      `,
+    );
+    writeFile(
+      'packages/kernel-markdown/css.config.ts',
+      `
+        import type { CssOptions } from '@website/infra/css';
+
+        export const config: CssOptions = {
+          sourceDir: 'src',
+          outputDir: 'dist',
+          themes: {
+            light: './src/themes/light.css',
+            dark: './src/themes/dark.css',
+          },
+        };
+      `,
+    );
+    writeFile(
+      'packages/kernel-blog/src/pages/BlogArticlePage.tsx',
+      `
+        import { Renderer } from '@website-kernel/markdown';
+        export const BlogArticlePage = () => Renderer;
+      `,
+    );
+    writeFile(
+      'packages/kernel-blog/src/pages/BlogArticlePage.css',
+      '.article { color: var(--blog-text); }',
+    );
+    writeFile(
+      'packages/kernel-markdown/src/themes/light.css',
+      '.markdown-shell { --markdown-bg: white; }',
+    );
+    writeFile(
+      'packages/kernel-markdown/src/components/Renderer/index.css',
+      '.markdown-prose { color: var(--markdown-text); }',
+    );
+
+    const graph = new ModuleCssGraph({
+      workspaceRoot: fixture.root,
+    });
+    const result = await graph.createKernelCssCode(
+      graph.parseKernelCssId('@website-kernel/blog/pages/BlogArticlePage.css')!,
+    );
+
+    expect(result.code.indexOf('.markdown-prose')).toBeLessThan(
+      result.code.indexOf('.article'),
+    );
+    expect(result.code).not.toContain('.markdown-shell');
+    expect(result.watchFiles).toContain(
+      normalizeCssFileKey(
+        path.join(
+          fixture.root,
+          'packages/kernel-blog/src/pages/BlogArticlePage.tsx',
+        ),
+      ),
+    );
+    expect(result.watchFiles).toContain(
+      normalizeCssFileKey(
+        path.join(
+          fixture.root,
+          'packages/kernel-blog/src/pages/BlogArticlePage.css',
+        ),
+      ),
+    );
+  });
+
+  const writeFile = (relativePath: string, content: string) => {
+    return fixture.writeFile(relativePath, content);
+  };
 });

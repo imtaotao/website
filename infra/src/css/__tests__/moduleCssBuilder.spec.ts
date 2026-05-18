@@ -1,50 +1,18 @@
-import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { ModuleCssBuilder } from '#infra/css/production/moduleCssBuilder';
 import { moduleCssBuildConfig } from '#infra/css/core/index';
+import { createCssTestFixture, type CssTestFixture } from './cssTestFixture';
 
 describe('ModuleCssBuilder', () => {
-  let tempRoot: string;
-
-  const writeFile = (relativePath: string, content: string) => {
-    const file = path.join(tempRoot, relativePath);
-    fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, content);
-    return file;
-  };
-
-  const readFile = (relativePath: string) => {
-    return fs.readFileSync(path.join(tempRoot, relativePath), 'utf8');
-  };
-
-  const listFiles = (relativePath: string) => {
-    const root = path.join(tempRoot, relativePath);
-    const files: Array<string> = [];
-
-    const walk = (dir: string) => {
-      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-        const file = path.join(dir, entry.name);
-        if (entry.isDirectory()) {
-          walk(file);
-          continue;
-        }
-        files.push(path.relative(root, file).split(path.sep).join('/'));
-      }
-    };
-
-    walk(root);
-    return files.sort();
-  };
+  let fixture: CssTestFixture;
 
   beforeEach(() => {
-    tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'infra-builder-'));
+    fixture = createCssTestFixture('infra-builder-');
     writeFile('package.json', JSON.stringify({ name: 'fixture-package' }));
   });
 
   afterEach(() => {
-    fs.rmSync(tempRoot, { recursive: true, force: true });
+    fixture.cleanup();
   });
 
   test('builds package, format and module CSS entries', async () => {
@@ -201,11 +169,9 @@ describe('ModuleCssBuilder', () => {
     expect(readFile('output/lib/style/index.css')).toContain(
       '@import "./themes/light.css";',
     );
-    expect(
-      fs.existsSync(
-        path.join(tempRoot, 'output/es/components/Card/tokens/style/index.css'),
-      ),
-    ).toBe(false);
+    expect(exists('output/es/components/Card/tokens/style/index.css')).toBe(
+      false,
+    );
   });
 
   test('rewrites legacy output-format package style imports per format', async () => {
@@ -374,12 +340,28 @@ describe('ModuleCssBuilder', () => {
   const createBuilder = () => {
     return new ModuleCssBuilder(
       {
-        packageRoot: tempRoot,
+        packageRoot: fixture.root,
       },
       {
         ...moduleCssBuildConfig,
         cssConfigFile: 'css.config.mjs',
       },
     );
+  };
+
+  const writeFile = (relativePath: string, content: string) => {
+    return fixture.writeFile(relativePath, content);
+  };
+
+  const readFile = (relativePath: string) => {
+    return fixture.readFile(relativePath);
+  };
+
+  const listFiles = (relativePath: string) => {
+    return fixture.listFiles(relativePath);
+  };
+
+  const exists = (relativePath: string) => {
+    return fixture.exists(relativePath);
   };
 });

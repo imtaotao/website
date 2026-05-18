@@ -38,6 +38,7 @@
   --markdown-code-symbol: #e36209;
   --markdown-code-deletion: #b31d28;
   --markdown-code-addition: #22863a;
+  --markdown-inline-code-bg: #f7f7f7;
   --markdown-heading-1: #111827;
   --markdown-heading-2: #1f2937;
   --markdown-heading-3: #374151;
@@ -238,6 +239,7 @@
   --markdown-github-hover-card-meta-bg: rgba(15, 23, 42, 0.06);
   --markdown-github-hover-card-error: #b42318;
   --markdown-poem-bg: rgba(15, 23, 42, 0.035);
+  --markdown-poem-border: transparent;
   --markdown-poem-divider: rgba(15, 23, 42, 0.08);
   --markdown-summary-card-bg: rgba(15, 23, 42, 0.04);
   --markdown-web-embed-border: rgba(14, 165, 233, 0.18);

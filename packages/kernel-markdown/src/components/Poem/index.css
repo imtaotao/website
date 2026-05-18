@@ -1,6 +1,7 @@
 .markdown-poem {
   margin: 1.8rem 0;
   padding: 1.4rem 1.5rem;
+  border: 1px solid var(--markdown-poem-border);
   border-radius: 14px;
   background: var(--markdown-poem-bg);
 }

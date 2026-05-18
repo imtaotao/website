@@ -252,7 +252,7 @@
 .markdown-prose-inline-code {
   padding: 0.3rem 0.34rem;
   border-radius: 5px;
-  background: #f7f7f7;
+  background: var(--markdown-inline-code-bg);
   color: var(--markdown-text-strong);
   font-family: var(--markdown-code-font);
   font-size: 0.86em;
@@ -307,8 +307,4 @@
 :root[data-wk-theme='dark'] .markdown-shell .markdown-prose-link:hover {
   color: #ffffff;
   text-decoration-color: #9ca3af;
-}
-
-:root[data-wk-theme='dark'] .markdown-shell .markdown-prose-inline-code {
-  background: #151515;
 }
