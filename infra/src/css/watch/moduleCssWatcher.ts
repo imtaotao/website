@@ -1,12 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import chokidar, { type FSWatcher } from 'chokidar';
-import { loadCssOptions } from '#infra/css/cssOptions';
-import { moduleCssBuildConfig } from '#infra/css/config';
+import { loadCssOptions } from '#infra/css/core/index';
+import { moduleCssBuildConfig } from '#infra/css/core/index';
 import type {
   ModuleCssBuildConfig,
   ModuleCssBuildContext,
-} from '#infra/css/types';
+} from '#infra/css/core/index';
 import { ModuleCssBuilder } from '#infra/css/production/moduleCssBuilder';
 
 export class ModuleCssWatcher {
@@ -24,12 +24,8 @@ export class ModuleCssWatcher {
     await this.rebuild();
     console.log('[infra:css] watch mode ready');
 
-    process.once('SIGINT', () => {
-      void this.close().finally(() => process.exit(0));
-    });
-    process.once('SIGTERM', () => {
-      this.close().finally(() => process.exit(0));
-    });
+    process.once('SIGINT', this.handleClose);
+    process.once('SIGTERM', this.handleClose);
   }
 
   private async rebuild() {
@@ -87,9 +83,15 @@ export class ModuleCssWatcher {
     if (this.timer) clearTimeout(this.timer);
     this.timer = setTimeout(() => {
       this.timer = null;
-      void this.rebuild();
+      this.rebuild().catch(console.error);
     }, 80);
   }
+
+  private handleClose = () => {
+    this.close()
+      .catch(console.error)
+      .finally(() => process.exit(0));
+  };
 
   private async close() {
     if (this.timer) clearTimeout(this.timer);

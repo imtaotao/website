@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { resolveCssOptionsModule } from '#infra/css/cssOptions';
+import { resolveCssOptionsModule } from '#infra/css/core/index';
 
 describe('resolveCssOptionsModule', () => {
   test('reads config from direct named export', () => {

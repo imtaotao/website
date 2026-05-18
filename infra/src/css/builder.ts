@@ -1,5 +1,5 @@
 import { ModuleCssBuilder } from '#infra/css/production/moduleCssBuilder';
-import { ModuleCssWatcher } from '#infra/css/production/moduleCssWatcher';
+import { ModuleCssWatcher } from '#infra/css/watch/moduleCssWatcher';
 
 const shouldWatch =
   process.argv.includes('--watch') || process.argv.includes('-w');

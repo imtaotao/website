@@ -5,9 +5,9 @@ import {
   IMPORT_AT_RULE,
   LINE_SEPARATOR,
   RELATIVE_IMPORT_PREFIX,
-} from '#infra/css/constants';
-import type { ModuleCssBuildConfig } from '#infra/css/types';
-import type { WorkspaceStyleResolver } from '#infra/css/workspaceStyleResolver';
+} from '#infra/css/core/constants';
+import type { ModuleCssBuildConfig } from '#infra/css/core/types';
+import type { WorkspaceStyleResolver } from '#infra/css/core/workspaceStyleResolver';
 
 export class StyleProcessor {
   constructor(

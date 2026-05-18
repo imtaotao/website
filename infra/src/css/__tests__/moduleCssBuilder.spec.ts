@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { ModuleCssBuilder } from '#infra/css/production/moduleCssBuilder';
-import { moduleCssBuildConfig } from '#infra/css/config';
+import { moduleCssBuildConfig } from '#infra/css/core/index';
 
 describe('ModuleCssBuilder', () => {
   let tempRoot: string;

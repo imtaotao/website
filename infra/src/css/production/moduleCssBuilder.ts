@@ -1,17 +1,17 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { isArray } from 'aidly';
-import { StyleProcessor } from '#infra/css/styleProcessor';
-import { ModuleStyleImportCollector } from '#infra/css/moduleStyleImportCollector';
+import { StyleProcessor } from '#infra/css/core/index';
+import { ModuleStyleImportCollector } from '#infra/css/core/index';
 import type {
   CssOptions,
   ModuleCssBuildConfig,
   ModuleCssBuildContext,
   ResolvedModuleCssBuildContext,
-} from '#infra/css/types';
-import { moduleCssBuildConfig } from '#infra/css/config';
-import { loadCssOptions } from '#infra/css/cssOptions';
-import { WorkspaceStyleResolver } from '#infra/css/workspaceStyleResolver';
+} from '#infra/css/core/index';
+import { moduleCssBuildConfig } from '#infra/css/core/index';
+import { loadCssOptions } from '#infra/css/core/index';
+import { WorkspaceStyleResolver } from '#infra/css/core/index';
 import { fileWalker, getSourceModuleDir, toPosixPath } from '#infra/utils';
 
 export class ModuleCssBuilder {

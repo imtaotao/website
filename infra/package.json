@@ -7,6 +7,12 @@
   "bin": {
     "infra": "./bin/entry.cjs"
   },
+  "exports": {
+    "./css": "./css.mjs"
+  },
+  "imports": {
+    "#infra/*": "./src/*.ts"
+  },
   "scripts": {
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",

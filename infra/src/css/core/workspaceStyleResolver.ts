@@ -4,7 +4,7 @@ import { POSIX_SEPARATOR } from '#infra/utils';
 import type {
   ModuleCssBuildConfig,
   ResolvedModuleCssBuildContext,
-} from '#infra/css/types';
+} from '#infra/css/core/types';
 
 const NODE_MODULES_DIR = 'node_modules';
 const PACKAGE_STYLE_FILE = 'style.css';

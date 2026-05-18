@@ -19,10 +19,12 @@ export type {
   ModuleCssBuildContext,
   ModuleCssBuildOutputConfig,
   ResolvedModuleCssBuildContext,
-} from '#infra/css/types';
+} from '#infra/css/core/index';
+export type { WebsiteKernelCssPluginOptions } from '#infra/css/vite/vitePlugin';
 
-export { moduleCssBuildConfig } from '#infra/css/config';
-export { loadCssOptions, resolveCssOptionsModule } from '#infra/css/cssOptions';
-export { ModuleStyleImportCollector } from '#infra/css/moduleStyleImportCollector';
-export { StyleProcessor } from '#infra/css/styleProcessor';
-export { WorkspaceStyleResolver } from '#infra/css/workspaceStyleResolver';
+export { moduleCssBuildConfig } from '#infra/css/core/index';
+export { loadCssOptions, resolveCssOptionsModule } from '#infra/css/core/index';
+export { ModuleStyleImportCollector } from '#infra/css/core/index';
+export { StyleProcessor } from '#infra/css/core/index';
+export { websiteKernelCssPlugin } from '#infra/css/vite/vitePlugin';
+export { WorkspaceStyleResolver } from '#infra/css/core/index';

@@ -2,9 +2,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
-import { moduleCssBuildConfig } from '#infra/css/config';
-import { StyleProcessor } from '#infra/css/styleProcessor';
-import type { WorkspaceStyleResolver } from '#infra/css/workspaceStyleResolver';
+import { moduleCssBuildConfig } from '#infra/css/core/index';
+import { StyleProcessor } from '#infra/css/core/index';
+import type { WorkspaceStyleResolver } from '#infra/css/core/index';
 
 describe('StyleProcessor', () => {
   let tempRoot: string;

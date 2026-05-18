@@ -2,9 +2,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
-import { ModuleStyleImportCollector } from '#infra/css/moduleStyleImportCollector';
-import type { CssOptions } from '#infra/css/types';
-import type { WorkspaceStyleResolver } from '#infra/css/workspaceStyleResolver';
+import { ModuleStyleImportCollector } from '#infra/css/core/index';
+import type { CssOptions } from '#infra/css/core/index';
+import type { WorkspaceStyleResolver } from '#infra/css/core/index';
 
 const cssOptions: CssOptions = {
   cssDependencies: {

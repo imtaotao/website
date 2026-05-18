@@ -1,4 +1,4 @@
-import type { ModuleCssBuildConfig } from '#infra/css/types';
+import type { ModuleCssBuildConfig } from '#infra/css/core/types';
 
 const CSS_LANGUAGE = 'css';
 const LESS_LANGUAGE = 'less';

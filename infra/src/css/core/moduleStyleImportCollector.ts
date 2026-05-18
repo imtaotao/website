@@ -2,8 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import ts from 'typescript';
 import { isArray } from 'aidly';
-import type { CssOptions } from '#infra/css/types';
-import type { WorkspaceStyleResolver } from '#infra/css/workspaceStyleResolver';
+import type { CssOptions } from '#infra/css/core/types';
+import type { WorkspaceStyleResolver } from '#infra/css/core/workspaceStyleResolver';
 import {
   appendUniqueMapValue,
   getSourceModuleDir,
