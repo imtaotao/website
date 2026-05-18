@@ -31,19 +31,23 @@
     "noUnusedLocals": true,
     "esModuleInterop": true,
     "paths": {
+      // app
+      "#app/*": ["./app/src/*"],
+
       // externals
       "@website/infra/*": ["./infra/src/*"],
       "@website-kernel/*": ["./packages/kernel-*/src"],
-
-      // app
-      "#app/*": ["./app/src/*"],
+      "@website-kernel/blog/*": ["./packages/kernel-blog/src/*"],
+      "@website-kernel/resume/*": ["./packages/kernel-resume/src/*"],
+      "@website-kernel/shared/*": ["./packages/kernel-shared/src/*"],
+      "@website-kernel/markdown/*": ["./packages/kernel-markdown/src/*"],
 
       // packages
       "#infra/*": ["./infra/src/*"],
       "#blog/*": ["./packages/kernel-blog/src/*"],
-      "#markdown/*": ["./packages/kernel-markdown/src/*"],
       "#resume/*": ["./packages/kernel-resume/src/*"],
-      "#shared/*": ["./packages/kernel-shared/src/*"]
+      "#shared/*": ["./packages/kernel-shared/src/*"],
+      "#markdown/*": ["./packages/kernel-markdown/src/*"]
     }
   }
 }
