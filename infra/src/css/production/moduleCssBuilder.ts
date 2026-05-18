@@ -14,7 +14,9 @@ import {
   createStyleFileKey,
   createStyleFileKeySet,
   groupStyleFilesByDir,
+  getExternalStyleDependencies,
   getGlobalStyleDependencies,
+  getThemeStyleDependencies,
   resolveThemeStyleFiles,
 } from '#infra/css/core/styleEntry';
 import { loadCssOptions } from '#infra/css/core/index';
@@ -66,16 +68,22 @@ export class ModuleCssBuilder {
       this.cleanThemeStyles(outRoot);
       this.copyStyleFiles(styleFiles, outRoot);
       const themeStyles = this.writeThemeStyles(themeFiles, outRoot);
+      const themeEntries = this.writeThemeEntries(
+        themeStyles,
+        outRoot,
+        cssOptions,
+      );
       const externalStyle = this.writeExternalStyle(outRoot, cssOptions);
       const moduleStyle = this.writeModuleStyle(styleFiles, outRoot);
       const entryStyle = this.writeEntryStyle(
         outRoot,
-        themeStyles,
-        externalStyle,
+        cssOptions,
+        themeStyles.map((themeStyle) => themeStyle.file),
         moduleStyle,
       );
 
-      outputs.push(...themeStyles);
+      outputs.push(...themeStyles.map((themeStyle) => themeStyle.file));
+      outputs.push(...themeEntries);
       if (externalStyle) outputs.push(externalStyle);
       if (moduleStyle) outputs.push(moduleStyle);
       if (entryStyle) outputs.push(entryStyle);
@@ -191,8 +199,8 @@ export class ModuleCssBuilder {
 
   private writeEntryStyle(
     outRoot: string,
+    buildConfig: CssOptions,
     themeStyles: Array<string>,
-    externalStyle: string | null,
     moduleStyle: string | null,
   ) {
     const target = path.join(
@@ -203,7 +211,10 @@ export class ModuleCssBuilder {
     const root = this.styleProcessor.createRoot();
     const styleDir = path.dirname(target);
 
-    for (const style of [...themeStyles, externalStyle, moduleStyle]) {
+    for (const specifier of getGlobalStyleDependencies(buildConfig)) {
+      this.styleProcessor.appendImportRule(root, specifier);
+    }
+    for (const style of [...themeStyles, moduleStyle]) {
       if (!style) continue;
       this.styleProcessor.appendImportRule(
         root,
@@ -217,7 +228,7 @@ export class ModuleCssBuilder {
   }
 
   private writeThemeStyles(themeFiles: Map<string, string>, outRoot: string) {
-    const outputs: Array<string> = [];
+    const outputs: Array<{ themeName: string; file: string }> = [];
     const themesDir = path.join(
       outRoot,
       this.config.output.styleDir,
@@ -237,6 +248,38 @@ export class ModuleCssBuilder {
         target,
         root.nodes?.length ? this.styleProcessor.stringify(root) : '',
       );
+      outputs.push({ themeName, file: target });
+    }
+
+    return outputs;
+  }
+
+  private writeThemeEntries(
+    themeStyles: Array<{ themeName: string; file: string }>,
+    outRoot: string,
+    buildConfig: CssOptions,
+  ) {
+    const outputs: Array<string> = [];
+    const themesDir = path.join(outRoot, THEMES_DIR);
+
+    for (const { themeName, file } of themeStyles) {
+      const target = path.join(themesDir, `${themeName}.css`);
+      const root = this.styleProcessor.createRoot();
+      const targetDir = path.dirname(target);
+
+      for (const specifier of getThemeStyleDependencies(
+        buildConfig,
+        themeName,
+      )) {
+        this.styleProcessor.appendImportRule(root, specifier);
+      }
+      this.styleProcessor.appendImportRule(
+        root,
+        this.toRelativeImportSpecifier(targetDir, file),
+      );
+
+      fs.mkdirSync(targetDir, { recursive: true });
+      fs.writeFileSync(target, this.styleProcessor.stringify(root));
       outputs.push(target);
     }
 
@@ -283,7 +326,7 @@ export class ModuleCssBuilder {
     );
     const root = this.styleProcessor.createRoot();
 
-    for (const specifier of getGlobalStyleDependencies(buildConfig)) {
+    for (const specifier of getExternalStyleDependencies(buildConfig)) {
       this.styleProcessor.appendImportRule(
         root,
         this.resolver.toExternalStyleSpecifier(specifier, outRoot),

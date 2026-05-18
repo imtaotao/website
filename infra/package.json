@@ -8,7 +8,11 @@
     "infra": "./bin/entry.cjs"
   },
   "exports": {
-    "./css": "./css.mjs"
+    "./css": "./css.mjs",
+    "./css/config": {
+      "types": "./css-config.d.cts",
+      "default": "./css-config.cjs"
+    }
   },
   "imports": {
     "#infra/*": "./src/*.ts"

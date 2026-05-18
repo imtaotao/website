@@ -1,6 +1,11 @@
 import { useParams } from 'react-router';
 import { BlogArticlePage as KernelBlogArticlePage } from '@website-kernel/blog/pages/BlogArticlePage';
-import '@website-kernel/blog/style.css';
+
+// import '@website-kernel/blog/style.css';
+import '@website-kernel/blog/pages/BlogArticlePage.css';
+// import '@website-kernel/blog/themes/dark.css';
+// import '@website-kernel/blog/themes/light.css';
+import '@website-kernel/blog/external.css';
 
 import { usePageMeta } from '#app/lib/pageMeta';
 import { getBlogArticleBySlug, resolveBlogAssetUrl } from '#app/lib/blog';

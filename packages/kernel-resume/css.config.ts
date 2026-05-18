@@ -4,7 +4,7 @@ export const config: CssOptions = {
   sourceDir: 'src',
   outputDir: 'dist',
   themes: {
-    light: './src/themes/light.css',
     dark: './src/themes/dark.css',
+    light: './src/themes/light.css',
   },
 };

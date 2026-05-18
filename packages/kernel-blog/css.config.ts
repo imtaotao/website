@@ -1,16 +1,14 @@
 import type { CssOptions } from '@website/infra/css';
+import { websiteKernelCssDependency } from '@website/infra/css/config';
 
 export const config: CssOptions = {
   sourceDir: 'src',
   outputDir: 'dist',
   themes: {
-    light: './src/themes/light.css',
     dark: './src/themes/dark.css',
+    light: './src/themes/light.css',
   },
   cssDependencies: {
-    '@website-kernel/markdown': {
-      global: '/style.css',
-      component: ['/pages/**.css', '/components/**.css'],
-    },
+    '@website-kernel/markdown': websiteKernelCssDependency,
   },
 };

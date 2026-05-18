@@ -1,6 +1,8 @@
 export type CssDependencyGroup = {
   // 全局 CSS 依赖，会被合并进包级 dist/index.css。
   global?: string | Array<string>;
+  // 主题 CSS 依赖，key 是当前包主题名，value 是依赖包对应主题入口。
+  themes?: Record<string, string>;
   // 模块 CSS 自动引用规则，用于从 import 推导对应样式入口。
   component?: string | Array<string>;
 };

@@ -47,6 +47,25 @@ export const getGlobalStyleDependencies = (cssOptions: CssOptions) => {
   return dependencies;
 };
 
+export const getExternalStyleDependencies = (cssOptions: CssOptions) => {
+  return getGlobalStyleDependencies(cssOptions);
+};
+
+export const getThemeStyleDependencies = (
+  cssOptions: CssOptions,
+  themeName: string,
+) => {
+  const dependencies: Array<string> = [];
+  for (const [packageName, dependency] of Object.entries(
+    cssOptions.cssDependencies ?? {},
+  )) {
+    const themeDependency = dependency.themes?.[themeName];
+    if (!themeDependency) continue;
+    dependencies.push(joinDependencySpecifier(packageName, themeDependency));
+  }
+  return dependencies;
+};
+
 export const getThemeStyleEntries = (cssOptions: CssOptions) => {
   return Object.entries(cssOptions.themes ?? {}).map(([themeName, file]) => ({
     themeName,

@@ -13,7 +13,9 @@ import {
   EXTERNAL_ENTRY,
   createStyleFileKey,
   createStyleFileKeySet,
+  getExternalStyleDependencies,
   getGlobalStyleDependencies,
+  getThemeStyleDependencies,
   groupStyleFilesByDir,
   KERNEL_PACKAGE_PREFIX,
   MODULE_ENTRY,
@@ -136,10 +138,7 @@ export class ModuleCssGraph {
     }
 
     if (parsed.cssPath === STYLE_ENTRY) {
-      const themes = this.createThemeCssCode(context);
-      const external = await this.createExternalCssCode(context);
-      const module = this.createModuleCssCode(context);
-      return mergeLoadResults(themes, external, module);
+      return this.createStyleCssCode(context);
     }
     if (parsed.cssPath === EXTERNAL_ENTRY) {
       return this.createExternalCssCode(context);
@@ -188,11 +187,41 @@ export class ModuleCssGraph {
     };
   }
 
-  private async createExternalCssCode(context: KernelCssContext) {
+  private async createStyleCssCode(context: KernelCssContext) {
+    const dependencies = await this.createStyleDependencyCssCode(context);
+    const themes = await this.createThemeCssCode(context, undefined, false);
+    const module = this.createModuleCssCode(context);
+
+    return mergeLoadResults(dependencies, themes, module);
+  }
+
+  private async createStyleDependencyCssCode(context: KernelCssContext) {
     const results: Array<KernelCssLoadResult> = [];
     const imports: Array<string> = [];
 
     for (const specifier of getGlobalStyleDependencies(context.cssOptions)) {
+      const parsed = parseKernelCssId(specifier);
+      if (parsed) {
+        results.push(await this.createKernelCssCode(parsed));
+        continue;
+      }
+      imports.push(specifier);
+    }
+
+    return mergeLoadResults(
+      {
+        code: createImportCode(imports),
+        watchFiles: [context.configPath],
+      },
+      ...results,
+    );
+  }
+
+  private async createExternalCssCode(context: KernelCssContext) {
+    const results: Array<KernelCssLoadResult> = [];
+    const imports: Array<string> = [];
+
+    for (const specifier of getExternalStyleDependencies(context.cssOptions)) {
       const external = this.toDevExternalStyleSpecifier(specifier);
       const parsed = parseKernelCssId(external);
       if (parsed) {
@@ -211,26 +240,52 @@ export class ModuleCssGraph {
     );
   }
 
-  private createThemeCssCode(context: KernelCssContext, cssPath?: string) {
+  private async createThemeCssCode(
+    context: KernelCssContext,
+    cssPath?: string,
+    includeDependencies = true,
+  ) {
     const themeFiles = this.getThemeStyleFiles(context);
     const targetThemeName = cssPath
       ? removeCssExtension(cssPath.slice(THEMES_ENTRY_PREFIX.length))
       : null;
     const root = context.styleProcessor.createRoot();
     const watchFiles = [context.configPath, ...themeFiles.values()];
+    const dependencyResults: Array<KernelCssLoadResult> = [];
+    const imports: Array<string> = [];
 
     for (const [themeName, themeFile] of themeFiles) {
       if (targetThemeName && themeName !== targetThemeName) continue;
+      if (includeDependencies) {
+        for (const specifier of getThemeStyleDependencies(
+          context.cssOptions,
+          themeName,
+        )) {
+          const parsed = parseKernelCssId(specifier);
+          if (!parsed) {
+            imports.push(specifier);
+            continue;
+          }
+          dependencyResults.push(await this.createKernelCssCode(parsed));
+        }
+      }
       const content = context.styleProcessor.readStyleFile(themeFile);
       if (content.trim()) {
         context.styleProcessor.appendStyleContent(root, content, themeFile);
       }
     }
 
-    return {
-      code: root.nodes?.length ? context.styleProcessor.stringify(root) : '',
-      watchFiles,
-    };
+    return mergeLoadResults(
+      {
+        code: createImportCode(imports),
+        watchFiles,
+      },
+      ...dependencyResults,
+      {
+        code: root.nodes?.length ? context.styleProcessor.stringify(root) : '',
+        watchFiles: [],
+      },
+    );
   }
 
   private getThemeStyleFiles(context: KernelCssContext) {

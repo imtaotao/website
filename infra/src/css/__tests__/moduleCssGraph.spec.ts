@@ -36,6 +36,10 @@ describe('ModuleCssGraph', () => {
           cssDependencies: {
             '@website-kernel/markdown': {
               global: '/style.css',
+              themes: {
+                light: '/themes/light.css',
+                dark: '/themes/dark.css',
+              },
             },
           },
         };
@@ -91,8 +95,49 @@ describe('ModuleCssGraph', () => {
             light: './src/themes/light.css',
             dark: './src/themes/dark.css',
           },
+          cssDependencies: {
+            '@website-kernel/markdown': {
+              global: '/style.css',
+              themes: {
+                light: '/themes/light.css',
+                dark: '/themes/dark.css',
+              },
+            },
+          },
         };
       `,
+    );
+    writeFile(
+      'packages/kernel-markdown/css.config.ts',
+      `
+        import type { CssOptions } from '@website/infra/css';
+
+        export const config: CssOptions = {
+          sourceDir: 'src',
+          outputDir: 'dist',
+          themes: {
+            light: './src/themes/light.css',
+            dark: './src/themes/dark.css',
+          },
+          cssDependencies: {
+            katex: {
+              global: '/dist/katex.min.css',
+            },
+          },
+        };
+      `,
+    );
+    writeFile(
+      'packages/kernel-markdown/src/themes/light.css',
+      '.markdown-shell { --markdown-bg: white; }',
+    );
+    writeFile(
+      'packages/kernel-markdown/src/themes/dark.css',
+      '.markdown-shell { --markdown-bg: black; }',
+    );
+    writeFile(
+      'packages/kernel-markdown/src/components/Renderer/index.css',
+      '.markdown-prose { color: var(--markdown-text); }',
     );
     writeFile(
       'packages/kernel-blog/src/themes/light.css',
@@ -114,6 +159,13 @@ describe('ModuleCssGraph', () => {
 
     const result = await graph.createKernelCssCode(parsed!);
 
+    expect(result.code.indexOf('@import "katex/dist/katex.min.css";')).toBe(0);
+    expect(result.code.indexOf('.markdown-shell')).toBeLessThan(
+      result.code.indexOf(':root { --bg: white; }'),
+    );
+    expect(result.code.indexOf('.markdown-prose')).toBeLessThan(
+      result.code.indexOf(':root { --bg: white; }'),
+    );
     expect(result.code.indexOf(':root { --bg: white; }')).toBeLessThan(
       result.code.indexOf('.article { background: var(--bg); }'),
     );
@@ -121,13 +173,28 @@ describe('ModuleCssGraph', () => {
       ':root[data-wk-theme="dark"] { --bg: black; }',
     );
     expect(result.code).not.toContain('src/themes/light.css');
-    expect(
-      await graph.createKernelCssCode(
-        graph.parseKernelCssId('@website-kernel/blog/themes/light.css')!,
+    expect(result.watchFiles).toContain(
+      normalizeCssFileKey(
+        path.join(tempRoot, 'packages/kernel-blog/css.config.ts'),
       ),
-    ).toMatchObject({
-      code: ':root { --bg: white; }\n',
-    });
+    );
+    const lightTheme = await graph.createKernelCssCode(
+      graph.parseKernelCssId('@website-kernel/blog/themes/light.css')!,
+    );
+    const darkTheme = await graph.createKernelCssCode(
+      graph.parseKernelCssId('@website-kernel/blog/themes/dark.css')!,
+    );
+
+    expect(lightTheme.code.indexOf('.markdown-shell')).toBeLessThan(
+      lightTheme.code.indexOf(':root { --bg: white; }'),
+    );
+    expect(lightTheme.code).toContain(':root { --bg: white; }');
+    expect(darkTheme.code.indexOf('.markdown-shell')).toBeLessThan(
+      darkTheme.code.indexOf(':root[data-wk-theme="dark"]'),
+    );
+    expect(darkTheme.code).toContain(
+      ':root[data-wk-theme="dark"] { --bg: black; }',
+    );
   });
 
   test('normalizes slash styles for kernel source graph checks and watch roots', () => {
