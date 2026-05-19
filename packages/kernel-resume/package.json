@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "author": "chentao.arthur",
   "scripts": {
-    "dev": "infra dev",
-    "build": "infra build",
+    "dev": "auk dev",
+    "build": "auk build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit --skipLibCheck"
@@ -77,7 +77,7 @@
     "tailwindcss": "catalog:"
   },
   "devDependencies": {
-    "@website/infra": "workspace:*",
+    "auklet": "workspace:*",
     "@types/react": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "vitest": "catalog:",

@@ -1,6 +1,6 @@
 packages:
   - 'app'
-  - 'infra'
+  - 'auklet'
   - 'packages/*'
 
 catalog:

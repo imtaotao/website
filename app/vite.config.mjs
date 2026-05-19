@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { existsSync, readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
+import { aukletCssPlugin } from 'auklet';
 import { parse as parseYaml } from 'yaml';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import remarkGfm from 'remark-gfm';
@@ -12,7 +13,6 @@ import rehypeKatex from 'rehype-katex';
 import mdx from '@mdx-js/rollup';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import { websiteKernelCssPlugin } from '@website/infra';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -104,7 +104,7 @@ export default defineConfig({
     }),
     react(),
     tailwindcss(),
-    websiteKernelCssPlugin(),
+    // aukletCssPlugin(),
     tsconfigPaths(),
   ],
 });

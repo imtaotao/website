@@ -35,8 +35,8 @@
       "#app/*": ["./app/src/*"],
 
       // externals
-      "@website/infra": ["./infra/src/index.ts"],
-      "@website/infra/*": ["./infra/src/*"],
+      "auklet": ["./auklet/src/index.ts"],
+      "auklet/*": ["./auklet/src/*"],
       "@website-kernel/*": ["./packages/kernel-*/src"],
       "@website-kernel/blog/*": ["./packages/kernel-blog/src/*"],
       "@website-kernel/resume/*": ["./packages/kernel-resume/src/*"],
@@ -44,7 +44,7 @@
       "@website-kernel/markdown/*": ["./packages/kernel-markdown/src/*"],
 
       // packages
-      "#infra/*": ["./infra/src/*"],
+      "#auklet/*": ["./auklet/src/*"],
       "#blog/*": ["./packages/kernel-blog/src/*"],
       "#resume/*": ["./packages/kernel-resume/src/*"],
       "#shared/*": ["./packages/kernel-shared/src/*"],

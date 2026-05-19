@@ -13,14 +13,14 @@
     "dev:packages": "pnpm --parallel --filter @website-kernel/* run dev",
     "build:packages": "pnpm --filter @website-kernel/* run build",
     "format:md": "prettier --write --parser markdown \"AGENTS.md\" \"docs/codex/**/*.(md|mdx)\" \"blog/**/*.(md|mdx)\"",
-    "format": "prettier --write --ignore-path .gitignore --parser typescript \"*.{js,mjs,cjs,ts,tsx}\" \"(app|infra|packages)/**/*.{js,mjs,cjs,ts,tsx}\""
+    "format": "prettier --write --ignore-path .gitignore --parser typescript \"*.{js,mjs,cjs,ts,tsx}\" \"(app|auklet|packages)/**/*.{js,mjs,cjs,ts,tsx}\""
   },
   "lint-staged": {
     "*.js": ["prettier --write"],
     "*.ts?(x)": ["prettier --parser=typescript --write"]
   },
   "dependencies": {
-    "@website/infra": "workspace:*",
+    "auklet": "workspace:*",
     "@types/node": "catalog:",
     "@types/minimist": "catalog:",
     "tsx": "catalog:",

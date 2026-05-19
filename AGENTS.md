@@ -29,15 +29,15 @@
 - `pnpm preview`
 - `pnpm dev:packages`
 - `pnpm build:packages`
-- `infra build-css`
+- `auk build-css`
 - `pnpm format`
 - `pnpm format:md`
 
 ## Codex 辅助脚本
 
-辅助脚本和构建辅助能力统一放在 `infra/` 包里，优先通过 `infra <command>` 调用，不要直接复制脚本逻辑到临时命令里。根目录保留的 `pnpm codex:*` 命令只是对 `infra` 的兼容封装。
+辅助脚本和构建辅助能力统一放在 `auklet/` 包里，优先通过 `auk <command>` 调用，不要直接复制脚本逻辑到临时命令里。根目录保留的 `pnpm codex:*` 命令只是对 `auklet` 的兼容封装。
 
-- `infra build-css`：构建 package 的 CSS 产物，包括组件 CSS、全局 CSS、外部依赖 CSS 和 package exports 需要的 CSS 文件。
+- `auk build-css`：构建 package 的 CSS 产物，包括组件 CSS、全局 CSS、外部依赖 CSS 和 package exports 需要的 CSS 文件。
 
 ## 常见修改入口
 

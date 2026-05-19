@@ -7,9 +7,9 @@
 - 包名：`@website-kernel/blog`
 - 构建命令：`pnpm --filter @website-kernel/blog run build`
 - 包内构建流程：
-  - `infra build`
-- `infra build` 会清理 `dist`，再运行内置 `tsdown` 配置和 CSS 构建。
-- JS、类型、CSS 构建配置统一放在 `packages/kernel-blog/infra.config.ts`。
+  - `auk build`
+- `auk build` 会清理 `dist`，再运行内置 `tsdown` 配置和 CSS 构建。
+- JS、类型、CSS 构建配置统一放在 `packages/kernel-blog/auklet.config.ts`。
 
 ## package.json 对外入口
 
@@ -72,7 +72,7 @@ import '@website-kernel/blog/pages/BlogHomePage.css';
 
 ## dist 根目录
 
-`dist/` 根目录由 `tsdown` 和 `infra build-css` 共同产出：
+`dist/` 根目录由 `tsdown` 和 `auk build-css` 共同产出：
 
 - `dist/index.js`
 - `dist/index.mjs`
@@ -86,7 +86,7 @@ import '@website-kernel/blog/pages/BlogHomePage.css';
 
 ## 模块化 JS 产物
 
-开启 `infra.config.ts` 里的 `build.modules` 后，`tsdown` 会额外生成两套 unbundle 产物：
+开启 `auklet.config.ts` 里的 `build.modules` 后，`tsdown` 会额外生成两套 unbundle 产物：
 
 - `dist/es/`：ES module。
 - `dist/lib/`：CommonJS。
@@ -157,10 +157,10 @@ import '@website-kernel/blog/pages/BlogHomePage.css';
 
 ## 验证命令
 
-产物结构的通用能力由 `@website/infra` 的单元测试覆盖：
+产物结构的通用能力由 `auklet` 的单元测试覆盖：
 
 ```shell
-pnpm --filter @website/infra run test
+pnpm --filter auklet run test
 ```
 
 涉及 blog 包产物调整时，再运行实际构建：
@@ -193,14 +193,14 @@ pnpm --filter @website/app run build
 
 目标是在源码中允许编写 `.less`，但发布产物仍保持 CSS 入口稳定：
 
-- `infra build-css` 的 `styleExtensions` 支持 `.less`。
+- `auk build-css` 的 `styleExtensions` 支持 `.less`。
 - `StyleProcessor` 按文件后缀分发处理：
   - `.css`：继续走 PostCSS AST。
   - `.less`：先用 Less 编译成 CSS，再交给 PostCSS AST 处理。
 - CSS 依赖分析仍以编译后的 CSS 为准。
 - 发布产物只输出 `.css`，不复制 `.less`。
 - 组件级入口继续保持 `style/index.css`。
-- `less` 依赖放在 `@website/infra` 内，由构建工具负责。
+- `less` 依赖放在 `auklet` 内，由构建工具负责。
 
 ### 主题 CSS 拆分
 

@@ -28,7 +28,7 @@
     "tailwindcss": "^4.2.4"
   },
   "devDependencies": {
-    "@website/infra": "workspace:*",
+    "auklet": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@types/react-syntax-highlighter": "^15.5.13",
