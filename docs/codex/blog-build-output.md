@@ -7,12 +7,9 @@
 - 包名：`@website-kernel/blog`
 - 构建命令：`pnpm --filter @website-kernel/blog run build`
 - 包内构建流程：
-  - `rimraf dist`
-  - `tsdown --config ./tsdown.config.ts`
-  - `infra build-css`
-- `packages/kernel-blog/tsdown.config.ts` 复用根目录 `tsdown.config.ts` 的 `baseOptions`。
-- JS 和类型产物由 `tsdown` 负责，CSS 入口和 CSS 依赖链由 `infra build-css` 负责。
-- CSS 依赖规则配置在 `packages/kernel-blog/css.config.ts`。
+  - `infra build`
+- `infra build` 会清理 `dist`，再运行内置 `tsdown` 配置和 CSS 构建。
+- JS、类型、CSS 构建配置统一放在 `packages/kernel-blog/infra.config.ts`。
 
 ## package.json 对外入口
 
@@ -89,7 +86,7 @@ import '@website-kernel/blog/pages/BlogHomePage.css';
 
 ## 模块化 JS 产物
 
-开启 `baseOptions(..., { modules: true })` 后，`tsdown` 会额外生成两套 unbundle 产物：
+开启 `infra.config.ts` 里的 `build.modules` 后，`tsdown` 会额外生成两套 unbundle 产物：
 
 - `dist/es/`：ES module。
 - `dist/lib/`：CommonJS。

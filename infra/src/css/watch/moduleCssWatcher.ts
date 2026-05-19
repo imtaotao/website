@@ -1,31 +1,39 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import chokidar, { type FSWatcher } from 'chokidar';
-import { loadCssOptions } from '#infra/css/core/index';
-import { moduleCssBuildConfig } from '#infra/css/core/index';
-import type {
-  ModuleCssBuildConfig,
-  ModuleCssBuildContext,
-} from '#infra/css/core/index';
+import chokidar from 'chokidar';
+import { moduleCssBuildConfig } from '#infra/css/core/config';
+import { loadCssOptions } from '#infra/css/core/cssOptions';
+import type { ModuleCssBuildConfig, ModuleCssBuildContext } from '#infra/types';
 import { ModuleCssBuilder } from '#infra/css/production/moduleCssBuilder';
 
+type Watcher = {
+  close: () => Promise<void>;
+  on: {
+    (event: 'all', listener: () => void): Watcher;
+    (event: 'error', listener: (error: unknown) => void): Watcher;
+  };
+};
+
 export class ModuleCssWatcher {
+  private readonly context: ModuleCssBuildContext & { packageRoot: string };
   private timer: ReturnType<typeof setTimeout> | null = null;
   private isBuilding = false;
   private shouldRebuild = false;
-  private watcher: FSWatcher | null = null;
+  private watcher: Watcher | null = null;
 
   constructor(
-    private readonly context: ModuleCssBuildContext,
+    context: ModuleCssBuildContext = {},
     private readonly config: ModuleCssBuildConfig = moduleCssBuildConfig,
-  ) {}
+  ) {
+    this.context = {
+      packageRoot: process.cwd(),
+      ...context,
+    };
+  }
 
   async watch() {
     await this.rebuild();
     console.log('[infra:css] watch mode ready');
-
-    process.once('SIGINT', this.handleClose);
-    process.once('SIGTERM', this.handleClose);
   }
 
   private async rebuild() {
@@ -70,11 +78,11 @@ export class ModuleCssWatcher {
       ignoreInitial: true,
       interval: 300,
       usePolling: true,
-    });
+    }) as unknown as Watcher;
     this.watcher.on('all', () => {
       this.scheduleBuild();
     });
-    this.watcher.on('error', (error) => {
+    this.watcher.on('error', (error: unknown) => {
       console.error(error);
     });
   }
@@ -87,13 +95,7 @@ export class ModuleCssWatcher {
     }, 80);
   }
 
-  private handleClose = () => {
-    this.close()
-      .catch(console.error)
-      .finally(() => process.exit(0));
-  };
-
-  private async close() {
+  async close() {
     if (this.timer) clearTimeout(this.timer);
     await this.watcher?.close();
   }

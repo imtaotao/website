@@ -2,7 +2,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
-import { loadCssOptions, resolveCssOptionsModule } from '#infra/css/core/index';
+import {
+  loadCssOptions,
+  resolveCssOptionsModule,
+} from '#infra/css/core/cssOptions';
 
 describe('loadCssOptions', () => {
   let tempRoot: string;
@@ -24,11 +27,11 @@ describe('loadCssOptions', () => {
 
   test('loads TypeScript css config without dynamic data url import', async () => {
     writeFile(
-      'css.config.ts',
+      'infra.config.ts',
       `
-        import type { CssOptions } from '@website/infra/css';
+        import type { InfraConfig } from '/infra';
 
-        export const config: CssOptions = {
+        export const config: InfraConfig = {
           sourceDir: 'source',
           outputDir: 'output',
           cssDependencies: {
@@ -41,7 +44,7 @@ describe('loadCssOptions', () => {
     );
 
     await expect(
-      loadCssOptions(tempRoot, 'css.config.ts', { cacheBust: true }),
+      loadCssOptions(tempRoot, 'infra.config.ts', { cacheBust: true }),
     ).resolves.toEqual({
       sourceDir: 'source',
       outputDir: 'output',

@@ -12,7 +12,7 @@ import rehypeKatex from 'rehype-katex';
 import mdx from '@mdx-js/rollup';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import { websiteKernelCssPlugin } from '@website/infra/css';
+import { websiteKernelCssPlugin } from '@website/infra';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

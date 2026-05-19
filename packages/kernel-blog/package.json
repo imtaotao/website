@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "author": "chentao.arthur",
   "scripts": {
-    "dev": "tsdown --watch & infra build-css --watch",
-    "build": "rimraf dist && tsdown && infra build-css",
+    "dev": "infra dev",
+    "build": "infra build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit --skipLibCheck"
@@ -81,8 +81,6 @@
     "@website/infra": "workspace:*",
     "@types/react": "catalog:",
     "@vitest/coverage-v8": "catalog:",
-    "tsdown": "catalog:",
-    "rimraf": "catalog:",
     "vitest": "catalog:",
     "typescript": "catalog:"
   }

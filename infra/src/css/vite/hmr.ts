@@ -5,7 +5,7 @@ import type {
   ModuleNode,
   ViteDevServer,
 } from 'vite';
-import type { ModuleCssGraph } from '#infra/css/core/index';
+import type { ModuleCssGraph } from '#infra/css/core/moduleCssGraph';
 import { normalizeCssFileKey } from '#infra/css/core/path';
 
 // package CSS 的 HMR 不能直接走 Vite 原生 CSS 文件链路：

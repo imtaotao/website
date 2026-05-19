@@ -8,25 +8,29 @@
     "infra": "./bin/entry.cjs"
   },
   "exports": {
-    "./css": "./css.mjs",
-    "./css/config": {
-      "types": "./css-config.d.cts",
-      "default": "./css-config.cjs"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     }
   },
   "imports": {
-    "#infra/*": "./src/*.ts"
+    "#infra/*": {
+      "source": "./src/*.ts",
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    }
   },
   "scripts": {
+    "build": "rimraf dist && tsc -p tsconfig.build.json",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit --skipLibCheck"
   },
+  "files": ["bin", "dist"],
   "dependencies": {
     "@types/node": "catalog:",
     "@types/minimist": "catalog:",
     "@vitest/coverage-v8": "catalog:",
-    "tsx": "catalog:",
     "execa": "catalog:",
     "aidly": "catalog:",
     "rimraf": "catalog:",

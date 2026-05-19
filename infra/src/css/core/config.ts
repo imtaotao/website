@@ -1,4 +1,4 @@
-import type { ModuleCssBuildConfig } from '#infra/css/core/types';
+import type { ModuleCssBuildConfig } from '#infra/types';
 
 const CSS_LANGUAGE = 'css';
 const LESS_LANGUAGE = 'less';
@@ -13,7 +13,7 @@ export const moduleCssBuildConfig: ModuleCssBuildConfig = {
     externalCssFile: 'external.css',
     outputFormats: ['es', 'lib'],
   },
-  cssConfigFile: 'css.config.ts',
+  cssConfigFile: 'infra.config.ts',
   lessLanguage: LESS_LANGUAGE,
   styleExtensions: {
     [CSS_EXTENSION]: CSS_LANGUAGE,

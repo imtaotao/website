@@ -2,8 +2,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
-import { moduleCssBuildConfig } from '#infra/css/core/index';
-import { WorkspaceStyleResolver } from '#infra/css/core/index';
+import { moduleCssBuildConfig } from '#infra/css/core/config';
+import { WorkspaceStyleResolver } from '#infra/css/core/workspaceStyleResolver';
 
 describe('WorkspaceStyleResolver', () => {
   let tempRoot: string;

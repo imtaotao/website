@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "author": "chentao.arthur",
   "scripts": {
-    "dev": "tsdown --watch & infra build-css --watch",
-    "build": "rimraf dist && tsdown && infra build-css",
+    "dev": "infra dev",
+    "build": "infra build",
     "typecheck": "tsc --noEmit --skipLibCheck"
   },
   "imports": {
@@ -73,8 +73,6 @@
   "devDependencies": {
     "@website/infra": "workspace:*",
     "@types/react": "catalog:",
-    "rimraf": "catalog:",
-    "tsdown": "catalog:",
     "typescript": "catalog:"
   }
 }

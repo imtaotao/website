@@ -30,7 +30,7 @@ import type {
   CssOptions,
   ModuleCssBuildConfig,
   ResolvedModuleCssBuildContext,
-} from '#infra/css/core/types';
+} from '#infra/types';
 import { WorkspaceStyleResolver } from '#infra/css/core/workspaceStyleResolver';
 import { fileWalker, toPosixPath } from '#infra/utils';
 

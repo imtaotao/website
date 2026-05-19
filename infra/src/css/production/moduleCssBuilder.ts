@@ -1,14 +1,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { StyleProcessor } from '#infra/css/core/index';
-import { ModuleStyleImportCollector } from '#infra/css/core/index';
+import { moduleCssBuildConfig } from '#infra/css/core/config';
+import { loadCssOptions } from '#infra/css/core/cssOptions';
+import { ModuleStyleImportCollector } from '#infra/css/core/moduleStyleImportCollector';
+import { StyleProcessor } from '#infra/css/core/styleProcessor';
 import type {
   CssOptions,
   ModuleCssBuildConfig,
   ModuleCssBuildContext,
   ResolvedModuleCssBuildContext,
-} from '#infra/css/core/index';
-import { moduleCssBuildConfig } from '#infra/css/core/index';
+} from '#infra/types';
 import {
   THEMES_DIR,
   createStyleFileKey,
@@ -19,23 +20,29 @@ import {
   getThemeStyleDependencies,
   resolveThemeStyleFiles,
 } from '#infra/css/core/styleEntry';
-import { loadCssOptions } from '#infra/css/core/index';
-import { WorkspaceStyleResolver } from '#infra/css/core/index';
+import { WorkspaceStyleResolver } from '#infra/css/core/workspaceStyleResolver';
 import { fileWalker, getSourceModuleDir, toPosixPath } from '#infra/utils';
 
 const EMPTY_MODULE_STYLE_ENTRY_COMMENT =
   '/* Empty style entry kept so automated tooling can resolve this module CSS path. */\n';
 
 export class ModuleCssBuilder {
+  private readonly context: ModuleCssBuildContext & { packageRoot: string };
   private srcRoot: string;
   private resolver: WorkspaceStyleResolver;
   private styleProcessor: StyleProcessor;
   private importCollector: ModuleStyleImportCollector;
 
   constructor(
-    private readonly context: ModuleCssBuildContext,
+    context: ModuleCssBuildContext = {},
     private readonly config: ModuleCssBuildConfig = moduleCssBuildConfig,
   ) {
+    this.context = {
+      packageRoot: process.cwd(),
+      sourceDir: context.sourceDir,
+      outputDir: context.outputDir,
+      ...context,
+    };
     this.applyContext(this.createBuildContext({}));
   }
 

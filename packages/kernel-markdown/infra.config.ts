@@ -1,8 +1,12 @@
-import type { CssOptions } from '@website/infra/css';
+import type { InfraConfig } from '@website/infra';
 
-export const config: CssOptions = {
+export const config: InfraConfig = {
   sourceDir: 'src',
   outputDir: 'dist',
+  build: {
+    formats: ['cjs', 'esm', 'iife'],
+    modules: true,
+  },
   themes: {
     dark: './src/themes/dark.css',
     light: './src/themes/light.css',

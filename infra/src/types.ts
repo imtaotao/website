@@ -18,14 +18,30 @@ export interface CssOptions {
   outputDir?: string;
 }
 
+export type PackageBuildFormat = 'cjs' | 'esm' | 'iife';
+
+export type PackageBuildOptions = {
+  // 包级 bundle 产物格式，例如 cjs、esm、iife。
+  formats?: Array<PackageBuildFormat>;
+  // 是否生成 dist/es 和 dist/lib 下的 unbundle 模块产物。
+  modules?: boolean;
+  // TypeScript 配置文件路径，相对于当前包根目录；默认向上查找 tsconfig.json。
+  tsconfig?: string;
+};
+
+export interface InfraConfig extends CssOptions {
+  // JavaScript/TypeScript 构建配置。
+  build?: PackageBuildOptions;
+}
+
 export type StyleLanguage = 'css' | 'less';
 
 export interface ModuleCssBuildContext {
-  // 当前执行 CSS 构建的包根目录。
-  packageRoot: string;
-  // 命令行传入的源码目录，会覆盖包内 css.config.ts 的配置。
+  // 当前执行 CSS 构建的包根目录，默认使用 process.cwd()。
+  packageRoot?: string;
+  // 命令行传入的源码目录，会覆盖包内 infra.config.ts 的配置。
   sourceDir?: string;
-  // 命令行传入的产物目录，会覆盖包内 css.config.ts 的配置。
+  // 命令行传入的产物目录，会覆盖包内 infra.config.ts 的配置。
   outputDir?: string;
 }
 
@@ -43,7 +59,7 @@ export interface ModuleCssBuildOutputConfig {
   outputFormats: Array<string>;
   // 组件级 CSS 入口目录名，例如 style/index.css 里的 style。
   styleDir: string;
-  // CSS 入口文件名，例如 style/index.css 和 dist/index.css 里的 index.css。
+  // CSS 入口文件名，例如 style/index.css 和 dist/index.css。
   indexCssFile: string;
   // 外部 CSS 入口文件名，例如 style/external.css。
   externalCssFile: string;

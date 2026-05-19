@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { isArray } from 'aidly';
 import { normalizeCssFileKey } from '#infra/css/core/path';
-import type { CssOptions } from '#infra/css/core/types';
+import type { CssOptions } from '#infra/types';
 import { getSourceModuleDir } from '#infra/utils';
 
 export const KERNEL_PACKAGE_PREFIX = '@website-kernel/';

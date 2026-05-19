@@ -1,8 +1,16 @@
 import fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { defineConfig, type UserConfig } from 'tsdown/config';
+import path from 'node:path';
+import { defineConfig } from 'tsdown/config';
+import type { UserConfig } from 'tsdown/config';
+import { moduleCssBuildConfig } from '#infra/css/core/config';
+import { loadCssOptions } from '#infra/css/core/cssOptions';
+import type {
+  InfraConfig,
+  PackageBuildFormat,
+  PackageBuildOptions,
+} from '#infra/types';
 
-type Format = 'cjs' | 'esm' | 'iife';
+export type TsdownFormat = PackageBuildFormat;
 
 type PackageJsonLike = {
   name?: string;
@@ -10,10 +18,6 @@ type PackageJsonLike = {
   author?: string;
   dependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
-};
-
-type BaseOptions = {
-  modules?: boolean;
 };
 
 type BuildContext = {
@@ -88,9 +92,25 @@ const getGlobalName = (pkg: PackageJsonLike) => {
     .join('');
 };
 
-const createBuildContext = (dir: string): BuildContext => {
+const findWorkspaceTsconfig = (packageRoot: string) => {
+  let current = packageRoot;
+
+  while (true) {
+    const tsconfig = path.join(current, 'tsconfig.json');
+    if (fs.existsSync(tsconfig)) return tsconfig;
+
+    const parent = path.dirname(current);
+    if (parent === current) return path.join(packageRoot, 'tsconfig.json');
+    current = parent;
+  }
+};
+
+const createBuildContext = (
+  packageRoot: string,
+  options: PackageBuildOptions,
+): BuildContext => {
   const pkg = JSON.parse(
-    fs.readFileSync(new URL('./package.json', dir)).toString(),
+    fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'),
   ) as PackageJsonLike;
   const banner =
     '/*!\n' +
@@ -101,8 +121,10 @@ const createBuildContext = (dir: string): BuildContext => {
     ' */';
 
   return {
-    packageRoot: fileURLToPath(new URL('.', dir)),
-    tsconfig: fileURLToPath(new URL('../../tsconfig.json', dir)),
+    packageRoot,
+    tsconfig: options.tsconfig
+      ? path.resolve(packageRoot, options.tsconfig)
+      : findWorkspaceTsconfig(packageRoot),
     pkg,
     dependencyNames: Object.keys(pkg.dependencies ?? {}),
     packageExternal: getPackageExternal(pkg),
@@ -133,8 +155,11 @@ const createCommonConfig = (
   } satisfies UserConfig;
 };
 
-const createBundleConfigs = (context: BuildContext, formats: Array<Format>) => {
-  const outputConfigs: Array<{ format: Format; extname: string }> = [];
+const createBundleConfigs = (
+  context: BuildContext,
+  formats: Array<TsdownFormat>,
+) => {
+  const outputConfigs: Array<{ format: TsdownFormat; extname: string }> = [];
 
   for (const format of formats) {
     const extnames = formatMap[format];
@@ -178,7 +203,7 @@ const createBundleConfigs = (context: BuildContext, formats: Array<Format>) => {
 
 const createModuleConfig = (
   commonConfig: ReturnType<typeof createCommonConfig>,
-  format: Extract<Format, 'cjs' | 'esm'>,
+  format: Extract<TsdownFormat, 'cjs' | 'esm'>,
   outDir: string,
 ) => {
   return {
@@ -212,13 +237,33 @@ const createModuleConfigs = (context: BuildContext) => {
   ] satisfies Array<UserConfig>;
 };
 
-export function baseOptions(
-  dir: string,
-  formats: Array<Format>,
-  options: BaseOptions = {},
-) {
-  const context = createBuildContext(dir);
+export const defineKernelPackageConfigFromOptions = (
+  packageRoot = process.cwd(),
+  config: InfraConfig = {},
+) => {
+  const buildOptions = config.build ?? {};
+  const formats = buildOptions.formats ?? ['cjs', 'esm', 'iife'];
+  const context = createBuildContext(packageRoot, buildOptions);
   const bundleConfigs = createBundleConfigs(context, formats);
-  const moduleConfigs = options.modules ? createModuleConfigs(context) : [];
-  return defineConfig([...bundleConfigs, ...moduleConfigs]);
-}
+  const moduleConfigs = buildOptions.modules
+    ? createModuleConfigs(context)
+    : [];
+
+  return [...bundleConfigs, ...moduleConfigs] satisfies Array<UserConfig>;
+};
+
+export const defineKernelPackageConfigFromFile = async (
+  packageRoot = process.cwd(),
+) => {
+  const config = (await loadCssOptions(
+    packageRoot,
+    moduleCssBuildConfig.cssConfigFile,
+    { cacheBust: true },
+  )) as InfraConfig;
+
+  return defineKernelPackageConfigFromOptions(packageRoot, config);
+};
+
+export default defineKernelPackageConfigFromFile(process.cwd()).then((config) =>
+  defineConfig(config),
+);

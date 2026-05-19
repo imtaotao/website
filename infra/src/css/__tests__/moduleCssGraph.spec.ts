@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
-import { ModuleCssGraph } from '#infra/css/core/index';
+import { ModuleCssGraph } from '#infra/css/core/moduleCssGraph';
 import { normalizeCssFileKey } from '#infra/css/core/path';
 import { createCssTestFixture, type CssTestFixture } from './cssTestFixture';
 
@@ -18,11 +18,11 @@ describe('ModuleCssGraph', () => {
 
   test('creates dev external CSS through recursive workspace kernel dependencies', async () => {
     writeFile(
-      'packages/kernel-blog/css.config.ts',
+      'packages/kernel-blog/infra.config.ts',
       `
-        import type { CssOptions } from '@website/infra/css';
+        import type { InfraConfig } from '/infra';
 
-        export const config: CssOptions = {
+        export const config: InfraConfig = {
           sourceDir: 'src',
           outputDir: 'dist',
           cssDependencies: {
@@ -38,11 +38,11 @@ describe('ModuleCssGraph', () => {
       `,
     );
     writeFile(
-      'packages/kernel-markdown/css.config.ts',
+      'packages/kernel-markdown/infra.config.ts',
       `
-        import type { CssOptions } from '@website/infra/css';
+        import type { InfraConfig } from '/infra';
 
-        export const config: CssOptions = {
+        export const config: InfraConfig = {
           sourceDir: 'src',
           outputDir: 'dist',
           cssDependencies: {
@@ -64,23 +64,23 @@ describe('ModuleCssGraph', () => {
     expect(result.code).toBe('@import "katex/dist/katex.min.css";');
     expect(result.watchFiles).toContain(
       normalizeCssFileKey(
-        path.join(fixture.root, 'packages/kernel-blog/css.config.ts'),
+        path.join(fixture.root, 'packages/kernel-blog/infra.config.ts'),
       ),
     );
     expect(result.watchFiles).toContain(
       normalizeCssFileKey(
-        path.join(fixture.root, 'packages/kernel-markdown/css.config.ts'),
+        path.join(fixture.root, 'packages/kernel-markdown/infra.config.ts'),
       ),
     );
   });
 
   test('creates dev style CSS with themes before module styles', async () => {
     writeFile(
-      'packages/kernel-blog/css.config.ts',
+      'packages/kernel-blog/infra.config.ts',
       `
-        import type { CssOptions } from '@website/infra/css';
+        import type { InfraConfig } from '/infra';
 
-        export const config: CssOptions = {
+        export const config: InfraConfig = {
           sourceDir: 'src',
           outputDir: 'dist',
           themes: {
@@ -100,11 +100,11 @@ describe('ModuleCssGraph', () => {
       `,
     );
     writeFile(
-      'packages/kernel-markdown/css.config.ts',
+      'packages/kernel-markdown/infra.config.ts',
       `
-        import type { CssOptions } from '@website/infra/css';
+        import type { InfraConfig } from '/infra';
 
-        export const config: CssOptions = {
+        export const config: InfraConfig = {
           sourceDir: 'src',
           outputDir: 'dist',
           themes: {
@@ -167,7 +167,7 @@ describe('ModuleCssGraph', () => {
     expect(result.code).not.toContain('src/themes/light.css');
     expect(result.watchFiles).toContain(
       normalizeCssFileKey(
-        path.join(fixture.root, 'packages/kernel-blog/css.config.ts'),
+        path.join(fixture.root, 'packages/kernel-blog/infra.config.ts'),
       ),
     );
     const lightTheme = await graph.createKernelCssCode(
@@ -211,17 +211,17 @@ describe('ModuleCssGraph', () => {
     ).toBe(false);
     expect(graph.getWatchRoots()).toEqual([
       'C:/repo/website/packages/kernel-*/src',
-      'C:/repo/website/packages/kernel-*/css.config.ts',
+      'C:/repo/website/packages/kernel-*/infra.config.ts',
     ]);
   });
 
   test('creates source module CSS with dependency modules before own styles', async () => {
     writeFile(
-      'packages/kernel-blog/css.config.ts',
+      'packages/kernel-blog/infra.config.ts',
       `
-        import type { CssOptions } from '@website/infra/css';
+        import type { InfraConfig } from '/infra';
 
-        export const config: CssOptions = {
+        export const config: InfraConfig = {
           sourceDir: 'src',
           outputDir: 'dist',
           cssDependencies: {
@@ -238,11 +238,11 @@ describe('ModuleCssGraph', () => {
       `,
     );
     writeFile(
-      'packages/kernel-markdown/css.config.ts',
+      'packages/kernel-markdown/infra.config.ts',
       `
-        import type { CssOptions } from '@website/infra/css';
+        import type { InfraConfig } from '/infra';
 
-        export const config: CssOptions = {
+        export const config: InfraConfig = {
           sourceDir: 'src',
           outputDir: 'dist',
           themes: {

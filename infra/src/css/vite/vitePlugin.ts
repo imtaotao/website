@@ -4,7 +4,7 @@ import type { HotUpdateOptions, ModuleNode, Plugin, ViteDevServer } from 'vite';
 import {
   ModuleCssGraph,
   type ModuleCssGraphOptions,
-} from '#infra/css/core/index';
+} from '#infra/css/core/moduleCssGraph';
 import { WebsiteKernelCssHmr } from '#infra/css/vite/hmr';
 
 const WORKSPACE_FILE = 'pnpm-workspace.yaml';

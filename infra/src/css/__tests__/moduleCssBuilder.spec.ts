@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { ModuleCssBuilder } from '#infra/css/production/moduleCssBuilder';
-import { moduleCssBuildConfig } from '#infra/css/core/index';
+import { moduleCssBuildConfig } from '#infra/css/core/config';
 import { createCssTestFixture, type CssTestFixture } from './cssTestFixture';
 
 describe('ModuleCssBuilder', () => {

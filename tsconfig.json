@@ -1,5 +1,5 @@
 {
-  "exclude": ["scripts", "./packages/*/tsdown.config.mts"],
+  "exclude": ["scripts"],
   "compilerOptions": {
     "target": "ES2018",
     "module": "preserve",
@@ -35,6 +35,7 @@
       "#app/*": ["./app/src/*"],
 
       // externals
+      "@website/infra": ["./infra/src/index.ts"],
       "@website/infra/*": ["./infra/src/*"],
       "@website-kernel/*": ["./packages/kernel-*/src"],
       "@website-kernel/blog/*": ["./packages/kernel-blog/src/*"],

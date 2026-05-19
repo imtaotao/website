@@ -1,10 +1,8 @@
-import vm from 'node:vm';
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
-import { createRequire } from 'node:module';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import ts from 'typescript';
-import type { CssOptions } from '#infra/css/core/types';
+import type { CssOptions } from '#infra/types';
 
 const importCssOptionsModule = async (configPath: string, href: string) => {
   try {
@@ -13,34 +11,35 @@ const importCssOptionsModule = async (configPath: string, href: string) => {
     if (!isUnknownTsExtensionError(error) || !configPath.endsWith('.ts')) {
       throw error;
     }
-    return importTranspiledCssOptionsModule(configPath);
+    return importTsOptionsModule(href);
   }
 };
 
-const importTranspiledCssOptionsModule = async (configPath: string) => {
-  const normalizedConfigPath = path.resolve(configPath);
-  const source = fs.readFileSync(normalizedConfigPath, 'utf8');
+const importTsOptionsModule = async (href: string) => {
+  const configPath = fileURLToPath(href);
+  const source = fs.readFileSync(configPath, 'utf8');
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,
-      module: ts.ModuleKind.CommonJS,
+      module: ts.ModuleKind.ESNext,
       target: ts.ScriptTarget.ES2020,
     },
-    fileName: normalizedConfigPath,
+    fileName: configPath,
   });
-  const module = { exports: {} as Record<string, unknown> };
-  const dirname = path.dirname(normalizedConfigPath);
-  const require = createRequire(normalizedConfigPath);
+  const tempFile = path.join(
+    path.dirname(configPath),
+    `.infra.config.${process.pid}.${Date.now()}.mjs`,
+  );
 
-  vm.runInNewContext(output.outputText, {
-    __dirname: dirname,
-    __filename: normalizedConfigPath,
-    exports: module.exports,
-    module,
-    require,
-  });
-
-  return module.exports;
+  fs.writeFileSync(tempFile, output.outputText);
+  try {
+    return (await import(pathToFileURL(tempFile).href)) as Record<
+      string,
+      unknown
+    >;
+  } finally {
+    fs.rmSync(tempFile, { force: true });
+  }
 };
 
 const isUnknownTsExtensionError = (error: unknown) => {
@@ -90,7 +89,7 @@ export async function loadCssOptions(
   }
 
   if (configPath.endsWith('.ts')) {
-    const module = await importTranspiledCssOptionsModule(configPath);
+    const module = await importTsOptionsModule(url.href);
     return resolveCssOptionsModule(module);
   }
 
