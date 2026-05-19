@@ -21,7 +21,10 @@ import {
 } from '#infra/css/core/styleEntry';
 import { loadCssOptions } from '#infra/css/core/index';
 import { WorkspaceStyleResolver } from '#infra/css/core/index';
-import { fileWalker, toPosixPath } from '#infra/utils';
+import { fileWalker, getSourceModuleDir, toPosixPath } from '#infra/utils';
+
+const EMPTY_MODULE_STYLE_ENTRY_COMMENT =
+  '/* Empty style entry kept so automated tooling can resolve this module CSS path. */\n';
 
 export class ModuleCssBuilder {
   private srcRoot: string;
@@ -89,6 +92,7 @@ export class ModuleCssBuilder {
       if (entryStyle) outputs.push(entryStyle);
       outputs.push(
         ...this.writeComponentStyleEntries(
+          sourceFiles,
           styleFiles,
           outRoot,
           moduleStyleImports,
@@ -341,6 +345,7 @@ export class ModuleCssBuilder {
   }
 
   private writeComponentStyleEntries(
+    sourceFiles: Array<string>,
     styleFiles: Array<string>,
     outRoot: string,
     moduleStyleImports: Map<string, Array<string>>,
@@ -348,8 +353,17 @@ export class ModuleCssBuilder {
     const styleFilesByDir = groupStyleFilesByDir(this.srcRoot, styleFiles);
     const importedStyleFiles =
       this.styleProcessor.collectImportedStyleFiles(styleFiles);
+    const sourceModuleDirs = this.getSourceModuleDirs(sourceFiles);
+    const ownStyleDirs = this.getOwnStyleDirs(
+      styleFilesByDir,
+      importedStyleFiles,
+    );
     const sourceDirs = Array.from(
-      new Set([...styleFilesByDir.keys(), ...moduleStyleImports.keys()]),
+      new Set([
+        ...sourceModuleDirs,
+        ...ownStyleDirs,
+        ...moduleStyleImports.keys(),
+      ]),
     );
     const outputs: Array<string> = [];
 
@@ -389,15 +403,40 @@ export class ModuleCssBuilder {
         );
       }
 
-      if (!root.nodes?.length) {
-        fs.rmSync(target, { force: true });
-        continue;
-      }
       fs.mkdirSync(styleDir, { recursive: true });
-      fs.writeFileSync(target, this.styleProcessor.stringify(root));
+      fs.writeFileSync(
+        target,
+        root.nodes?.length
+          ? this.styleProcessor.stringify(root)
+          : EMPTY_MODULE_STYLE_ENTRY_COMMENT,
+      );
       outputs.push(target);
     }
     return outputs;
+  }
+
+  private getSourceModuleDirs(sourceFiles: Array<string>) {
+    return sourceFiles
+      .filter((sourceFile) => sourceFile.endsWith('.tsx'))
+      .map((sourceFile) => {
+        return getSourceModuleDir(path.relative(this.srcRoot, sourceFile));
+      })
+      .filter((sourceModuleDir) => {
+        return toPosixPath(sourceModuleDir).split('/').length === 2;
+      });
+  }
+
+  private getOwnStyleDirs(
+    styleFilesByDir: Map<string, Array<string>>,
+    importedStyleFiles: Set<string>,
+  ) {
+    return Array.from(styleFilesByDir.entries())
+      .filter(([, dirStyleFiles]) =>
+        dirStyleFiles.some(
+          (styleFile) => !importedStyleFiles.has(path.resolve(styleFile)),
+        ),
+      )
+      .map(([sourceDir]) => sourceDir);
   }
 
   private getModuleStyleSpecifiers(

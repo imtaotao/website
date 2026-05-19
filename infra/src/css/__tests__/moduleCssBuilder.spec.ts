@@ -295,6 +295,54 @@ describe('ModuleCssBuilder', () => {
     );
   });
 
+  test('builds empty module CSS entries for second-level tsx modules without styles', async () => {
+    writeFile(
+      'css.config.mjs',
+      `
+        export const config = {
+          sourceDir: 'source',
+          outputDir: 'output',
+        };
+      `,
+    );
+    writeFile('source/index.ts', 'export const root = true;');
+    writeFile('source/components/Plain/data.ts', 'export const data = [];');
+    writeFile(
+      'source/components/Plain/index.tsx',
+      'export const Plain = () => null;',
+    );
+    writeFile(
+      'source/components/Plain/Part/index.tsx',
+      'export const Part = () => null;',
+    );
+    writeFile(
+      'source/pages/AboutPage.tsx',
+      'export const AboutPage = () => null;',
+    );
+
+    await createBuilder().build();
+
+    expect(readFile('output/es/components/Plain/style/index.css')).toBe(
+      '/* Empty style entry kept so automated tooling can resolve this module CSS path. */\n',
+    );
+    expect(readFile('output/es/pages/AboutPage/style/index.css')).toBe(
+      '/* Empty style entry kept so automated tooling can resolve this module CSS path. */\n',
+    );
+    expect(readFile('output/lib/components/Plain/style/index.css')).toBe(
+      '/* Empty style entry kept so automated tooling can resolve this module CSS path. */\n',
+    );
+    expect(readFile('output/lib/pages/AboutPage/style/index.css')).toBe(
+      '/* Empty style entry kept so automated tooling can resolve this module CSS path. */\n',
+    );
+    expect(exists('output/es/style/index.css')).toBe(false);
+    expect(exists('output/es/components/Plain/data/style/index.css')).toBe(
+      false,
+    );
+    expect(exists('output/es/components/Plain/Part/style/index.css')).toBe(
+      false,
+    );
+  });
+
   test('builds same-name style entries for flat source modules', async () => {
     writeFile(
       'package.json',

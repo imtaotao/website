@@ -29,6 +29,8 @@
     "tsx": "catalog:",
     "execa": "catalog:",
     "aidly": "catalog:",
+    "rimraf": "catalog:",
+    "tsdown": "catalog:",
     "postcss": "catalog:",
     "chokidar": "catalog:",
     "minimist": "catalog:",
