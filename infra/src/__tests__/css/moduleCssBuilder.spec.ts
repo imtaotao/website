@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { ModuleCssBuilder } from '#infra/css/production/moduleCssBuilder';
 import { moduleCssBuildConfig } from '#infra/css/core/config';
 import { createCssTestFixture, type CssTestFixture } from './cssTestFixture';
@@ -383,6 +383,21 @@ describe('ModuleCssBuilder', () => {
     expect(readFile('output/es/components/Button/style/index.css')).toBe(
       '@import "../../Button.css";\n',
     );
+  });
+
+  test('uses process cwd as the default package root', async () => {
+    writeFile('infra.config.ts', 'export const config = {};');
+    writeFile('src/index.tsx', 'export const value = 1;');
+    writeFile('src/index.css', '.root { color: red; }');
+
+    const cwd = vi.spyOn(process, 'cwd').mockReturnValue(fixture.root);
+    try {
+      await new ModuleCssBuilder().build();
+    } finally {
+      cwd.mockRestore();
+    }
+
+    expect(readFile('dist/index.css')).toContain('.root { color: red; }');
   });
 
   const createBuilder = () => {

@@ -25,19 +25,29 @@ describe('loadCssOptions', () => {
     fs.rmSync(tempRoot, { recursive: true, force: true });
   });
 
-  test('loads TypeScript css config without dynamic data url import', async () => {
+  test('loads TypeScript infra config as an ES module', async () => {
+    writeFile(
+      'dependency.mjs',
+      `
+        export const dependency = {
+          global: '/dist/dependency.css',
+        };
+      `,
+    );
     writeFile(
       'infra.config.ts',
       `
+        import { dependency } from './dependency.mjs';
         import type { InfraConfig } from '/infra';
 
         export const config: InfraConfig = {
           sourceDir: 'source',
           outputDir: 'output',
+          build: {
+            formats: ['esm'],
+          },
           cssDependencies: {
-            katex: {
-              global: '/dist/katex.min.css',
-            },
+            katex: dependency,
           },
         };
       `,
@@ -48,9 +58,12 @@ describe('loadCssOptions', () => {
     ).resolves.toEqual({
       sourceDir: 'source',
       outputDir: 'output',
+      build: {
+        formats: ['esm'],
+      },
       cssDependencies: {
         katex: {
-          global: '/dist/katex.min.css',
+          global: '/dist/dependency.css',
         },
       },
     });
