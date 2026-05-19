@@ -37,18 +37,34 @@
       // externals
       "auklet": ["./auklet/src/index.ts"],
       "auklet/*": ["./auklet/src/*"],
-      "@website-kernel/*": ["./packages/kernel-*/src"],
-      "@website-kernel/blog/*": ["./packages/kernel-blog/src/*"],
-      "@website-kernel/resume/*": ["./packages/kernel-resume/src/*"],
-      "@website-kernel/shared/*": ["./packages/kernel-shared/src/*"],
-      "@website-kernel/markdown/*": ["./packages/kernel-markdown/src/*"],
 
-      // packages
+      // workspace package root imports
+      "@website-kernel/*": ["./packages/kernel-*/src"],
+
+      // workspace package component subpath imports
+      "@website-kernel/blog/*": [
+        "./packages/kernel-blog/src/*/index.tsx",
+        "./packages/kernel-blog/src/*.tsx"
+      ],
+      "@website-kernel/resume/*": [
+        "./packages/kernel-resume/src/*/index.tsx",
+        "./packages/kernel-resume/src/*.tsx"
+      ],
+      "@website-kernel/shared/*": [
+        "./packages/kernel-shared/src/*/index.tsx",
+        "./packages/kernel-shared/src/*.tsx"
+      ],
+      "@website-kernel/markdown/*": [
+        "./packages/kernel-markdown/src/*/index.tsx",
+        "./packages/kernel-markdown/src/*.tsx"
+      ],
+
+      // internal package aliases
       "#auklet/*": ["./auklet/src/*"],
       "#blog/*": ["./packages/kernel-blog/src/*"],
       "#resume/*": ["./packages/kernel-resume/src/*"],
       "#shared/*": ["./packages/kernel-shared/src/*"],
-      "#markdown/*": ["./packages/kernel-markdown/src/*"]
+      "#markdown/*": ["./packages/kernel-markdown/src/*"],
     }
   }
 }

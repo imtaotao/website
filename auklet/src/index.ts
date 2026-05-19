@@ -18,7 +18,7 @@ export {
   loadAukletConfig,
   resolveAukletConfigModule,
 } from '#auklet/configLoader';
-export { createTsdownArgs, runTsdown } from '#auklet/build/runTsdown';
-export { ModuleCssBuilder } from '#auklet/css/production/moduleCssBuilder';
-export { ModuleCssWatcher } from '#auklet/css/watch/moduleCssWatcher';
 export { aukletCssPlugin } from '#auklet/css/vite/vitePlugin';
+export { createTsdownArgs, runTsdown } from '#auklet/build/runTsdown';
+export { ModuleCssWatcher } from '#auklet/css/watch/moduleCssWatcher';
+export { ModuleCssBuilder } from '#auklet/css/production/moduleCssBuilder';

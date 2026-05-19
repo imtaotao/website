@@ -104,7 +104,7 @@ export default defineConfig({
     }),
     react(),
     tailwindcss(),
-    // aukletCssPlugin(),
     tsconfigPaths(),
+    aukletCssPlugin(),
   ],
 });
