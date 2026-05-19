@@ -6,12 +6,16 @@ const minimist = require('minimist');
 
 const runBuildCss = async (args) => {
   const shouldWatch = args.includes('--watch') || args.includes('-w');
+  const { loadInfraConfig } = await import('../dist/configLoader.js');
+  const infraConfig = await loadInfraConfig(process.cwd(), {
+    cacheBust: shouldWatch,
+  });
 
   if (shouldWatch) {
     const { ModuleCssWatcher } = await import(
       '../dist/css/watch/moduleCssWatcher.js'
     );
-    const watcher = new ModuleCssWatcher();
+    const watcher = new ModuleCssWatcher({ infraConfig, logger: console });
     await watcher.watch();
     const close = () => {
       watcher
@@ -28,7 +32,7 @@ const runBuildCss = async (args) => {
   const { ModuleCssBuilder } = await import(
     '../dist/css/production/moduleCssBuilder.js'
   );
-  const builder = new ModuleCssBuilder();
+  const builder = new ModuleCssBuilder({ infraConfig, logger: console });
   await builder.build();
   return 0;
 };

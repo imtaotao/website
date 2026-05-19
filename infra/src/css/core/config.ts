@@ -13,7 +13,6 @@ export const moduleCssBuildConfig: ModuleCssBuildConfig = {
     externalCssFile: 'external.css',
     outputFormats: ['es', 'lib'],
   },
-  cssConfigFile: 'infra.config.ts',
   lessLanguage: LESS_LANGUAGE,
   styleExtensions: {
     [CSS_EXTENSION]: CSS_LANGUAGE,

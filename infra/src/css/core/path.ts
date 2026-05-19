@@ -4,11 +4,11 @@ import { toPosixPath } from '#infra/utils';
 
 const WINDOWS_ABSOLUTE_PATH_RE = /^[a-zA-Z]:[\\/]/;
 
-export const isWindowsAbsolutePath = (file: string) => {
+export function isWindowsAbsolutePath(file: string) {
   return WINDOWS_ABSOLUTE_PATH_RE.test(file);
-};
+}
 
-export const normalizeCssFileKey = (file: string) => {
+export function normalizeCssFileKey(file: string) {
   if (process.platform !== 'win32' && isWindowsAbsolutePath(file)) {
     return toPosixPath(file);
   }
@@ -19,16 +19,16 @@ export const normalizeCssFileKey = (file: string) => {
     : resolved;
 
   return toPosixPath(realpath);
-};
+}
 
-export const toCssFsSpecifier = (file: string) => {
+export function toCssFsSpecifier(file: string) {
   return path.posix.join('/@fs', normalizeCssFileKey(file));
-};
+}
 
-export const toCssWatchPath = (...parts: Array<string>) => {
+export function toCssWatchPath(...parts: Array<string>) {
   if (parts[0] && isWindowsAbsolutePath(parts[0])) {
     return toPosixPath(path.win32.join(...parts));
   }
 
   return toPosixPath(path.join(...parts));
-};
+}

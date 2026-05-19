@@ -23,6 +23,10 @@ export type PackageBuildFormat = 'cjs' | 'esm' | 'iife';
 export type PackageBuildOptions = {
   // 包级 bundle 产物格式，例如 cjs、esm、iife。
   formats?: Array<PackageBuildFormat>;
+  // 自定义 bundle banner；未传入时根据 package.json 自动生成。
+  banner?: string;
+  // 额外标记为外部依赖的包名；会和 package.json dependencies、peerDependencies 一起传给 tsdown。
+  externals?: Array<string>;
   // 是否生成 dist/es 和 dist/lib 下的 unbundle 模块产物。
   modules?: boolean;
   // TypeScript 配置文件路径，相对于当前包根目录；默认向上查找 tsconfig.json。
@@ -34,11 +38,28 @@ export interface InfraConfig extends CssOptions {
   build?: PackageBuildOptions;
 }
 
+export type InfraLogger = {
+  log?: (...args: Array<unknown>) => void;
+  info?: (...args: Array<unknown>) => void;
+  error?: (...args: Array<unknown>) => void;
+};
+
+export type LoadInfraConfigOptions = {
+  // 配置文件名，默认 infra.config.ts。
+  configFile?: string;
+  // 是否绕开 ESM import cache。
+  cacheBust?: boolean;
+};
+
 export type StyleLanguage = 'css' | 'less';
 
 export interface ModuleCssBuildContext {
   // 当前执行 CSS 构建的包根目录，默认使用 process.cwd()。
   packageRoot?: string;
+  // 已加载的 infra 配置；未传入时核心 API 使用空配置。
+  infraConfig?: InfraConfig;
+  // 可选日志输出；核心 API 默认静默，CLI 会传入 console。
+  logger?: InfraLogger;
   // 命令行传入的源码目录，会覆盖包内 infra.config.ts 的配置。
   sourceDir?: string;
   // 命令行传入的产物目录，会覆盖包内 infra.config.ts 的配置。
@@ -53,6 +74,11 @@ export interface ResolvedModuleCssBuildContext {
   // 已解析后的产物目录，使用绝对路径。
   outputDir: string;
 }
+
+export type ModuleCssBuildOptions = {
+  infraConfig?: InfraConfig;
+  logger?: InfraLogger;
+};
 
 export interface ModuleCssBuildOutputConfig {
   // 需要同步生成 CSS 产物的模块格式目录，例如 es、lib。
@@ -70,8 +96,6 @@ export interface ModuleCssBuildOutputConfig {
 export interface ModuleCssBuildConfig {
   // CSS 产物结构配置。
   output: ModuleCssBuildOutputConfig;
-  // 包内 CSS 构建配置文件名。
-  cssConfigFile: string;
   // 支持处理的样式文件后缀和对应语言类型。
   styleExtensions: Record<string, StyleLanguage>;
   // Less 文件在构建流程中的语言标识。

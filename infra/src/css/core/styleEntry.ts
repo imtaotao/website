@@ -16,10 +16,10 @@ export type PackageStyleSpecifier = {
   stylePath: string;
 };
 
-export const groupStyleFilesByDir = (
+export function groupStyleFilesByDir(
   sourceRoot: string,
   styleFiles: Array<string>,
-) => {
+) {
   const styleFilesByDir = new Map<string, Array<string>>();
   for (const styleFile of styleFiles) {
     const sourceRelative = path.relative(sourceRoot, styleFile);
@@ -29,9 +29,9 @@ export const groupStyleFilesByDir = (
     styleFilesByDir.set(sourceDir, values);
   }
   return styleFilesByDir;
-};
+}
 
-export const getGlobalStyleDependencies = (cssOptions: CssOptions) => {
+export function getGlobalStyleDependencies(cssOptions: CssOptions) {
   const dependencies: Array<string> = [];
   for (const [packageName, dependency] of Object.entries(
     cssOptions.cssDependencies ?? {},
@@ -45,16 +45,16 @@ export const getGlobalStyleDependencies = (cssOptions: CssOptions) => {
     }
   }
   return dependencies;
-};
+}
 
-export const getExternalStyleDependencies = (cssOptions: CssOptions) => {
+export function getExternalStyleDependencies(cssOptions: CssOptions) {
   return getGlobalStyleDependencies(cssOptions);
-};
+}
 
-export const getThemeStyleDependencies = (
+export function getThemeStyleDependencies(
   cssOptions: CssOptions,
   themeName: string,
-) => {
+) {
   const dependencies: Array<string> = [];
   for (const [packageName, dependency] of Object.entries(
     cssOptions.cssDependencies ?? {},
@@ -64,37 +64,37 @@ export const getThemeStyleDependencies = (
     dependencies.push(joinDependencySpecifier(packageName, themeDependency));
   }
   return dependencies;
-};
+}
 
-export const getThemeStyleEntries = (cssOptions: CssOptions) => {
+export function getThemeStyleEntries(cssOptions: CssOptions) {
   return Object.entries(cssOptions.themes ?? {}).map(([themeName, file]) => ({
     themeName,
     file,
   }));
-};
+}
 
-export const resolveThemeStyleFiles = (
+export function resolveThemeStyleFiles(
   cssOptions: CssOptions,
   packageRoot: string,
-) => {
+) {
   const themeFiles = new Map<string, string>();
   for (const { themeName, file } of getThemeStyleEntries(cssOptions)) {
     themeFiles.set(themeName, path.resolve(packageRoot, file));
   }
   return themeFiles;
-};
+}
 
-export const createStyleFileKeySet = (styleFiles: Iterable<string>) => {
+export function createStyleFileKeySet(styleFiles: Iterable<string>) {
   return new Set(Array.from(styleFiles, normalizeCssFileKey));
-};
+}
 
-export const createStyleFileKey = (styleFile: string) => {
+export function createStyleFileKey(styleFile: string) {
   return normalizeCssFileKey(styleFile);
-};
+}
 
-export const parsePackageStyleSpecifier = (
+export function parsePackageStyleSpecifier(
   specifier: string,
-): PackageStyleSpecifier | null => {
+): PackageStyleSpecifier | null {
   if (specifier.startsWith('.')) return null;
 
   const parts = specifier.split('/');
@@ -107,24 +107,24 @@ export const parsePackageStyleSpecifier = (
     packageName,
     stylePath: parts.join('/'),
   };
-};
+}
 
-export const joinDependencySpecifier = (
+export function joinDependencySpecifier(
   packageName: string,
   dependencyPath: string,
-) => {
+) {
   if (!dependencyPath) return packageName;
   return dependencyPath.startsWith('/')
     ? `${packageName}${dependencyPath}`
     : `${packageName}/${dependencyPath}`;
-};
+}
 
-export const createImportCode = (specifiers: Array<string>) => {
+export function createImportCode(specifiers: Array<string>) {
   return Array.from(new Set(specifiers))
     .map((specifier) => `@import "${specifier}";`)
     .join('\n');
-};
+}
 
-export const removeCssExtension = (cssPath: string) => {
+export function removeCssExtension(cssPath: string) {
   return cssPath.slice(0, -path.extname(cssPath).length);
-};
+}

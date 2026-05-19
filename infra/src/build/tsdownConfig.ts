@@ -1,9 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { defineConfig } from 'tsdown/config';
-import type { UserConfig } from 'tsdown/config';
-import { moduleCssBuildConfig } from '#infra/css/core/config';
-import { loadCssOptions } from '#infra/css/core/cssOptions';
+import { defineConfig, type UserConfig } from 'tsdown/config';
+import { loadInfraConfig } from '#infra/configLoader';
 import type {
   InfraConfig,
   PackageBuildFormat,
@@ -47,15 +45,27 @@ const getExternal = (names: Array<string>) => {
   return [...external];
 };
 
-const getPackageExternal = (pkg: PackageJsonLike) => {
+const getPackageExternal = (
+  pkg: PackageJsonLike,
+  options: PackageBuildOptions,
+) => {
   return getExternal([
     ...Object.keys(pkg.dependencies ?? {}),
     ...Object.keys(pkg.peerDependencies ?? {}),
+    ...(options.externals ?? []),
   ]);
 };
 
-const getPeerExternal = (pkg: PackageJsonLike) => {
-  return Object.keys(pkg.peerDependencies ?? {});
+const getPeerExternal = (
+  pkg: PackageJsonLike,
+  options: PackageBuildOptions,
+) => {
+  return [
+    ...new Set([
+      ...Object.keys(pkg.peerDependencies ?? {}),
+      ...(options.externals ?? []),
+    ]),
+  ];
 };
 
 const getDependencyGlobalName = (name: string) => {
@@ -112,13 +122,15 @@ const createBuildContext = (
   const pkg = JSON.parse(
     fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'),
   ) as PackageJsonLike;
+
   const banner =
+    options.banner ??
     '/*!\n' +
-    ` * ${pkg.name}.js v${pkg.version}\n` +
-    ` * (c) 2026-${new Date().getFullYear()} ${
-      pkg.author || 'chentao.arthur'
-    }\n` +
-    ' */';
+      ` * ${pkg.name}.js v${pkg.version}\n` +
+      (pkg.author
+        ? ` * (c) 2026-${new Date().getFullYear()} ${pkg.author}\n`
+        : '') +
+      ' */';
 
   return {
     packageRoot,
@@ -127,8 +139,8 @@ const createBuildContext = (
       : findWorkspaceTsconfig(packageRoot),
     pkg,
     dependencyNames: Object.keys(pkg.dependencies ?? {}),
-    packageExternal: getPackageExternal(pkg),
-    peerExternal: getPeerExternal(pkg),
+    packageExternal: getPackageExternal(pkg, options),
+    peerExternal: getPeerExternal(pkg, options),
     globalName: getGlobalName(pkg),
     banner,
   };
@@ -237,10 +249,10 @@ const createModuleConfigs = (context: BuildContext) => {
   ] satisfies Array<UserConfig>;
 };
 
-export const defineKernelPackageConfigFromOptions = (
+export function defineKernelPackageConfigFromOptions(
   packageRoot = process.cwd(),
   config: InfraConfig = {},
-) => {
+): Array<UserConfig> {
   const buildOptions = config.build ?? {};
   const formats = buildOptions.formats ?? ['cjs', 'esm', 'iife'];
   const context = createBuildContext(packageRoot, buildOptions);
@@ -250,19 +262,14 @@ export const defineKernelPackageConfigFromOptions = (
     : [];
 
   return [...bundleConfigs, ...moduleConfigs] satisfies Array<UserConfig>;
-};
+}
 
-export const defineKernelPackageConfigFromFile = async (
+export async function defineKernelPackageConfigFromFile(
   packageRoot = process.cwd(),
-) => {
-  const config = (await loadCssOptions(
-    packageRoot,
-    moduleCssBuildConfig.cssConfigFile,
-    { cacheBust: true },
-  )) as InfraConfig;
-
+): Promise<Array<UserConfig>> {
+  const config = await loadInfraConfig(packageRoot, { cacheBust: true });
   return defineKernelPackageConfigFromOptions(packageRoot, config);
-};
+}
 
 export default defineKernelPackageConfigFromFile(process.cwd()).then((config) =>
   defineConfig(config),

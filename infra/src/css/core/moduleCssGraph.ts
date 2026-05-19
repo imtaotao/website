@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { infraConfigFile } from '#infra/config';
+import { loadInfraConfig } from '#infra/configLoader';
 import { moduleCssBuildConfig } from '#infra/css/core/config';
-import { loadCssOptions } from '#infra/css/core/cssOptions';
 import { ModuleStyleImportCollector } from '#infra/css/core/moduleStyleImportCollector';
 import {
   normalizeCssFileKey,
@@ -28,6 +29,7 @@ import {
 import { StyleProcessor } from '#infra/css/core/styleProcessor';
 import type {
   CssOptions,
+  InfraConfig,
   ModuleCssBuildConfig,
   ResolvedModuleCssBuildContext,
 } from '#infra/types';
@@ -59,6 +61,10 @@ const mergeLoadResults = (...results: Array<KernelCssLoadResult>) => {
 export interface ModuleCssGraphOptions {
   workspaceRoot: string;
   config?: ModuleCssBuildConfig;
+  loadInfraConfig?: (
+    packageRoot: string,
+    options?: { cacheBust?: boolean },
+  ) => Promise<InfraConfig>;
 }
 
 export type KernelCssId = {
@@ -75,10 +81,14 @@ export type KernelCssLoadResult = {
 export class ModuleCssGraph {
   private readonly config: ModuleCssBuildConfig;
   private readonly workspaceRoot: string;
+  private readonly loadInfraConfig: NonNullable<
+    ModuleCssGraphOptions['loadInfraConfig']
+  >;
 
   constructor(options: ModuleCssGraphOptions) {
     this.config = options.config ?? moduleCssBuildConfig;
     this.workspaceRoot = normalizeCssFileKey(options.workspaceRoot);
+    this.loadInfraConfig = options.loadInfraConfig ?? loadInfraConfig;
   }
 
   parseKernelCssId(id: string) {
@@ -90,7 +100,7 @@ export class ModuleCssGraph {
     if (!normalizedFile.includes('/packages/kernel-')) {
       return false;
     }
-    if (normalizedFile.endsWith(this.config.cssConfigFile)) return true;
+    if (normalizedFile.endsWith(infraConfigFile)) return true;
     if (normalizedFile.endsWith('.ts') || normalizedFile.endsWith('.tsx')) {
       return true;
     }
@@ -101,7 +111,7 @@ export class ModuleCssGraph {
   }
 
   isCssConfigFile(file: string) {
-    return normalizeCssFileKey(file).endsWith(this.config.cssConfigFile);
+    return normalizeCssFileKey(file).endsWith(infraConfigFile);
   }
 
   isStyleFile(file: string) {
@@ -124,7 +134,7 @@ export class ModuleCssGraph {
     const packagesRoot = path.join(this.workspaceRoot, 'packages');
     return [
       toCssWatchPath(packagesRoot, 'kernel-*', 'src'),
-      toCssWatchPath(packagesRoot, 'kernel-*', this.config.cssConfigFile),
+      toCssWatchPath(packagesRoot, 'kernel-*', infraConfigFile),
     ];
   }
 
@@ -160,13 +170,9 @@ export class ModuleCssGraph {
     );
     if (!fs.existsSync(packageRoot)) return null;
 
-    const cssOptions = await loadCssOptions(
-      packageRoot,
-      this.config.cssConfigFile,
-      {
-        cacheBust: true,
-      },
-    );
+    const cssOptions = await this.loadInfraConfig(packageRoot, {
+      cacheBust: true,
+    });
     const context: ResolvedModuleCssBuildContext = {
       packageRoot,
       sourceDir: cssOptions.sourceDir ?? 'src',
@@ -180,7 +186,7 @@ export class ModuleCssGraph {
       cssOptions,
       context,
       packageName: parsed.packageName,
-      configPath: path.join(packageRoot, this.config.cssConfigFile),
+      configPath: path.join(packageRoot, infraConfigFile),
       resolver,
       sourceRoot,
       styleProcessor,

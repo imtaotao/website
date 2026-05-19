@@ -2,12 +2,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
-import {
-  loadCssOptions,
-  resolveCssOptionsModule,
-} from '#infra/css/core/cssOptions';
+import { loadInfraConfig, resolveInfraConfigModule } from '#infra/configLoader';
 
-describe('loadCssOptions', () => {
+describe('loadInfraConfig', () => {
   let tempRoot: string;
 
   const writeFile = (relativePath: string, content: string) => {
@@ -23,6 +20,10 @@ describe('loadCssOptions', () => {
 
   afterEach(() => {
     fs.rmSync(tempRoot, { recursive: true, force: true });
+  });
+
+  test('returns empty config when the config file is missing', async () => {
+    await expect(loadInfraConfig(tempRoot)).resolves.toEqual({});
   });
 
   test('loads TypeScript infra config as an ES module', async () => {
@@ -54,7 +55,7 @@ describe('loadCssOptions', () => {
     );
 
     await expect(
-      loadCssOptions(tempRoot, 'infra.config.ts', { cacheBust: true }),
+      loadInfraConfig(tempRoot, { cacheBust: true }),
     ).resolves.toEqual({
       sourceDir: 'source',
       outputDir: 'output',
@@ -68,12 +69,33 @@ describe('loadCssOptions', () => {
       },
     });
   });
+
+  test('removes the temporary module generated for TypeScript config', async () => {
+    writeFile(
+      'infra.config.ts',
+      `
+        export const config = {
+          sourceDir: 'source',
+        };
+      `,
+    );
+
+    await loadInfraConfig(tempRoot, { cacheBust: true });
+
+    expect(
+      fs
+        .readdirSync(tempRoot)
+        .some(
+          (file) => file.startsWith('.infra.config.') && file.endsWith('.mjs'),
+        ),
+    ).toBe(false);
+  });
 });
 
-describe('resolveCssOptionsModule', () => {
+describe('resolveInfraConfigModule', () => {
   test('reads config from direct named export', () => {
     expect(
-      resolveCssOptionsModule({
+      resolveInfraConfigModule({
         config: {
           sourceDir: 'src',
           outputDir: 'dist',
@@ -86,6 +108,6 @@ describe('resolveCssOptionsModule', () => {
   });
 
   test('falls back to empty config for unsupported module shapes', () => {
-    expect(resolveCssOptionsModule({ default: null })).toEqual({});
+    expect(resolveInfraConfigModule({ default: null })).toEqual({});
   });
 });

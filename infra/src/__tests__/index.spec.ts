@@ -9,6 +9,8 @@ describe('@website/infra public api', () => {
     expect(infra.ModuleCssWatcher).toEqual(expect.any(Function));
     expect(infra.createTsdownArgs).toEqual(expect.any(Function));
     expect(infra.runTsdown).toEqual(expect.any(Function));
+    expect(infra.loadInfraConfig).toEqual(expect.any(Function));
+    expect(infra.resolveInfraConfigModule).toEqual(expect.any(Function));
   });
 
   test('does not expose tsdown config file helpers from the root entry', () => {

@@ -2,9 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import ts from 'typescript';
-import type { CssOptions } from '#infra/types';
+import { infraConfigFile } from '#infra/config';
+import type { InfraConfig, LoadInfraConfigOptions } from '#infra/types';
 
-const importCssOptionsModule = async (configPath: string, href: string) => {
+const importInfraConfigModule = async (configPath: string, href: string) => {
   try {
     return (await import(href)) as Record<string, unknown>;
   } catch (error) {
@@ -57,7 +58,7 @@ const asRecord = (value: unknown) => {
   return value as Record<string, unknown>;
 };
 
-export function resolveCssOptionsModule(module: Record<string, unknown>) {
+export function resolveInfraConfigModule(module: Record<string, unknown>) {
   const candidates = [
     module,
     asRecord(module.default),
@@ -67,18 +68,20 @@ export function resolveCssOptionsModule(module: Record<string, unknown>) {
     if (!candidate) continue;
     const config = asRecord(candidate.config);
     if (config) {
-      return config as CssOptions;
+      return config as InfraConfig;
     }
   }
   return {};
 }
 
-export async function loadCssOptions(
+export async function loadInfraConfig(
   packageRoot: string,
-  cssConfigFile: string,
-  options: { cacheBust?: boolean } = {},
+  options: LoadInfraConfigOptions = {},
 ) {
-  const configPath = path.join(packageRoot, cssConfigFile);
+  const configPath = path.join(
+    packageRoot,
+    options.configFile ?? infraConfigFile,
+  );
   if (!fs.existsSync(configPath)) {
     return {};
   }
@@ -90,9 +93,9 @@ export async function loadCssOptions(
 
   if (configPath.endsWith('.ts')) {
     const module = await importTsOptionsModule(url.href);
-    return resolveCssOptionsModule(module);
+    return resolveInfraConfigModule(module);
   }
 
-  const module = await importCssOptionsModule(configPath, url.href);
-  return resolveCssOptionsModule(module);
+  const module = await importInfraConfigModule(configPath, url.href);
+  return resolveInfraConfigModule(module);
 }

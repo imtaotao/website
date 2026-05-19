@@ -25,17 +25,17 @@ export type RunTsdownOptions = {
   cwd?: string;
 };
 
-export const createTsdownArgs = (args: Array<string>) => {
+export function createTsdownArgs(args: Array<string>) {
   const tsdownArgs = hasConfigArg(args)
     ? args
     : ['--config', defaultConfigFile, ...args];
   return [tsdownRunFile, ...tsdownArgs];
-};
+}
 
-export const runTsdown = async (
+export async function runTsdown(
   args: Array<string>,
   options: RunTsdownOptions = {},
-) => {
+) {
   const tsdownArgs = createTsdownArgs(args);
   const result = await execa(process.execPath, tsdownArgs, {
     cwd: options.cwd ?? process.cwd(),
@@ -44,4 +44,4 @@ export const runTsdown = async (
   });
 
   return result.exitCode ?? 0;
-};
+}

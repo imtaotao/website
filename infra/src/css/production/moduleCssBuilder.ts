@@ -1,13 +1,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { moduleCssBuildConfig } from '#infra/css/core/config';
-import { loadCssOptions } from '#infra/css/core/cssOptions';
-import { ModuleStyleImportCollector } from '#infra/css/core/moduleStyleImportCollector';
 import { StyleProcessor } from '#infra/css/core/styleProcessor';
+import { ModuleStyleImportCollector } from '#infra/css/core/moduleStyleImportCollector';
 import type {
   CssOptions,
+  InfraLogger,
   ModuleCssBuildConfig,
   ModuleCssBuildContext,
+  ModuleCssBuildOptions,
   ResolvedModuleCssBuildContext,
 } from '#infra/types';
 import {
@@ -28,6 +29,7 @@ const EMPTY_MODULE_STYLE_ENTRY_COMMENT =
 
 export class ModuleCssBuilder {
   private readonly context: ModuleCssBuildContext & { packageRoot: string };
+  private readonly logger?: InfraLogger;
   private srcRoot: string;
   private resolver: WorkspaceStyleResolver;
   private styleProcessor: StyleProcessor;
@@ -43,16 +45,18 @@ export class ModuleCssBuilder {
       outputDir: context.outputDir,
       ...context,
     };
+    this.logger = context.logger;
     this.applyContext(this.createBuildContext({}));
   }
 
-  async build(options: { cacheBust?: boolean } = {}) {
-    const cssOptions = await this.loadCssOptions(options);
+  async build(options: ModuleCssBuildOptions = {}) {
+    const cssOptions = options.infraConfig ?? this.context.infraConfig ?? {};
+    const logger = options.logger ?? this.logger;
     const context = this.createBuildContext(cssOptions);
 
     this.applyContext(context);
 
-    console.log(`[infra:css] build ${path.basename(context.packageRoot)}`);
+    logger?.log?.(`[infra:css] build ${path.basename(context.packageRoot)}`);
 
     const sourceFiles = fileWalker(this.srcRoot);
     const themeFiles = resolveThemeStyleFiles(cssOptions, context.packageRoot);
@@ -107,11 +111,11 @@ export class ModuleCssBuilder {
       );
     }
 
-    console.log(
+    logger?.log?.(
       `[infra:css] ${styleFiles.length} source style file(s), ${outputs.length} output entry file(s)`,
     );
     for (const output of outputs) {
-      console.log(
+      logger?.log?.(
         `[infra:css] + ${toPosixPath(
           path.relative(context.packageRoot, output),
         )}`,
@@ -122,14 +126,6 @@ export class ModuleCssBuilder {
   private getStyleFiles(files: Array<string>) {
     return files.filter((file) =>
       Boolean(this.config.styleExtensions[path.extname(file)]),
-    );
-  }
-
-  private async loadCssOptions(options: { cacheBust?: boolean } = {}) {
-    return loadCssOptions(
-      this.context.packageRoot,
-      this.config.cssConfigFile,
-      options,
     );
   }
 

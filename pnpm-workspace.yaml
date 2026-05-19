@@ -21,7 +21,7 @@ catalog:
   "react-twitter-widgets": "1.11.0"
   "typescript": "6.0.3"
   "tailwindcss": "4.2.4"
-  "@types/node": "20.10.6"
+  "@types/node": "22.17.0"
   "@types/react": "19.2.14"
   "@types/react-dom": "19.2.3"
   "@types/minimist": "1.2.5"

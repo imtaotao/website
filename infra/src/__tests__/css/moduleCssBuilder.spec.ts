@@ -1,13 +1,15 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { ModuleCssBuilder } from '#infra/css/production/moduleCssBuilder';
-import { moduleCssBuildConfig } from '#infra/css/core/config';
+import type { InfraConfig } from '#infra/types';
 import { createCssTestFixture, type CssTestFixture } from './cssTestFixture';
 
 describe('ModuleCssBuilder', () => {
   let fixture: CssTestFixture;
+  let infraConfig: InfraConfig;
 
   beforeEach(() => {
     fixture = createCssTestFixture('infra-builder-');
+    infraConfig = {};
     writeFile('package.json', JSON.stringify({ name: 'fixture-package' }));
   });
 
@@ -25,32 +27,27 @@ describe('ModuleCssBuilder', () => {
         },
       }),
     );
-    writeFile(
-      'css.config.mjs',
-      `
-        export const config = {
-          sourceDir: 'source',
-          outputDir: 'output',
+    setInfraConfig({
+      sourceDir: 'source',
+      outputDir: 'output',
+      themes: {
+        light: './source/themes/light.css',
+        dark: './source/themes/dark.css',
+      },
+      cssDependencies: {
+        '@website-kernel/markdown': {
+          global: '/style.css',
           themes: {
-            light: './source/themes/light.css',
-            dark: './source/themes/dark.css',
+            light: '/themes/light.css',
+            dark: '/themes/dark.css',
           },
-          cssDependencies: {
-            '@website-kernel/markdown': {
-              global: '/style.css',
-              themes: {
-                light: '/themes/light.css',
-                dark: '/themes/dark.css',
-              },
-            },
-            '@scope/ui': {
-              global: '/style.css',
-              component: ['/pages/**.css', '/components/**.css'],
-            },
-          },
-        };
-      `,
-    );
+        },
+        '@scope/ui': {
+          global: '/style.css',
+          component: ['/pages/**.css', '/components/**.css'],
+        },
+      },
+    });
     writeFile(
       'node_modules/@scope/ui/style.css',
       `
@@ -175,20 +172,15 @@ describe('ModuleCssBuilder', () => {
   });
 
   test('rewrites legacy output-format package style imports per format', async () => {
-    writeFile(
-      'css.config.mjs',
-      `
-        export const config = {
-          sourceDir: 'source',
-          outputDir: 'output',
-          cssDependencies: {
-            '@scope/ui': {
-              global: '/es/style/index.css',
-            },
-          },
-        };
-      `,
-    );
+    setInfraConfig({
+      sourceDir: 'source',
+      outputDir: 'output',
+      cssDependencies: {
+        '@scope/ui': {
+          global: '/es/style/index.css',
+        },
+      },
+    });
     writeFile('node_modules/@scope/ui/es/style/index.css', '.esm {}');
     writeFile('node_modules/@scope/ui/lib/style/index.css', '.cjs {}');
     writeFile('source/index.css', '.local {}');
@@ -217,15 +209,10 @@ describe('ModuleCssBuilder', () => {
         },
       }),
     );
-    writeFile(
-      'css.config.mjs',
-      `
-        export const config = {
-          sourceDir: 'source',
-          outputDir: 'output',
-        };
-      `,
-    );
+    setInfraConfig({
+      sourceDir: 'source',
+      outputDir: 'output',
+    });
     writeFile(
       'source/components/Renderer/index.tsx',
       `
@@ -266,15 +253,10 @@ describe('ModuleCssBuilder', () => {
         },
       }),
     );
-    writeFile(
-      'css.config.mjs',
-      `
-        export const config = {
-          sourceDir: 'source',
-          outputDir: 'output',
-        };
-      `,
-    );
+    setInfraConfig({
+      sourceDir: 'source',
+      outputDir: 'output',
+    });
     writeFile(
       'source/components/Renderer/index.tsx',
       `
@@ -296,15 +278,10 @@ describe('ModuleCssBuilder', () => {
   });
 
   test('builds empty module CSS entries for second-level tsx modules without styles', async () => {
-    writeFile(
-      'css.config.mjs',
-      `
-        export const config = {
-          sourceDir: 'source',
-          outputDir: 'output',
-        };
-      `,
-    );
+    setInfraConfig({
+      sourceDir: 'source',
+      outputDir: 'output',
+    });
     writeFile('source/index.ts', 'export const root = true;');
     writeFile('source/components/Plain/data.ts', 'export const data = [];');
     writeFile(
@@ -353,15 +330,10 @@ describe('ModuleCssBuilder', () => {
         },
       }),
     );
-    writeFile(
-      'css.config.mjs',
-      `
-        export const config = {
-          sourceDir: 'source',
-          outputDir: 'output',
-        };
-      `,
-    );
+    setInfraConfig({
+      sourceDir: 'source',
+      outputDir: 'output',
+    });
     writeFile(
       'source/components/Renderer.tsx',
       `
@@ -401,15 +373,14 @@ describe('ModuleCssBuilder', () => {
   });
 
   const createBuilder = () => {
-    return new ModuleCssBuilder(
-      {
-        packageRoot: fixture.root,
-      },
-      {
-        ...moduleCssBuildConfig,
-        cssConfigFile: 'css.config.mjs',
-      },
-    );
+    return new ModuleCssBuilder({
+      packageRoot: fixture.root,
+      infraConfig,
+    });
+  };
+
+  const setInfraConfig = (config: InfraConfig) => {
+    infraConfig = config;
   };
 
   const writeFile = (relativePath: string, content: string) => {
