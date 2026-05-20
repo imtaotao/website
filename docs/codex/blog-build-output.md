@@ -80,13 +80,13 @@ import '@website-kernel/blog/pages/BlogHomePage.css';
 - `dist/index.global.js`
 - `dist/index.css`
 
-其中 `dist/index.css` 是给原生 HTML `<link>` 等场景使用的扁平化样式文件，会内联 blog 自身 CSS，以及 `cssDependencies.global` 指定的外部全局 CSS 内容。
+其中 `dist/index.css` 是给原生 HTML `<link>` 等场景使用的扁平化样式文件，会内联 blog 自身 CSS，以及 `styles.dependencies.*.entry` 指定的外部全局 CSS 内容。
 
 `dist/index.css` 当前不作为 package exports 入口；包导出的 `./style.css` 指向模块化总样式入口 `dist/{es,lib}/style/index.css`。
 
 ## 模块化 JS 产物
 
-开启 `auklet.config.ts` 里的 `build.modules` 后，`tsdown` 会额外生成两套 unbundle 产物：
+开启 `auklet.config.ts` 里的 `modules` 后，`tsdown` 会额外生成两套 unbundle 产物：
 
 - `dist/es/`：ES module。
 - `dist/lib/`：CommonJS。

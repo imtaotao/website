@@ -53,7 +53,7 @@ import '@website-kernel/resume/pages/ResumeMobile.css';
 
 ### 外部依赖入口
 
-`@website-kernel/pkg/external.css` 来自包内 `auklet.config.ts` 的 `cssDependencies.global`。
+`@website-kernel/pkg/external.css` 来自包内 `auklet.config.ts` 的 `styles.dependencies.*.entry`。
 
 - 对 workspace 内 kernel 包，继续解析到该包的虚拟 `external.css` 或对应入口。
 - 对普通外部依赖，例如 `katex/dist/katex.min.css`，保留标准 package import，让 Vite 自己解析。
@@ -104,9 +104,9 @@ import '@website-kernel/resume/pages/ResumeMobile.css';
 
 ## 当前拆分进展
 
-- 当前写入 `dist` 的生产构建逻辑放在 `auklet/src/css/production/`。
-- `auklet/src/css/` 根目录保留未来 Vite 插件也需要复用的配置、解析、样式处理和 import 收集能力。
-- `auk build-css --watch` 已支持监听当前包的 `sourceDir` 和 `auklet.config.ts`，变更后重新执行生产 CSS 构建。这个 watch 仍然写入 `dist`，是现有产物构建的开发辅助，不是最终的 Vite 虚拟 CSS dev mode。
+- 当前写入 `dist` 的生产构建逻辑由外部依赖 `auklet` 提供。
+- `auklet` 的 CSS 构建能力同时服务生产构建和 Vite 虚拟 CSS dev mode。
+- `auk build-css --watch` 已支持监听当前包的 `source` 和 `auklet.config.ts`，变更后重新执行生产 CSS 构建。这个 watch 仍然写入 `dist`，是现有产物构建的开发辅助，不是最终的 Vite 虚拟 CSS dev mode。
 
 ## 初步实施顺序
 

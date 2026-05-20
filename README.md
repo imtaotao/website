@@ -24,7 +24,6 @@ This is the source repository for my personal website. It currently includes:
 ├── app/                       # Vite + React frontend app
 ├── blog/                      # MDX blog content
 ├── docs/codex/                # Project conventions and feature notes
-├── auklet/                     # Build and repository helper commands
 ├── packages/kernel-blog/      # Blog domain package
 ├── packages/kernel-resume/    # Resume domain package
 ├── packages/kernel-shared/    # Shared cross-domain package

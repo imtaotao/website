@@ -2,14 +2,14 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { existsSync, readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
-import { aukletCssPlugin } from 'auklet';
 import { parse as parseYaml } from 'yaml';
+import { aukletStylePlugin } from 'auklet';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import remarkGfm from 'remark-gfm';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import mdx from '@mdx-js/rollup';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
@@ -105,6 +105,6 @@ export default defineConfig({
     react(),
     tailwindcss(),
     tsconfigPaths(),
-    aukletCssPlugin(),
+    aukletStylePlugin(),
   ],
 });
