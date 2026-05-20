@@ -20,9 +20,9 @@
     "*.ts?(x)": ["prettier --parser=typescript --write"]
   },
   "dependencies": {
-    "auklet": "workspace:*",
     "@types/node": "catalog:",
     "@types/minimist": "catalog:",
+    "auklet": "catalog:",
     "tsx": "catalog:",
     "aidly": "catalog:",
     "execa": "catalog:",

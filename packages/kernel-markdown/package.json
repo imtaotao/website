@@ -79,9 +79,9 @@
     "tailwindcss": "catalog:"
   },
   "devDependencies": {
-    "auklet": "workspace:*",
     "@types/react": "catalog:",
     "@vitest/coverage-v8": "catalog:",
+    "auklet": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

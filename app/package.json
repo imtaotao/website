@@ -28,12 +28,12 @@
     "tailwindcss": "^4.2.4"
   },
   "devDependencies": {
-    "auklet": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@mdx-js/rollup": "^3.1.1",
     "@vitejs/plugin-react": "^6.0.1",
+    "auklet": "catalog:",
     "rimraf": "catalog:",
     "vite": "catalog:",
     "yaml": "catalog:",

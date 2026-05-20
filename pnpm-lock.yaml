@@ -30,18 +30,15 @@ catalogs:
     aidly:
       specifier: 1.37.0
       version: 1.37.0
-    chokidar:
-      specifier: 5.0.0
-      version: 5.0.0
+    auklet:
+      specifier: 0.0.4
+      version: 0.0.4
     execa:
       specifier: 9.1.0
       version: 9.1.0
     minimist:
       specifier: 1.2.8
       version: 1.2.8
-    postcss:
-      specifier: 8.5.14
-      version: 8.5.14
     react:
       specifier: 19.2.6
       version: 19.2.6
@@ -89,12 +86,12 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.17.0
-      'auklet':
-        specifier: workspace:*
-        version: link:auklet
       aidly:
         specifier: 'catalog:'
         version: 1.37.0
+      auklet:
+        specifier: 'catalog:'
+        version: 0.0.4(@tsdown/css@0.22.0)(tsx@4.11.2)
       execa:
         specifier: 'catalog:'
         version: 9.1.0
@@ -192,9 +189,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^6.0.1
         version: 6.0.1(vite@8.0.13(@types/node@22.17.0)(jiti@2.6.1)(tsx@4.11.2)(yaml@2.8.3))
-      'auklet':
-        specifier: workspace:*
-        version: link:../auklet
+      auklet:
+        specifier: 'catalog:'
+        version: 0.0.4(@tsdown/css@0.22.0)(tsx@4.11.2)
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -229,52 +226,6 @@ importers:
         specifier: 'catalog:'
         version: 2.8.3
 
-  auklet:
-    dependencies:
-      '@types/minimist':
-        specifier: 'catalog:'
-        version: 1.2.5
-      '@types/node':
-        specifier: 'catalog:'
-        version: 22.17.0
-      '@vitest/coverage-v8':
-        specifier: 'catalog:'
-        version: 1.6.0(vitest@1.6.0(@types/node@22.17.0)(lightningcss@1.32.0))
-      aidly:
-        specifier: 'catalog:'
-        version: 1.37.0
-      chokidar:
-        specifier: 'catalog:'
-        version: 5.0.0
-      execa:
-        specifier: 'catalog:'
-        version: 9.1.0
-      minimist:
-        specifier: 'catalog:'
-        version: 1.2.8
-      postcss:
-        specifier: 'catalog:'
-        version: 8.5.14
-      rimraf:
-        specifier: 'catalog:'
-        version: 6.0.1
-      tailwindcss:
-        specifier: 'catalog:'
-        version: 4.2.4
-      tsdown:
-        specifier: 'catalog:'
-        version: 0.22.0(@tsdown/css@0.22.0)(tsx@4.11.2)(typescript@6.0.3)(unrun@0.3.0)
-      typescript:
-        specifier: 'catalog:'
-        version: 6.0.3
-    devDependencies:
-      vite:
-        specifier: 'catalog:'
-        version: 8.0.13(@types/node@22.17.0)(jiti@2.6.1)(tsx@4.11.2)(yaml@2.8.3)
-      vitest:
-        specifier: 'catalog:'
-        version: 1.6.0(@types/node@22.17.0)(lightningcss@1.32.0)
-
   packages/kernel-blog:
     dependencies:
       '@radix-ui/react-icons':
@@ -305,9 +256,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: 'catalog:'
         version: 1.6.0(vitest@1.6.0(@types/node@22.17.0)(lightningcss@1.32.0))
-      'auklet':
-        specifier: workspace:*
-        version: link:../../auklet
+      auklet:
+        specifier: 'catalog:'
+        version: 0.0.4(@tsdown/css@0.22.0)(tsx@4.11.2)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -348,9 +299,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: 'catalog:'
         version: 1.6.0(vitest@1.6.0(@types/node@22.17.0)(lightningcss@1.32.0))
-      'auklet':
-        specifier: workspace:*
-        version: link:../../auklet
+      auklet:
+        specifier: 'catalog:'
+        version: 0.0.4(@tsdown/css@0.22.0)(tsx@4.11.2)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -388,9 +339,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: 'catalog:'
         version: 1.6.0(vitest@1.6.0(@types/node@22.17.0)(lightningcss@1.32.0))
-      'auklet':
-        specifier: workspace:*
-        version: link:../../auklet
+      auklet:
+        specifier: 'catalog:'
+        version: 0.0.4(@tsdown/css@0.22.0)(tsx@4.11.2)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -413,9 +364,9 @@ importers:
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.14
-      'auklet':
-        specifier: workspace:*
-        version: link:../../auklet
+      auklet:
+        specifier: 'catalog:'
+        version: 0.0.4(@tsdown/css@0.22.0)(tsx@4.11.2)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -2007,6 +1958,11 @@ packages:
 
   astring@1.9.0:
     resolution: {integrity: sha512-LElXdjswlqjWrPpJFg1Fx4wpkOCxj1TDHlSV4PlaRxHGWko024xICaa97ZkMfs6DRKlCguiAI+rbXv5GWwXIkg==}
+    hasBin: true
+
+  auklet@0.0.4:
+    resolution: {integrity: sha512-x0722Q2BfrhYMQAqoZFHAyXd3OFBMqnLHRdKipXSlfxZ5QeAfkFChxahklKUEN76Ey/HsxUkOGKLhXG4aZyVWA==}
+    engines: {node: '>=22', pnpm: '=10.27.0'}
     hasBin: true
 
   available-typed-arrays@1.0.7:
@@ -5707,6 +5663,32 @@ snapshots:
 
   astring@1.9.0: {}
 
+  auklet@0.0.4(@tsdown/css@0.22.0)(tsx@4.11.2):
+    dependencies:
+      aidly: 1.37.0
+      chokidar: 5.0.0
+      execa: 9.1.0
+      minimist: 1.2.8
+      postcss: 8.5.14
+      rimraf: 6.0.1
+      tailwindcss: 4.2.4
+      tsdown: 0.22.0(@tsdown/css@0.22.0)(tsx@4.11.2)(typescript@6.0.3)(unrun@0.3.0)
+      typescript: 6.0.3
+      unrun: 0.3.0
+    transitivePeerDependencies:
+      - '@arethetypeswrong/core'
+      - '@ts-macro/tsc'
+      - '@tsdown/css'
+      - '@tsdown/exe'
+      - '@typescript/native-preview'
+      - '@vitejs/devtools'
+      - oxc-resolver
+      - publint
+      - synckit
+      - tsx
+      - unplugin-unused
+      - vue-tsc
+
   available-typed-arrays@1.0.7:
     dependencies:
       possible-typed-array-names: 1.0.0
@@ -8308,7 +8290,6 @@ snapshots:
   unrun@0.3.0:
     dependencies:
       rolldown: 1.0.1
-    optional: true
 
   uri-js@4.4.1:
     dependencies:

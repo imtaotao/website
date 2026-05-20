@@ -1,6 +1,5 @@
 packages:
   - 'app'
-  - 'auklet'
   - 'packages/*'
 
 catalog:
@@ -10,6 +9,7 @@ catalog:
   "vite": "8.0.13"
   "vitest": "1.6.0"
   "rimraf": "6.0.1"
+  "auklet": "0.0.4"
   "tsdown": "0.22.0"
   "execa": "9.1.0"
   "chokidar": "5.0.0"

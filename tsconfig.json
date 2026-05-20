@@ -34,10 +34,6 @@
       // app
       "#app/*": ["./app/src/*"],
 
-      // externals
-      "auklet": ["./auklet/src/index.ts"],
-      "auklet/*": ["./auklet/src/*"],
-
       // workspace package root imports
       "@website-kernel/*": ["./packages/kernel-*/src"],
 
@@ -60,7 +56,6 @@
       ],
 
       // internal package aliases
-      "#auklet/*": ["./auklet/src/*"],
       "#blog/*": ["./packages/kernel-blog/src/*"],
       "#resume/*": ["./packages/kernel-resume/src/*"],
       "#shared/*": ["./packages/kernel-shared/src/*"],
