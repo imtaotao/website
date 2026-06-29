@@ -1,3 +1,5 @@
+import { Button, Progress } from 'willa';
+
 export function ResumeExportBar(props: {
   onExportPdf?: () => void;
   exporting?: boolean;
@@ -13,14 +15,18 @@ export function ResumeExportBar(props: {
   return (
     <div data-export-hide="true" className="resume-toolbar-group">
       <div className="resume-toolbar-row">
-        <button
+        <Button
           type="button"
+          variant="link"
+          size="sm"
           className="resume-toolbar-action"
           disabled={exporting || disabled}
+          loading={exporting}
+          loadingText={`导出中 ${Math.round(progress)}%`}
           onClick={props.onExportPdf}
         >
-          {exporting ? `导出中 ${Math.round(progress)}%` : '导出 PDF'}
-        </button>
+          导出 PDF
+        </Button>
       </div>
 
       {exporting ? (
@@ -30,12 +36,7 @@ export function ResumeExportBar(props: {
               {props.progressText}
             </div>
           ) : null}
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-200/70">
-            <div
-              className="h-full rounded-full bg-zinc-700 transition-[width] duration-200"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+          <Progress value={progress} max={100} size="sm" tone="neutral" />
         </div>
       ) : disabled && props.disabledText ? (
         <div className="resume-toolbar-hint">{props.disabledText}</div>

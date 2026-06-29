@@ -3,9 +3,6 @@ import { Link } from 'react-router';
 import { Container, Stack, WillaShell } from 'willa';
 
 import { usePageMeta } from '#app/lib/pageMeta';
-import 'willa/Container.css';
-import 'willa/Stack.css';
-import 'willa/WillaShell.css';
 import '#app/pages/HomePage.css';
 
 type Segment =

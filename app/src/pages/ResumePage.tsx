@@ -6,7 +6,6 @@ import { ResumeDesktop } from '@website-kernel/resume/pages/ResumeDesktop';
 import { IconButton } from 'willa';
 
 import '@website-kernel/resume/style.css';
-import 'willa/IconButton.css';
 
 import { loadResumeModel } from '#app/lib/resume';
 import { useIsMobile } from '#app/lib/browser';

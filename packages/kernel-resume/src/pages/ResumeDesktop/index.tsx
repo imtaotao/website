@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { Progress, Spinner, Toolbar } from 'willa';
 import { type ResumeModel } from '#resume/parser';
 import { exportElementToPdf } from '#resume/exportPdf';
 import type { ResumeImageAssets } from '#resume/assets';
@@ -87,23 +88,21 @@ export function ResumeDesktop(props: {
       {exporting ? (
         <div className="fixed inset-0 z-9999 flex items-center justify-center bg-white/60 backdrop-blur-sm">
           <div className="w-70 rounded-xl border border-zinc-200 bg-white px-4 py-3 shadow-lg">
-            <div className="text-sm font-semibold text-zinc-900">
-              正在导出 PDF
-            </div>
-            <div className="mt-1 text-xs font-medium text-zinc-600">
-              {exportProgressText || '请稍候…'}
-            </div>
-            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-zinc-200/70">
-              <div
-                className="h-full rounded-full bg-zinc-900 transition-[width] duration-200"
-                style={{
-                  width: `${Math.min(100, Math.max(0, exportProgress))}%`,
-                }}
-              />
-            </div>
-            <div className="mt-2 text-right text-[11px] font-medium text-zinc-600">
-              {Math.round(exportProgress)}%
-            </div>
+            <Spinner
+              size="sm"
+              label="正在导出 PDF"
+              className="text-sm font-semibold text-zinc-900"
+            />
+            <Progress
+              className="resume-export-dialog-progress mt-3"
+              value={exportProgress}
+              max={100}
+              description={exportProgressText || '请稍候…'}
+              valueLabel={`${Math.round(exportProgress)}%`}
+              showValue
+              size="md"
+              tone="neutral"
+            />
           </div>
         </div>
       ) : null}
@@ -111,7 +110,13 @@ export function ResumeDesktop(props: {
       <ResumeShell
         ref={exportRef}
         topBar={
-          <div className="resume-toolbar">
+          <Toolbar
+            ariaLabel="简历操作"
+            size="sm"
+            gap="20px"
+            align="start"
+            className="resume-toolbar"
+          >
             <ResumeExportBar
               onExportPdf={async () => {
                 if (!exportRef.current) return;
@@ -126,6 +131,7 @@ export function ResumeDesktop(props: {
                 setExporting(true);
                 setExportProgress(0);
                 setExportProgressText('准备导出…');
+
                 try {
                   await exportElementToPdf(exportRef.current, {
                     onProgress: (p) => {
@@ -154,7 +160,7 @@ export function ResumeDesktop(props: {
               disabled={!canExportPdf}
             />
             {props.topBarExtra}
-          </div>
+          </Toolbar>
         }
       >
         <ResumeHeader basics={model.basics} assets={props.assets} />

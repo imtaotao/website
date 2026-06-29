@@ -7,8 +7,8 @@ import {
   MobileIcon,
   ReaderIcon,
 } from '@radix-ui/react-icons';
+import { Avatar, Badge, Button } from 'willa';
 import { type ResumeBasics } from '#resume/parser';
-import { copyToClipboard } from '#resume/clipboard';
 import type { ResumeImageAssets } from '#resume/assets';
 
 const iconClassName = 'h-3.5 w-3.5 text-zinc-500';
@@ -18,52 +18,30 @@ const ContactItem = (props: {
   icon: ReactNode;
   text: string;
   copied: boolean;
-  onCopy: () => void;
+  onCopied: (text: string) => void;
 }) => {
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <Button
+      type="button"
+      variant="soft"
+      size="sm"
       title="点击复制"
-      onClick={props.onCopy}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') props.onCopy();
-      }}
-      className={
-        'inline-flex select-text items-center gap-2 rounded-md border border-transparent px-3.5 py-2 text-xs font-medium ' +
-        'cursor-copy transition-colors ' +
-        (props.copied
-          ? 'border-emerald-200 bg-emerald-50/60 text-emerald-700'
-          : 'bg-zinc-50 text-zinc-600 hover:bg-zinc-100')
-      }
+      icon={props.icon}
+      pressed={props.copied}
+      copyText={props.text}
+      copiedDuration={1200}
+      onCopyText={props.onCopied}
+      backgroundColor="rgb(250 250 250)"
+      hoverBackgroundColor="rgb(244 244 245)"
+      textColor="rgb(82 82 91)"
+      hoverTextColor="rgb(82 82 91)"
+      className="resume-contact-button"
     >
-      {props.icon}
       <span className="leading-none">{props.text}</span>
       {props.copied ? (
-        <span className="ml-1 whitespace-nowrap text-[10px] font-semibold tracking-wide">
-          已复制
-        </span>
+        <span className="resume-contact-copied">已复制</span>
       ) : null}
-    </div>
-  );
-};
-
-const Avatar = (props: { name: string; src?: string }) => {
-  const initial = (props.name || '?').trim().slice(-1);
-  return (
-    <div className="h-24 w-24 overflow-hidden rounded-full md:h-28 md:w-28">
-      {props.src ? (
-        <img
-          alt={props.name}
-          src={props.src}
-          className="h-full w-full object-cover"
-        />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center text-2xl font-semibold text-zinc-500 md:text-3xl">
-          {initial}
-        </div>
-      )}
-    </div>
+    </Button>
   );
 };
 
@@ -100,9 +78,7 @@ export function ResumeHeader(props: {
   const [copiedText, setCopiedText] = useState<string>('');
   const timerRef = useRef<number | null>(null);
 
-  const onCopy = useCallback(async (text: string) => {
-    const ok = await copyToClipboard(text);
-    if (!ok) return;
+  const handleCopied = useCallback((text: string) => {
     setCopiedText(text);
     if (timerRef.current) window.clearTimeout(timerRef.current);
     timerRef.current = window.setTimeout(() => setCopiedText(''), 1200);
@@ -112,8 +88,12 @@ export function ResumeHeader(props: {
     <header className="relative mb-6">
       <div className="absolute right-0 top-10 z-0 md:top-0">
         <Avatar
-          name={basics.name}
+          alt={basics.name}
+          name={(basics.name || '?').trim().slice(-1)}
           src={basics.avatar ?? props.assets?.defaultAvatarUrl}
+          size="xl"
+          shape="circle"
+          className="resume-avatar"
         />
       </div>
 
@@ -128,9 +108,14 @@ export function ResumeHeader(props: {
             </span>
           </h1>
           {basics.title ? (
-            <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-medium text-zinc-700">
+            <Badge
+              variant="soft"
+              tone="neutral"
+              size="sm"
+              className="resume-title-badge"
+            >
               {basics.title}
-            </span>
+            </Badge>
           ) : null}
         </div>
 
@@ -139,16 +124,18 @@ export function ResumeHeader(props: {
             {hasLinks ? (
               <nav className="flex flex-wrap gap-x-5 gap-y-2 text-xs font-medium">
                 {links.map((l) => (
-                  <a
+                  <Button
                     key={`${l.label}:${l.url}`}
                     href={l.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-950"
+                    variant="link"
+                    size="sm"
+                    icon={labelIcon(l.label, props.assets)}
+                    className="resume-social-link"
                   >
-                    {labelIcon(l.label, props.assets)}
-                    <span>{l.label}</span>
-                  </a>
+                    {l.label}
+                  </Button>
                 ))}
               </nav>
             ) : null}
@@ -160,7 +147,7 @@ export function ResumeHeader(props: {
                     icon={<ReaderIcon className={iconClassName} />}
                     text={basics.school}
                     copied={copiedText === basics.school}
-                    onCopy={() => onCopy(basics.school!)}
+                    onCopied={handleCopied}
                   />
                 ) : null}
                 {basics.phone ? (
@@ -168,7 +155,7 @@ export function ResumeHeader(props: {
                     icon={<MobileIcon className={iconClassName} />}
                     text={basics.phone}
                     copied={copiedText === basics.phone}
-                    onCopy={() => onCopy(basics.phone!)}
+                    onCopied={handleCopied}
                   />
                 ) : null}
                 {basics.email ? (
@@ -176,7 +163,7 @@ export function ResumeHeader(props: {
                     icon={<EnvelopeClosedIcon className={iconClassName} />}
                     text={basics.email}
                     copied={copiedText === basics.email}
-                    onCopy={() => onCopy(basics.email!)}
+                    onCopied={handleCopied}
                   />
                 ) : null}
                 {basics.location ? (
@@ -184,7 +171,7 @@ export function ResumeHeader(props: {
                     icon={<GlobeIcon className={iconClassName} />}
                     text={basics.location}
                     copied={copiedText === basics.location}
-                    onCopy={() => onCopy(basics.location!)}
+                    onCopied={handleCopied}
                   />
                 ) : null}
               </div>

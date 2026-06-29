@@ -256,7 +256,7 @@ export const ResumeShell = forwardRef<
   };
 
   return (
-    <div className="resume-root text-zinc-900">
+    <div className="resume-root willa-shell text-zinc-900">
       {props.topBar ? (
         <div
           data-export-hide="true"

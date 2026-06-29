@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import { isPlainObject } from 'aidly';
+import { List } from 'willa';
 import { type ResumeOpenSourceProject } from '#resume/parser';
 
 const pickPrimaryLink = (p: ResumeOpenSourceProject) => {
@@ -110,6 +111,14 @@ export function ResumeOpenSourceProjects(props: {
     });
   }, [props.items, starsMap]);
 
+  const listItems = useMemo(() => {
+    return sortedItems.map((p) => ({ id: p.name, title: p.name }));
+  }, [sortedItems]);
+
+  const projectByName = useMemo(() => {
+    return new Map(sortedItems.map((p) => [p.name, p]));
+  }, [sortedItems]);
+
   useEffect(() => {
     if (!fullNames.length) {
       props.onRemoteDataLoadingChange?.(false);
@@ -212,72 +221,76 @@ export function ResumeOpenSourceProjects(props: {
         </div>
       ) : null}
 
-      <div
+      <List
         data-export-keep-together="true"
-        className="overflow-hidden rounded-[3px] border border-zinc-200/70 bg-zinc-50/60"
-      >
-        <ul className="divide-y divide-zinc-200/70 px-4 py-3">
-          {sortedItems.map((p) => {
-            const primary = pickPrimaryLink(p);
-            const href = primary?.url;
-            const full = href ? parseGitHubRepoFullName(href) : undefined;
-            const stars = full ? starsMap[full] : undefined;
+        className="resume-open-source-list"
+        variant="panel"
+        size="sm"
+        split
+        items={listItems}
+        renderItem={(item) => {
+          const p = projectByName.get(item.id);
+          if (!p) return null;
 
-            return (
-              <li
-                key={p.name}
-                data-export-keep-together="true"
-                className="py-3"
-              >
-                <div className="grid grid-cols-[16px_minmax(0,1fr)] gap-x-2">
-                  <GitHubLogoIcon className="mt-0.5 h-3.5 w-3.5 text-zinc-500" />
+          const primary = pickPrimaryLink(p);
+          const href = primary?.url;
+          const full = href ? parseGitHubRepoFullName(href) : undefined;
+          const stars = full ? starsMap[full] : undefined;
 
-                  <div className="min-w-0">
-                    <div className="flex min-w-0 items-baseline gap-2">
-                      <div className="min-w-0 flex-1">
-                        {href ? (
-                          <a
-                            href={href}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="block overflow-hidden whitespace-nowrap text-sm font-medium text-zinc-900 hover:underline"
-                            title={href}
-                          >
-                            {p.name}
-                          </a>
-                        ) : (
-                          <span className="block overflow-hidden whitespace-nowrap text-sm font-medium text-zinc-900">
-                            {p.name}
-                          </span>
-                        )}
-                      </div>
+          return (
+            <div
+              data-export-keep-together="true"
+              className="resume-open-source-list-item"
+            >
+              <div className="resume-open-source-list-item-row">
+                <span className="resume-open-source-list-icon" aria-hidden>
+                  <GitHubLogoIcon className="resume-open-source-list-icon-svg" />
+                </span>
 
-                      <span className="ml-auto flex shrink-0 items-baseline gap-2">
-                        {p.description ? (
-                          <span className="hidden max-w-55 truncate font-mono text-[10px] font-medium tracking-[0.04em] text-zinc-400 sm:inline">
-                            {p.description}
-                          </span>
-                        ) : null}
+                <div className="min-w-0">
+                  <div className="flex min-w-0 items-baseline gap-2">
+                    <div className="min-w-0 flex-1">
+                      {href ? (
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="block overflow-hidden whitespace-nowrap text-sm font-medium text-zinc-900 hover:underline"
+                        >
+                          {p.name}
+                        </a>
+                      ) : (
+                        <span className="block overflow-hidden whitespace-nowrap text-sm font-medium text-zinc-900">
+                          {p.name}
+                        </span>
+                      )}
+                    </div>
 
-                        <span className="text-xs font-semibold text-zinc-600">
-                          <span className="inline-flex w-16 items-baseline justify-end gap-1 tabular-nums">
-                            <span className="text-zinc-600">★</span>
-                            <span className="text-right">
-                              {typeof stars === 'number'
-                                ? formatStars(stars)
-                                : '—'}
-                            </span>
+                    <span className="ml-auto flex shrink-0 items-baseline gap-2">
+                      {p.description ? (
+                        <span className="hidden max-w-55 truncate font-mono text-[10px] font-medium tracking-[0.04em] text-zinc-400 sm:inline">
+                          {p.description}
+                        </span>
+                      ) : null}
+
+                      <span className="text-xs font-semibold text-zinc-600">
+                        <span className="inline-flex w-16 items-baseline justify-end gap-1 tabular-nums">
+                          <span className="text-zinc-600">★</span>
+                          <span className="text-right">
+                            {typeof stars === 'number'
+                              ? formatStars(stars)
+                              : '—'}
                           </span>
                         </span>
                       </span>
-                    </div>
+                    </span>
                   </div>
                 </div>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+              </div>
+            </div>
+          );
+        }}
+      />
     </div>
   );
 }

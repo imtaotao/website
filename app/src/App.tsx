@@ -8,7 +8,7 @@ import { WebsiteThemeToggle } from '#app/components/WebsiteThemeToggle';
 import NotFoundPage from '#app/pages/NotFoundPage';
 
 import '@radix-ui/themes/styles.css';
-import 'willa/Spinner.css';
+import 'willa/style.css';
 import '#app/App.css';
 
 const HomePage = lazy(() => import('#app/pages/HomePage'));

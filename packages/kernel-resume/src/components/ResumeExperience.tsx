@@ -1,5 +1,6 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState, type CSSProperties } from 'react';
 import { CodeIcon, HomeIcon, RocketIcon } from '@radix-ui/react-icons';
+import { Card } from 'willa';
 
 import { type ResumeExperience } from '#resume/parser';
 import { copyToClipboard } from '#resume/clipboard';
@@ -159,6 +160,26 @@ const collectHighlights = (e: ResumeExperience) => {
   return result;
 };
 
+const getExperienceCardStyle = (options: {
+  copied: boolean;
+  hovered: boolean;
+}) => {
+  const background = options.copied
+    ? 'rgb(236 253 245 / 0.4)'
+    : options.hovered
+    ? 'rgb(255 255 255 / 0.6)'
+    : 'rgb(250 250 250 / 0.6)';
+
+  return {
+    borderColor: options.copied ? 'rgb(167 243 208)' : 'rgb(228 228 231 / 0.7)',
+    borderRadius: 3,
+    background,
+    boxShadow: 'none',
+    cursor: 'copy',
+    transform: 'none',
+  } satisfies CSSProperties;
+};
+
 export function ResumeExperienceList(props: {
   items: Array<ResumeExperience>;
   assets?: ResumeImageAssets;
@@ -166,6 +187,7 @@ export function ResumeExperienceList(props: {
   if (!props.items.length) return null;
 
   const [copiedKey, setCopiedKey] = useState<string>('');
+  const [hoveredKey, setHoveredKey] = useState<string>('');
   const timerRef = useRef<number | null>(null);
 
   const onCopy = useCallback(async (key: string, text: string) => {
@@ -232,6 +254,7 @@ export function ResumeExperienceList(props: {
         (() => {
           const companyKey = c.company;
           const copied = copiedKey === companyKey;
+          const hovered = hoveredKey === companyKey;
 
           const companyBlockText = [
             c.company,
@@ -269,24 +292,26 @@ export function ResumeExperienceList(props: {
             .trim();
 
           return (
-            <article
+            <Card
               key={c.company}
+              variant="soft"
+              padding="md"
               data-export-keep-together="true"
               role="button"
               tabIndex={0}
-              title="点击复制"
+              style={getExperienceCardStyle({ copied, hovered })}
+              onMouseEnter={() => setHoveredKey(companyKey)}
+              onMouseLeave={() => {
+                setHoveredKey((current) =>
+                  current === companyKey ? '' : current,
+                );
+              }}
               onClick={() => onCopy(companyKey, companyBlockText)}
               onKeyDown={(ev) => {
                 if (ev.key === 'Enter' || ev.key === ' ') {
                   onCopy(companyKey, companyBlockText);
                 }
               }}
-              className={
-                'cursor-copy overflow-hidden rounded-[3px] border px-4 py-4 transition-colors ' +
-                (copied
-                  ? 'border-emerald-200 bg-emerald-50/40'
-                  : 'border-zinc-200/70 bg-zinc-50/60 hover:bg-white/60')
-              }
             >
               <div className="inline-flex items-center gap-2 text-base font-semibold tracking-tight text-zinc-900">
                 <CompanyLogo company={c.company} assets={props.assets} />
@@ -388,7 +413,7 @@ export function ResumeExperienceList(props: {
                   );
                 })}
               </div>
-            </article>
+            </Card>
           );
         })(),
       )}

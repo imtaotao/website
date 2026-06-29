@@ -1,4 +1,5 @@
 import { type ReactNode } from 'react';
+import { Separator } from 'willa';
 
 export function ResumeSection(props: {
   title: string;
@@ -16,11 +17,11 @@ export function ResumeSection(props: {
     >
       {decorated ? (
         <div className="mb-5 flex items-center gap-3">
-          <div className="h-px flex-1 bg-zinc-300/60" />
+          <Separator size="sm" className="resume-section-separator" />
           <h2 className="text-xs font-medium tracking-[0.24em] text-zinc-500">
             {props.title}
           </h2>
-          <div className="h-px flex-1 bg-zinc-300/60" />
+          <Separator size="sm" className="resume-section-separator" />
         </div>
       ) : (
         <h2 className="mb-3 text-xs font-medium tracking-[0.24em] text-zinc-500">

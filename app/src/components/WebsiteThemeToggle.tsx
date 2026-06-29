@@ -3,8 +3,6 @@ import { useLocation } from 'react-router';
 import { useWebsiteTheme } from '@website-kernel/shared';
 import { IconButton } from 'willa';
 
-import 'willa/IconButton.css';
-
 export function WebsiteThemeToggle() {
   const location = useLocation();
   const { theme, toggleTheme } = useWebsiteTheme();

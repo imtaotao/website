@@ -101,6 +101,6 @@ export default defineConfig({
     react(),
     tailwindcss(),
     tsconfigPaths(),
-    aukletStylePlugin(),
+    aukletStylePlugin({ mode: 'monorepo' }),
   ],
 });
