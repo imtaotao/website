@@ -27,6 +27,7 @@
   --blog-text: rgba(17, 24, 39, 0.88);
   --blog-text-soft: rgba(31, 41, 55, 0.72);
   --blog-text-faint: rgba(31, 41, 55, 0.52);
+  --blog-selection-bg: rgb(223, 223, 223);
   --blog-line: rgba(15, 23, 42, 0.11);
   --blog-line-strong: rgba(15, 23, 42, 0.18);
   --blog-year-stroke: rgba(15, 23, 42, 0.07);
@@ -45,6 +46,7 @@
   --blog-accent-2-soft: rgba(5, 150, 105, 0.1);
   --blog-focus-ring: rgba(37, 99, 235, 0.34);
   --blog-panel-bg: rgba(255, 255, 255, 0.98);
+  --blog-summary-card-bg: rgba(15, 23, 42, 0.04);
   --blog-cover-bg: #e5e7eb;
   --blog-cover-gradient-start: rgba(255, 255, 255, 0);
   --blog-cover-gradient-mid: rgba(255, 255, 255, 0.66);

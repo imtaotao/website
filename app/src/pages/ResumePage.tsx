@@ -3,8 +3,10 @@ import { useWebsiteTheme } from '@website-kernel/shared';
 import type { ResumeModel, ResumeImageAssets } from '@website-kernel/resume';
 import { ResumeMobile } from '@website-kernel/resume/pages/ResumeMobile';
 import { ResumeDesktop } from '@website-kernel/resume/pages/ResumeDesktop';
+import { IconButton } from 'willa';
 
 import '@website-kernel/resume/style.css';
+import 'willa/IconButton.css';
 
 import { loadResumeModel } from '#app/lib/resume';
 import { useIsMobile } from '#app/lib/browser';
@@ -29,7 +31,7 @@ const resumeAssets: ResumeImageAssets = {
 
 export default function ResumePage() {
   const model: ResumeModel = loadResumeModel();
-  const isMobile = useIsMobile(768);
+  const isMobile = useIsMobile();
   const { theme, toggleTheme } = useWebsiteTheme();
   const isDark = theme === 'dark';
   const ThemeIcon = isDark ? SunIcon : MoonIcon;
@@ -49,17 +51,18 @@ export default function ResumePage() {
       model={model}
       assets={resumeAssets}
       topBarExtra={
-        <button
+        <IconButton
           type="button"
+          variant="ghost"
+          size="sm"
+          icon={<ThemeIcon className="app__themeToggleIcon" />}
           className={`app__themeToggle app__themeToggle--inline resume-toolbar-toggle ${
             isDark ? 'app__themeToggle--dark' : 'app__themeToggle--light'
           }`}
           onClick={toggleTheme}
-          aria-label={themeToggleLabel}
+          ariaLabel={themeToggleLabel}
           title={themeToggleLabel}
-        >
-          <ThemeIcon className="app__themeToggleIcon" />
-        </button>
+        />
       }
     />
   );

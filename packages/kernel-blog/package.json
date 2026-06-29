@@ -67,9 +67,10 @@
     "**/*.css"
   ],
   "dependencies": {
-    "@website-kernel/markdown": "workspace:*",
     "@radix-ui/react-icons": "catalog:",
     "aidly": "catalog:",
+    "auklet": "catalog:",
+    "willa": "catalog:",
     "yaml": "catalog:"
   },
   "peerDependencies": {
@@ -80,7 +81,6 @@
   "devDependencies": {
     "@types/react": "catalog:",
     "@vitest/coverage-v8": "catalog:",
-    "auklet": "catalog:",
     "vitest": "catalog:",
     "typescript": "catalog:"
   }

@@ -1,7 +1,11 @@
 import { type CSSProperties, type ReactNode } from 'react';
 import { Link } from 'react-router';
+import { Container, Stack, WillaShell } from 'willa';
 
 import { usePageMeta } from '#app/lib/pageMeta';
+import 'willa/Container.css';
+import 'willa/Stack.css';
+import 'willa/WillaShell.css';
 import '#app/pages/HomePage.css';
 
 type Segment =
@@ -125,17 +129,31 @@ export default function HomePage() {
   });
 
   return (
-    <main className="home-shell">
-      {/* 左偏布局：不居中对齐，右侧留白更大 */}
-      <div className="home-root w-full px-6 py-14 md:px-14 md:py-24">
-        <div className="home-container max-w-185">
+    <WillaShell as="main" className="home-shell">
+      <Container
+        as="section"
+        size="full"
+        padding="none"
+        centered={false}
+        className="home-root"
+      >
+        <Container
+          size="full"
+          padding="none"
+          centered={false}
+          className="home-container"
+        >
           <header className="select-none app__enter" style={getEnterStyle(120)}>
             <h1 className="home-title-font mt-2 text-4xl font-medium tracking-tight md:text-5xl">
               {HOME.name}
             </h1>
           </header>
 
-          <div className="home-body-font mt-8 space-y-6 text-[16px] leading-8">
+          <Stack
+            as="section"
+            gap="1.5rem"
+            className="home-body-font mt-8 text-[16px] leading-8"
+          >
             {HOME.blocks.map((b, idx) => (
               <p
                 key={idx}
@@ -145,9 +163,9 @@ export default function HomePage() {
                 {renderSegments(b.segments)}
               </p>
             ))}
-          </div>
-        </div>
-      </div>
-    </main>
+          </Stack>
+        </Container>
+      </Container>
+    </WillaShell>
   );
 }

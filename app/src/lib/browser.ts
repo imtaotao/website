@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { isBrowser } from 'aidly';
 
+export const SITE_MOBILE_BREAKPOINT_PX = 768;
+
 export async function copyToClipboard(text: string): Promise<boolean> {
   if (!text) return false;
 
@@ -27,7 +29,7 @@ export async function copyToClipboard(text: string): Promise<boolean> {
   }
 }
 
-export function useIsMobile(breakpointPx: number = 768): boolean {
+export function useIsMobile(breakpointPx: number = SITE_MOBILE_BREAKPOINT_PX) {
   const query = useMemo(
     () => `(max-width: ${breakpointPx - 1}px)`,
     [breakpointPx],

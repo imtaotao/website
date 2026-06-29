@@ -120,7 +120,7 @@ import '@website-kernel/blog/pages/BlogHomePage.css';
 `external.css` 是稳定外部依赖入口。即使当前包没有外部 CSS 依赖，也必须生成空文件。blog 包当前会生成：
 
 ```css
-@import '@website-kernel/markdown/external.css';
+@import 'willa/external.css';
 ```
 
 `module.css` 聚合当前包自己的 CSS 内容。
@@ -148,8 +148,8 @@ import '@website-kernel/blog/pages/BlogHomePage.css';
 示例：
 
 ```css
-@import '@website-kernel/markdown/components/Lightbox.css';
-@import '@website-kernel/markdown/components/Renderer.css';
+@import 'willa/Lightbox.css';
+@import 'willa/Mdx.css';
 @import '../../../components/BlogThemeToggle/BlogThemeToggle/style/index.css';
 @import '../../BlogHomePage/style/index.css';
 @import '../index.css';

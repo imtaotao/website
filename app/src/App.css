@@ -326,19 +326,6 @@ body:has(.app__notFound) {
   color: rgba(0, 0, 0, 0.6);
 }
 
-.app__spinner {
-  width: 28px;
-  height: 28px;
-  border-radius: 9999px;
-  border: 3px solid rgba(0, 0, 0, 0.12);
-  border-top-color: rgba(0, 0, 0, 0.55);
-  animation: app__spin 0.9s linear infinite;
-}
-
-.app__suspenseText {
-  letter-spacing: 0.2px;
-}
-
 .app__themeToggle {
   position: fixed;
   top: 16px;
@@ -544,11 +531,5 @@ body:has(.app__notFound) {
   :root[data-wk-theme='dark'] .app__notFound {
     --not-found-bg: #000000;
     --not-found-bg-image: none;
-  }
-}
-
-@keyframes app__spin {
-  to {
-    transform: rotate(360deg);
   }
 }

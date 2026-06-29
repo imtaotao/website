@@ -1,0 +1,63 @@
+.blog-summary-cards {
+  margin: 1.8rem 0;
+}
+
+.blog-summary-card {
+  background: var(--blog-summary-card-bg);
+  border-color: transparent;
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+.blog-summary-card.willa-card--md {
+  padding: 1rem 1rem 0.95rem;
+}
+
+.blog-summary-card .willa-card-content {
+  gap: 0;
+}
+
+.blog-summary-card .willa-card-title {
+  margin: 0;
+  color: var(--blog-text-strong);
+  font-family: var(--blog-title-font);
+  font-size: 0.96rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.blog-summary-card .willa-card-body {
+  margin-top: 0.72rem;
+}
+
+.blog-summary-card-line {
+  margin: 0;
+  color: var(--blog-text-soft);
+  font-size: 0.92rem;
+  line-height: 1.82;
+}
+
+.blog-summary-card-line + .blog-summary-card-line {
+  margin-top: 0.48rem;
+}
+
+@media (max-width: 767px) {
+  .blog-summary-cards {
+    grid-template-columns: 1fr !important;
+    gap: 0.88rem !important;
+    margin: 1.5rem 0;
+  }
+
+  .blog-summary-card {
+    border-radius: 12px;
+  }
+
+  .blog-summary-card.willa-card--md {
+    padding: 0.92rem 0.92rem 0.88rem;
+  }
+
+  .blog-summary-card-line {
+    font-size: 0.9rem;
+    line-height: 1.76;
+  }
+}

@@ -1,7 +1,3 @@
-@import './ArticleActions.css';
-@import '../Page.css';
-@import '../Shared.css';
-
 .blog-article-page {
   position: relative;
   width: 100%;

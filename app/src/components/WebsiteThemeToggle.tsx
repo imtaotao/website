@@ -1,6 +1,9 @@
 import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
 import { useLocation } from 'react-router';
 import { useWebsiteTheme } from '@website-kernel/shared';
+import { IconButton } from 'willa';
+
+import 'willa/IconButton.css';
 
 export function WebsiteThemeToggle() {
   const location = useLocation();
@@ -16,14 +19,15 @@ export function WebsiteThemeToggle() {
     : 'app__themeToggle--light';
 
   return (
-    <button
+    <IconButton
       type="button"
+      variant="ghost"
+      size="sm"
+      icon={<Icon className="app__themeToggleIcon" />}
       className={`app__themeToggle ${toneClass}`}
       onClick={toggleTheme}
-      aria-label={label}
+      ariaLabel={label}
       title={label}
-    >
-      <Icon className="app__themeToggleIcon" />
-    </button>
+    />
   );
 }

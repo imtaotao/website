@@ -75,52 +75,77 @@
     Arial,
     sans-serif
   );
-  --markdown-body-font: var(--blog-body-font);
-  --markdown-title-font: var(--blog-title-font);
-  --markdown-code-font: var(--blog-code-font);
-  --markdown-surface: var(--blog-surface);
-  --markdown-surface-soft: var(--blog-surface-soft);
-  --markdown-surface-tint: var(--blog-surface-tint);
-  --markdown-text-strong: var(--blog-text-strong);
-  --markdown-text: var(--blog-text);
-  --markdown-text-soft: var(--blog-text-soft);
-  --markdown-text-faint: var(--blog-text-faint);
-  --markdown-line: var(--blog-line);
-  --markdown-line-strong: var(--blog-line-strong);
-  --markdown-accent: var(--blog-accent);
-  --markdown-accent-2: var(--blog-accent-2);
-  --markdown-accent-2-soft: var(--blog-accent-2-soft);
-  --markdown-color-gray: var(--blog-color-gray);
-  --markdown-color-blue: var(--blog-color-blue);
-  --markdown-color-green: var(--blog-color-green);
-  --markdown-color-cyan: var(--blog-color-cyan);
-  --markdown-color-orange: var(--blog-color-orange);
-  --markdown-color-red: var(--blog-color-red);
-  --markdown-color-purple: var(--blog-color-purple);
-  --markdown-color-pink: var(--blog-color-pink);
-  --markdown-code-block-bg: var(--blog-code-block-bg);
-  --markdown-code-block-border: var(--blog-code-block-border);
-  --markdown-code-line-highlight: var(--blog-code-line-highlight);
-  --markdown-code-meta-border: var(--blog-code-meta-border);
-  --markdown-code-lang-bg: var(--blog-code-lang-bg);
-  --markdown-code-lang-color: var(--blog-code-lang-color);
-  --markdown-code-text: var(--blog-code-text);
-  --markdown-code-muted: var(--blog-code-muted);
-  --markdown-code-keyword: var(--blog-code-keyword);
-  --markdown-code-string: var(--blog-code-string);
-  --markdown-code-number: var(--blog-code-number);
-  --markdown-code-title: var(--blog-code-title);
-  --markdown-code-comment: var(--blog-code-comment);
-  --markdown-code-attr: var(--blog-code-attr);
-  --markdown-code-symbol: var(--blog-code-symbol);
-  --markdown-code-deletion: var(--blog-code-deletion);
-  --markdown-code-addition: var(--blog-code-addition);
-  --markdown-focus-ring: var(--blog-focus-ring);
-  --markdown-panel-bg: var(--blog-panel-bg);
-  --markdown-cover-bg: var(--blog-cover-bg);
-  --markdown-image-bg: var(--blog-image-bg);
-  --markdown-floating-bg: var(--blog-floating-bg);
-  --markdown-lightbox-bg: var(--blog-lightbox-bg);
+  --willa-body-font: var(--blog-body-font);
+  --willa-title-font: var(--blog-title-font);
+  --willa-code-font: var(--blog-code-font);
+  --willa-surface: var(--blog-surface);
+  --willa-surface-soft: var(--blog-surface-soft);
+  --willa-surface-tint: var(--blog-surface-tint);
+  --willa-text-strong: var(--blog-text-strong);
+  --willa-text: var(--blog-text);
+  --willa-text-soft: var(--blog-text-soft);
+  --willa-text-faint: var(--blog-text-faint);
+  --willa-line: var(--blog-line);
+  --willa-line-strong: var(--blog-line-strong);
+  --willa-accent: var(--blog-accent);
+  --willa-accent-2: var(--blog-accent-2);
+  --willa-accent-2-soft: var(--blog-accent-2-soft);
+  --willa-focus-ring: var(--blog-focus-ring);
+  --willa-panel-bg: var(--blog-panel-bg);
+  --willa-cover-bg: var(--blog-cover-bg);
+  --willa-image-bg: var(--blog-image-bg);
+  --willa-floating-bg: var(--blog-floating-bg);
+  --willa-lightbox-bg: var(--blog-lightbox-bg);
+  --willa-card-bg: var(--blog-panel-bg);
+  --willa-card-border: var(--blog-line);
+  --willa-heading-1: var(--blog-text-strong);
+  --willa-heading-2: var(--blog-text-strong);
+  --willa-heading-3: var(--blog-text-strong);
+  --willa-heading-4: var(--blog-text-strong);
+  --willa-heading-5: var(--blog-text-soft);
+  --willa-heading-6: var(--blog-text-faint);
+  --willa-prose-marker-color: var(--blog-text-faint);
+  --willa-prose-nested-marker-color: var(--blog-text-faint);
+  --willa-prose-quote-color: var(--blog-text-soft);
+  --willa-prose-quote-border: var(--blog-line-strong);
+  --willa-prose-link-color: var(--blog-text-strong);
+  --willa-prose-link-hover-color: var(--blog-text-strong);
+  --willa-prose-link-decoration: color-mix(
+    in srgb,
+    currentColor 26%,
+    transparent
+  );
+  --willa-prose-link-hover-decoration: color-mix(
+    in srgb,
+    currentColor 42%,
+    transparent
+  );
+  --willa-color-gray: var(--blog-color-gray);
+  --willa-color-blue: var(--blog-color-blue);
+  --willa-color-green: var(--blog-color-green);
+  --willa-color-cyan: var(--blog-color-cyan);
+  --willa-color-orange: var(--blog-color-orange);
+  --willa-color-red: var(--blog-color-red);
+  --willa-color-purple: var(--blog-color-purple);
+  --willa-color-pink: var(--blog-color-pink);
+  --willa-inline-code-bg: var(--blog-code-block-bg);
+  --willa-code-block-bg: var(--blog-code-block-bg);
+  --willa-code-block-border: var(--blog-code-block-border);
+  --willa-code-line-highlight: var(--blog-code-line-highlight);
+  --willa-code-meta-border: var(--blog-code-meta-border);
+  --willa-code-lang-bg: var(--blog-code-lang-bg);
+  --willa-code-lang-color: var(--blog-code-lang-color);
+  --willa-code-text: var(--blog-code-text);
+  --willa-code-muted: var(--blog-code-muted);
+  --willa-code-keyword: var(--blog-code-keyword);
+  --willa-code-string: var(--blog-code-string);
+  --willa-code-number: var(--blog-code-number);
+  --willa-code-title: var(--blog-code-title);
+  --willa-code-comment: var(--blog-code-comment);
+  --willa-code-attr: var(--blog-code-attr);
+  --willa-code-symbol: var(--blog-code-symbol);
+  --willa-code-deletion: var(--blog-code-deletion);
+  --willa-code-addition: var(--blog-code-addition);
   min-height: 100%;
   position: relative;
   isolation: isolate;
@@ -136,24 +161,14 @@
 
 .blog-shell::selection,
 .blog-shell *::selection {
-  background-color: rgb(223, 223, 223) !important;
+  background-color: var(--blog-selection-bg) !important;
   color: inherit !important;
   text-shadow: none !important;
 }
 
 .blog-shell::-moz-selection,
 .blog-shell *::-moz-selection {
-  background-color: rgb(223, 223, 223) !important;
+  background-color: var(--blog-selection-bg) !important;
   color: inherit !important;
   text-shadow: none !important;
-}
-
-:root[data-wk-theme='dark'] .blog-shell::selection,
-:root[data-wk-theme='dark'] .blog-shell *::selection {
-  background-color: #282828 !important;
-}
-
-:root[data-wk-theme='dark'] .blog-shell::-moz-selection,
-:root[data-wk-theme='dark'] .blog-shell *::-moz-selection {
-  background-color: #282828 !important;
 }

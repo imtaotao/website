@@ -2,11 +2,13 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { Theme } from '@radix-ui/themes';
 import { useWebsiteTheme } from '@website-kernel/shared';
+import { Spinner } from 'willa';
 
 import { WebsiteThemeToggle } from '#app/components/WebsiteThemeToggle';
 import NotFoundPage from '#app/pages/NotFoundPage';
 
 import '@radix-ui/themes/styles.css';
+import 'willa/Spinner.css';
 import '#app/App.css';
 
 const HomePage = lazy(() => import('#app/pages/HomePage'));
@@ -16,14 +18,8 @@ const BlogArticlePage = lazy(() => import('#app/pages/Blog/BlogArticlePage'));
 
 function AppSuspenseFallback() {
   return (
-    <div
-      className="app__suspenseFallback"
-      role="status"
-      aria-live="polite"
-      aria-label="页面加载中"
-    >
-      <div className="app__spinner" aria-hidden="true" />
-      <div className="app__suspenseText">加载中</div>
+    <div className="app__suspenseFallback">
+      <Spinner size="lg" label="加载中" labelPosition="block" />
     </div>
   );
 }

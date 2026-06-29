@@ -14,11 +14,12 @@ import type {
 
 export { blogTagMap };
 export { extractFrontmatter, normalizeBlogArticleFrontmatter };
-export { Renderer as BlogMdx, extractHeadings } from '@website-kernel/markdown';
+export { Mdx as BlogMdx, extractHeadings } from 'willa';
 export {
   BlogThemeToggle,
   useBlogTheme,
 } from '#blog/components/BlogThemeToggle/BlogThemeToggle';
+export { BlogSummaryCards } from '#blog/components/BlogSummaryCards';
 export {
   BLOG_TAG_QUERY_KEY,
   BlogHomePage,
@@ -38,6 +39,10 @@ export type {
 } from '#blog/articleTypes';
 export type { BlogTheme } from '#blog/components/BlogThemeToggle/BlogThemeToggle';
 export type {
+  BlogSummaryCardItem,
+  BlogSummaryCardsProps,
+} from '#blog/components/BlogSummaryCards';
+export type {
   BlogHomeArticle,
   BlogHomePageProps,
 } from '#blog/pages/BlogHomePage';
@@ -45,7 +50,7 @@ export type {
   BlogArticlePageProps,
   BlogArticleView,
 } from '#blog/pages/BlogArticlePage';
-export type { Heading } from '@website-kernel/markdown';
+export type { Heading } from 'willa';
 
 const ARTICLE_ENTRY_FILENAME = 'index.mdx';
 

@@ -7,23 +7,22 @@ import {
   useCallback,
   type CSSProperties,
   type ComponentType,
-  type SVGProps,
 } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
-import {
-  ListBulletIcon,
-  ArrowUpIcon,
-  CaretUpIcon,
-} from '@radix-ui/react-icons';
+import { ListBulletIcon } from '@radix-ui/react-icons';
 import {
   Lightbox,
-  Renderer,
-  createLightboxImage,
+  MathExpression,
+  Mdx as Renderer,
+  normalizeLightboxImage,
   type LightboxImage,
   type LightboxState,
-} from '@website-kernel/markdown';
+  type MdxTheme,
+} from 'willa';
 
 import type { BlogArticleFrontmatter } from '#blog/articleTypes';
+import { ArticleActions } from '#blog/components/ArticleActions';
+import { BlogSummaryCards } from '#blog/components/BlogSummaryCards';
 import {
   BLOG_TAG_QUERY_KEY,
   createBlogTagNavigation,
@@ -65,26 +64,37 @@ const COPY = {
   backToTop: '\u8fd4\u56de\u9876\u90e8',
 } as const;
 
-function BlogBgmSpeakerIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 15 15" fill="none" aria-hidden="true" {...props}>
-      <path
-        d="M2.5 6.1H4.9L7.85 3.8V11.2L4.9 8.9H2.5V6.1Z"
-        stroke="currentColor"
-        strokeWidth="1.95"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M10.15 5.4C10.77 5.95 11.1 6.65 11.1 7.5C11.1 8.35 10.77 9.05 10.15 9.6"
-        stroke="currentColor"
-        strokeWidth="1.95"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+const ARTICLE_MDX_COMPONENTS = {
+  MathExpression,
+  SummaryCards: BlogSummaryCards,
+};
+
+const ARTICLE_MDX_THEME = {
+  fontFamily: 'var(--blog-body-font)',
+  titleFont: 'var(--blog-title-font)',
+  codeFont: 'var(--blog-code-font)',
+  text: 'var(--blog-text)',
+  textSoft: 'var(--blog-text-soft)',
+  textFaint: 'var(--blog-text-faint)',
+  textStrong: 'var(--blog-text-strong)',
+  heading1: 'var(--blog-text-strong)',
+  heading2: 'var(--blog-text-strong)',
+  heading3: 'var(--blog-text-strong)',
+  heading4: 'var(--blog-text-strong)',
+  heading5: 'var(--blog-text-soft)',
+  heading6: 'var(--blog-text-faint)',
+  inlineCodeBg: 'var(--blog-code-block-bg)',
+  selectionBg: 'var(--blog-selection-bg)',
+  selectionColor: 'inherit',
+  markerColor: 'var(--blog-text-faint)',
+  nestedMarkerColor: 'var(--blog-text-faint)',
+  quoteColor: 'var(--blog-text-soft)',
+  quoteBorder: 'var(--blog-line-strong)',
+  linkColor: 'var(--blog-text-strong)',
+  linkHoverColor: 'var(--blog-text-strong)',
+  linkDecoration: 'color-mix(in srgb, currentColor 26%, transparent)',
+  linkHoverDecoration: 'color-mix(in srgb, currentColor 42%, transparent)',
+} satisfies MdxTheme;
 
 export function BlogArticlePage(props: BlogArticlePageProps) {
   const { slug = '' } = useParams();
@@ -136,23 +146,23 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
 
     return Array.from(
       articleBody.querySelectorAll<HTMLElement>(
-        'figure.markdown-prose-image, figure.markdown-prose-gallery-item',
+        'figure.willa-prose-image, figure.willa-prose-gallery-item',
       ),
     )
       .map((figure) => {
         const button = figure.querySelector<HTMLButtonElement>(
-          'button[data-markdown-lightbox-id]',
+          'button[data-willa-lightbox-id]',
         );
         const img = figure.querySelector<HTMLImageElement>(
-          '.markdown-prose-image-asset, .markdown-prose-gallery-asset',
+          '.willa-prose-image-asset, .willa-prose-gallery-asset',
         );
         if (!img?.src) return null;
         const caption = figure.querySelector<HTMLElement>(
-          '.markdown-prose-image-caption, .markdown-prose-gallery-caption',
+          '.willa-prose-image-caption, .willa-prose-gallery-caption',
         )?.textContent;
 
         return {
-          id: button?.dataset.markdownLightboxId,
+          id: button?.dataset.willaLightboxId,
           src: img.src,
           alt: img.alt || undefined,
           caption: caption?.trim() || undefined,
@@ -235,33 +245,6 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
     },
     [lightboxImages],
   );
-
-  useEffect(() => {
-    if (!lightboxImage) return;
-
-    const previousOverflow = document.body.style.overflow;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        closeLightbox();
-        return;
-      }
-      if (event.key === 'ArrowLeft' && lightboxImages.length > 1) {
-        handleLightboxStep(-1);
-        return;
-      }
-      if (event.key === 'ArrowRight' && lightboxImages.length > 1) {
-        handleLightboxStep(1);
-      }
-    };
-
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', onKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener('keydown', onKeyDown);
-    };
-  }, [lightboxImage, lightboxImages]);
 
   useEffect(() => {
     if (!shouldEnableBgm) {
@@ -431,19 +414,28 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
     if (articleRef.current) {
       ro.observe(articleRef.current);
     }
+    if (titleRef.current) {
+      ro.observe(titleRef.current);
+    }
+
+    const titleAnimationTarget = titleRef.current?.closest('.blog-enter');
+
+    titleAnimationTarget?.addEventListener('animationend', schedule);
+    document.fonts?.ready.then(schedule);
 
     window.addEventListener('resize', schedule);
 
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
+      titleAnimationTarget?.removeEventListener('animationend', schedule);
       window.removeEventListener('resize', schedule);
     };
   }, [article, headings.length, slug]);
 
   if (!article) {
     return (
-      <main className="blog-shell markdown-shell">
+      <main className="blog-shell willa-shell">
         <div className="blog-page blog-empty-state">
           <p>{COPY.articleMissing}</p>
           <Link to="/blog" className="blog-subtle-link">
@@ -455,7 +447,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   }
 
   return (
-    <main ref={articleRef} className="blog-shell markdown-shell">
+    <main ref={articleRef} className="blog-shell willa-shell">
       <article
         className={`blog-article-page${
           article.coverUrl ? ' blog-article-page--with-cover' : ''
@@ -472,7 +464,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
               onClick={() =>
                 openLightbox({
                   images: [
-                    createLightboxImage(article.coverUrl, article.title),
+                    normalizeLightboxImage(article.coverUrl, article.title),
                   ].filter((item): item is LightboxImage => Boolean(item)),
                   currentIndex: 0,
                 })
@@ -535,6 +527,9 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
                 Content={article.Content}
                 articleSourcePath={article.sourcePath}
                 resolveAssetUrl={props.resolveAssetUrl}
+                className="blog-article-prose"
+                theme={ARTICLE_MDX_THEME}
+                components={ARTICLE_MDX_COMPONENTS}
                 openLightbox={openLightbox}
               />
             </section>
@@ -578,66 +573,16 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
           ) : null}
         </div>
 
-        <div className="blog-article-actions" aria-label={COPY.backToTop}>
-          <button
-            type="button"
-            className={`blog-article-action blog-back-to-top${
-              showBackToTop ? ' blog-back-to-top--visible' : ''
-            }`}
-            onClick={scrollToTop}
-            aria-label={COPY.backToTop}
-            title={COPY.backToTop}
-            aria-hidden={!showBackToTop}
-            tabIndex={showBackToTop ? 0 : -1}
-          >
-            <ArrowUpIcon className="blog-back-to-top-icon blog-back-to-top-icon--desktop" />
-            <CaretUpIcon className="blog-back-to-top-icon blog-back-to-top-icon--mobile" />
-          </button>
-
-          {shouldEnableBgm ? (
-            <button
-              type="button"
-              className={`blog-article-action blog-bgm-toggle${
-                isBgmPlaying ? ' blog-bgm-toggle--playing' : ''
-              }${hasBgmError ? ' blog-bgm-toggle--error' : ''}${
-                !isBgmReady ? ' blog-bgm-toggle--loading' : ''
-              }`}
-              onClick={() => {
-                handleToggleBgm();
-              }}
-              aria-label={
-                hasBgmError
-                  ? '背景音乐加载失败，点击重试'
-                  : isBgmPlaying
-                  ? '暂停背景音乐'
-                  : '播放背景音乐'
-              }
-              title={
-                hasBgmError
-                  ? '背景音乐加载失败，点击重试'
-                  : isBgmPlaying
-                  ? '暂停背景音乐'
-                  : isBgmReady
-                  ? '播放背景音乐'
-                  : '背景音乐加载中'
-              }
-            >
-              <span
-                className={`blog-bgm-icon-wrap${
-                  isBgmPlaying ? ' blog-bgm-icon-wrap--hidden' : ''
-                }`}
-                aria-hidden="true"
-              >
-                <BlogBgmSpeakerIcon className="blog-article-action-icon" />
-              </span>
-              <span className="blog-bgm-bars" aria-hidden="true">
-                <span />
-                <span />
-                <span />
-              </span>
-            </button>
-          ) : null}
-        </div>
+        <ArticleActions
+          showBackToTop={showBackToTop}
+          shouldEnableBgm={shouldEnableBgm}
+          isBgmReady={isBgmReady}
+          isBgmPlaying={isBgmPlaying}
+          hasBgmError={hasBgmError}
+          backToTopLabel={COPY.backToTop}
+          onBackToTop={scrollToTop}
+          onToggleBgm={handleToggleBgm}
+        />
 
         {lightboxImage ? (
           <Lightbox

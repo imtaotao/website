@@ -1,18 +1,19 @@
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { existsSync, readFileSync } from 'node:fs';
+
 import { defineConfig } from 'vite';
 import { parse as parseYaml } from 'yaml';
 import { aukletStylePlugin } from 'auklet';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
+
 import mdx from '@mdx-js/rollup';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+
+import remarkGfm from 'remark-gfm';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -20,12 +21,11 @@ const resolveResumeJson = () => {
   const yamlPath = resolve(__dirname, '../resume.yaml');
   if (!existsSync(yamlPath)) {
     throw new Error(
-      `Missing resume.yaml at repo root: ${yamlPath}. Please ensure the file exists.`,
+      `Missing resume.yaml at repo root: ${yamlPath}. ` +
+        `Please ensure the file exists.`,
     );
   }
-  const yamlText = readFileSync(yamlPath, 'utf8');
-  const data = parseYaml(yamlText);
-  return JSON.stringify(data);
+  return JSON.stringify(parseYaml(readFileSync(yamlPath, 'utf8')));
 };
 
 const RESUME_JSON = resolveResumeJson();
@@ -40,7 +40,6 @@ const remarkCodeMetaClassName = () => {
   return (tree) => {
     const visit = (node) => {
       if (!node || typeof node !== 'object') return;
-
       if (node.type === 'code' && node.lang && node.meta) {
         node.lang = `${node.lang}--meta-${encodeCodeMeta(node.meta)}`;
       }
@@ -49,7 +48,6 @@ const remarkCodeMetaClassName = () => {
         visit(child);
       }
     };
-
     visit(tree);
   };
 };
@@ -93,10 +91,8 @@ export default defineConfig({
   plugins: [
     mdx({
       providerImportSource: '@mdx-js/react',
-      rehypePlugins: [rehypeKatex],
       remarkPlugins: [
         remarkGfm,
-        remarkMath,
         remarkFrontmatter,
         remarkMdxFrontmatter,
         remarkCodeMetaClassName,

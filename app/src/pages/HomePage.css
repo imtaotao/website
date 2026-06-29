@@ -28,6 +28,9 @@
   --home-ink-from: rgba(59, 130, 246, 0.2);
   --home-ink-mid: rgba(147, 197, 253, 0.14);
   --home-ink-shadow: rgba(59, 130, 246, 0.12);
+  --willa-body-font: var(--site-font-body);
+  --willa-title-font: var(--site-font-title);
+  --willa-text: var(--home-text);
   min-height: 100%;
   color: var(--home-text);
 }
@@ -62,10 +65,13 @@
 
 .home-root {
   background: transparent;
+  width: 100%;
+  padding: 3.5rem 1.5rem;
 }
 
 /* 左偏：保持阅读宽度，但不做居中 */
 .home-container {
+  max-width: 46.25rem;
   margin-left: clamp(0px, 3vw, 56px);
 }
 
@@ -136,5 +142,11 @@
   :root[data-wk-theme='dark'] .home-shell {
     --home-bg: #000000;
     --home-bg-image: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .home-root {
+    padding: 6rem 3.5rem;
   }
 }

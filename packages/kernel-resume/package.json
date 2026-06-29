@@ -69,6 +69,7 @@
     "@radix-ui/themes": "catalog:",
     "@radix-ui/react-icons": "catalog:",
     "aidly": "catalog:",
+    "willa": "catalog:",
     "jspdf": "^4.2.1",
     "html-to-image": "^1.11.13"
   },
