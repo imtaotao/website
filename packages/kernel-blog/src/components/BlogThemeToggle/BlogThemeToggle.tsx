@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
 import { isBrowser } from 'aidly';
+import { IconButton } from 'willa';
 
 export type BlogTheme = 'light' | 'dark';
 
@@ -78,14 +79,15 @@ export function BlogThemeToggle(props: BlogThemeToggleProps) {
   const label = isDark ? '切换到白天模式' : '切换到黑夜模式';
 
   return (
-    <button
+    <IconButton
       type="button"
+      variant="ghost"
+      size="sm"
+      icon={<Icon className="blog-theme-toggle-icon" />}
       className="blog-theme-toggle"
       onClick={props.onToggle}
-      aria-label={label}
+      ariaLabel={label}
       title={label}
-    >
-      <Icon className="blog-theme-toggle-icon" />
-    </button>
+    />
   );
 }

@@ -5,12 +5,11 @@ declare module '*.mdx?raw' {
   export default content;
 }
 
-declare global {
-  interface Window {
-    __APP_BASE__?: string;
-  }
-
-  const __RESUME_JSON__: string;
+declare module 'virtual:resume-json' {
+  const content: string;
+  export default content;
 }
 
-export {};
+interface Window {
+  __APP_BASE__?: string;
+}

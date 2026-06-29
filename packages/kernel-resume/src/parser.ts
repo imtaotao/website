@@ -11,6 +11,7 @@ export type ResumeBasics = {
   name: string;
   title: string;
   school?: string;
+  schoolPeriod?: string;
   avatar?: string;
   location?: string;
   phone?: string;
@@ -207,6 +208,7 @@ export function normalizeResumeModel(input: ResumeModelInput) {
     name: asString(basicsRaw.name) ?? '',
     title: asString(basicsRaw.title) ?? '',
     school: asString(basicsRaw.school),
+    schoolPeriod: asString(basicsRaw.schoolPeriod),
     avatar: asString(basicsRaw.avatar),
     location: asString(basicsRaw.location),
     phone: asText(basicsRaw.phone),

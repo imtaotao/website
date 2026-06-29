@@ -5,14 +5,13 @@ basics:
   phone: 15211133566
   email: dwchentao@163.com
   school: 湖南工商大学
+  schoolPeriod: 2012.09 - 2016.07
   links:
     - label: GitHub
       url: https://github.com/imtaotao
-    - label: 知乎
-      url: https://www.zhihu.com/people/chen-tao-2-78
 
 summary:
-  - Hi，我目前在字节跳动工作，参与一些有趣的项目，例如微前端、微组件、前端部署服务以及高效的共享开发模型。现阶段我正在学习一些编译原理和 AI 相关的知识，如果你也对这些感兴趣，欢迎关注我！
+  - Hi，我目前在字节跳动工作，参与一些有趣的项目，例如微前端、微组件、前端部署服务以及高效的共享开发模型。现阶段我正在学习一些编译原理和 AI 相关的知识，如果你也对这些感兴趣，欢迎和我讨论！
 
 skills:
   - category: 前端
@@ -28,16 +27,16 @@ skills:
 
 experiences:
   - company: 湖南成功软件
-    role: 
     startAt: 2016-08
     endAt: 2017-10
     department: 业务开发组
+    role: 前端开发工程师
     highlights:
       - 业务侧：负责业务功能开发与维护。
 
   - company: 编程猫
     department: 硬件开发组
-    role: 
+    role: 前端开发工程师
     startAt: 2017-10
     endAt: 2018-10
     highlights:
@@ -49,7 +48,7 @@ experiences:
       - 项目链接：https://github.com/imtaotao/Swop
 
   - company: 珍爱网
-    role: 
+    role: 前端开发工程师
     startAt: 2019-03
     endAt: 2020-05
     department: 技术平台部
@@ -63,7 +62,7 @@ experiences:
 
   - company: 腾讯
     department: 微视增长组
-    role: 
+    role: 高级前端开发工程师
     startAt: 2020-06
     endAt: 2020-07
     highlights:
@@ -71,7 +70,7 @@ experiences:
 
   - company: 字节跳动
     department: 今日头条
-    role: 
+    role: 高级前端开发工程师
     startAt: 2020-07
     endAt: 2022-07
     highlights:
@@ -83,7 +82,7 @@ experiences:
 
   - company: 字节跳动
     department: aPaaS
-    role: 
+    role: 前端技术专家
     startAt: 2022-07
     endAt: 2024-04
     highlights:
@@ -94,7 +93,7 @@ experiences:
 
   - company: 字节跳动
     department: TikTok Shop
-    role: 
+    role: 前端技术专家
     startAt: 2024-04
     endAt: present
     highlights:

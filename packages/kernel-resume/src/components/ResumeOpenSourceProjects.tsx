@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import { isPlainObject } from 'aidly';
-import { List } from 'willa';
+import { List, Stack } from 'willa';
 import { type ResumeOpenSourceProject } from '#resume/parser';
 
 const pickPrimaryLink = (p: ResumeOpenSourceProject) => {
@@ -206,19 +206,16 @@ export function ResumeOpenSourceProjects(props: {
   return (
     <div>
       {intro.length ? (
-        <div className="mb-3 px-0 py-0">
+        <Stack gap="0.5rem" className="mb-3 px-0 py-0">
           {intro.map((t, idx) => (
             <p
               key={idx}
-              className={
-                'text-[14px] font-medium leading-6 text-zinc-700 md:text-[15px]' +
-                (idx === 0 ? '' : ' mt-2')
-              }
+              className="text-[14px] font-medium leading-6 text-zinc-700 md:text-[15px]"
             >
               {t}
             </p>
           ))}
-        </div>
+        </Stack>
       ) : null}
 
       <List

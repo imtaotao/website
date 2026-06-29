@@ -16,19 +16,35 @@ import remarkFrontmatter from 'remark-frontmatter';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const resumeYamlPath = resolve(__dirname, '../resume.yaml');
 
 const resolveResumeJson = () => {
-  const yamlPath = resolve(__dirname, '../resume.yaml');
-  if (!existsSync(yamlPath)) {
+  if (!existsSync(resumeYamlPath)) {
     throw new Error(
-      `Missing resume.yaml at repo root: ${yamlPath}. ` +
+      `Missing resume.yaml at repo root: ${resumeYamlPath}. ` +
         `Please ensure the file exists.`,
     );
   }
-  return JSON.stringify(parseYaml(readFileSync(yamlPath, 'utf8')));
+  return JSON.stringify(parseYaml(readFileSync(resumeYamlPath, 'utf8')));
 };
 
-const RESUME_JSON = resolveResumeJson();
+const resumeYamlPlugin = () => {
+  const virtualModuleId = 'virtual:resume-json';
+  const resolvedVirtualModuleId = `\0${virtualModuleId}`;
+
+  return {
+    name: 'website-resume-yaml',
+    resolveId(id) {
+      if (id === virtualModuleId) return resolvedVirtualModuleId;
+      return null;
+    },
+    load(id) {
+      if (id !== resolvedVirtualModuleId) return null;
+      this.addWatchFile(resumeYamlPath);
+      return `export default ${JSON.stringify(resolveResumeJson())};`;
+    },
+  };
+};
 
 const encodeCodeMeta = (value) => {
   return String(value ?? '')
@@ -54,9 +70,6 @@ const remarkCodeMetaClassName = () => {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  define: {
-    __RESUME_JSON__: JSON.stringify(RESUME_JSON),
-  },
   server: {
     proxy: {
       '/api/dictionary/youdao': {
@@ -89,6 +102,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    resumeYamlPlugin(),
     mdx({
       providerImportSource: '@mdx-js/react',
       remarkPlugins: [

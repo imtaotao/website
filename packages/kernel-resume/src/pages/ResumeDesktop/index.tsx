@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Progress, Spinner, Toolbar } from 'willa';
+import { Progress, Spinner, Toolbar, WillaShell } from 'willa';
+
 import { type ResumeModel } from '#resume/parser';
 import { exportElementToPdf } from '#resume/exportPdf';
 import type { ResumeImageAssets } from '#resume/assets';
@@ -87,7 +88,10 @@ export function ResumeDesktop(props: {
     <>
       {exporting ? (
         <div className="fixed inset-0 z-9999 flex items-center justify-center bg-white/60 backdrop-blur-sm">
-          <div className="w-70 rounded-xl border border-zinc-200 bg-white px-4 py-3 shadow-lg">
+          <WillaShell
+            theme="light"
+            className="w-70 rounded-xl border border-zinc-200 bg-white px-4 py-3 shadow-lg"
+          >
             <Spinner
               size="sm"
               label="正在导出 PDF"
@@ -103,7 +107,7 @@ export function ResumeDesktop(props: {
               size="md"
               tone="neutral"
             />
-          </div>
+          </WillaShell>
         </div>
       ) : null}
 

@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState, type CSSProperties } from 'react';
 import { CodeIcon, HomeIcon, RocketIcon } from '@radix-ui/react-icons';
-import { Card } from 'willa';
+import { Card, Group } from 'willa';
 
 import { type ResumeExperience } from '#resume/parser';
 import { copyToClipboard } from '#resume/clipboard';
@@ -160,6 +160,12 @@ const collectHighlights = (e: ResumeExperience) => {
   return result;
 };
 
+const getDepartmentRoles = (items: Array<ResumeExperience>) => {
+  return Array.from(
+    new Set(items.map((item) => item.role.trim()).filter(Boolean)),
+  );
+};
+
 const getExperienceCardStyle = (options: {
   copied: boolean;
   hovered: boolean;
@@ -236,6 +242,7 @@ export function ResumeExperienceList(props: {
 
     const departmentKey = (e.department ?? '').trim();
     let depGroup = companyGroup.departmentIndex.get(departmentKey);
+
     if (!depGroup) {
       depGroup = {
         department: departmentKey ? departmentKey : undefined,
@@ -272,13 +279,14 @@ export function ResumeExperienceList(props: {
                 depStartAt && depEndAt ? formatRange(depStartAt, depEndAt) : '';
 
               const lines: Array<string> = [];
+              const roleText = getDepartmentRoles(d.items).join(' / ');
               const header = `${d.department ? d.department : ''}${
-                depRangeText ? ` (${depRangeText})` : ''
-              }`.trim();
+                roleText ? ` · ${roleText}` : ''
+              }${depRangeText ? ` (${depRangeText})` : ''}`.trim();
               if (header) lines.push(header);
 
               for (const e of d.items) {
-                if (e.role) lines.push(e.role);
+                if (!roleText && e.role) lines.push(e.role);
                 const hl = collectHighlights(e).map((x) => `- ${x.text}`);
                 lines.push(...hl);
                 lines.push('');
@@ -313,7 +321,12 @@ export function ResumeExperienceList(props: {
                 }
               }}
             >
-              <div className="inline-flex items-center gap-2 text-base font-semibold tracking-tight text-zinc-900">
+              <Group
+                inline
+                align="center"
+                gap="0.5rem"
+                className="text-base font-semibold tracking-tight text-zinc-900"
+              >
                 <CompanyLogo company={c.company} assets={props.assets} />
                 <span>{c.company}</span>
                 {copied ? (
@@ -322,7 +335,7 @@ export function ResumeExperienceList(props: {
                     <span className="hidden sm:inline">已复制</span>
                   </span>
                 ) : null}
-              </div>
+              </Group>
 
               <div className="mt-3 space-y-6">
                 {c.departments.map((d) => {
@@ -338,6 +351,7 @@ export function ResumeExperienceList(props: {
                     depStartAt && depEndAt
                       ? formatRange(depStartAt, depEndAt)
                       : '';
+                  const roleText = getDepartmentRoles(d.items).join(' / ');
 
                   return (
                     <section
@@ -345,9 +359,19 @@ export function ResumeExperienceList(props: {
                       data-export-keep-together="true"
                       className="rounded-md px-3 py-2"
                     >
-                      {d.department ? (
+                      {d.department || roleText ? (
                         <div className="grid w-full min-w-0 grid-cols-[minmax(0,1fr)_140px] items-baseline gap-x-3 text-sm font-semibold text-zinc-700 sm:grid-cols-[minmax(0,1fr)_156px] sm:gap-x-4">
-                          <span className="min-w-0">{d.department}</span>
+                          <span className="min-w-0">
+                            {d.department ? <span>{d.department}</span> : null}
+                            {d.department && roleText ? (
+                              <span className="mx-1.5 text-zinc-400">·</span>
+                            ) : null}
+                            {roleText ? (
+                              <span className="resume-experience-role-header text-zinc-500">
+                                {roleText}
+                              </span>
+                            ) : null}
+                          </span>
                           <span className="min-w-0 text-right font-mono text-[10px] font-medium tracking-[0.04em] text-zinc-400 sm:text-xs sm:tracking-[0.16em]">
                             {depRangeText}
                           </span>
@@ -370,6 +394,7 @@ export function ResumeExperienceList(props: {
                       >
                         {d.items.map((e, idx) => {
                           const items = collectHighlights(e);
+                          const showRole = !roleText && Boolean(e.role);
 
                           return (
                             <div
@@ -378,8 +403,8 @@ export function ResumeExperienceList(props: {
                               }:${e.startAt}:${e.endAt}`}
                               data-export-keep-together="true"
                             >
-                              {e.role ? (
-                                <div className="text-sm font-semibold text-zinc-900">
+                              {showRole ? (
+                                <div className="resume-experience-role-item text-zinc-900">
                                   {e.role}
                                 </div>
                               ) : null}

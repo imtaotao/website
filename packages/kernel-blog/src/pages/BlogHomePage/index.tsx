@@ -1,9 +1,10 @@
 import { useMemo, type CSSProperties } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { OpenInNewWindowIcon } from '@radix-ui/react-icons';
+import { Group, Stack } from 'willa';
 import {
-  BlogThemeToggle,
   useBlogTheme,
+  BlogThemeToggle,
 } from '#blog/components/BlogThemeToggle/BlogThemeToggle';
 import type { BlogArticleMeta, BlogTagSummary } from '#blog/articleTypes';
 
@@ -189,14 +190,19 @@ export function BlogHomePage(props: BlogHomePageProps) {
               </div>
             </Link>
           ) : null}
-          <div>
+          <Stack gap="none">
             <p className="blog-home-subtitle">
               记录一些我的技术想法、实践和日常生活。
             </p>
-          </div>
+          </Stack>
         </div>
-        <div className="blog-home-actions">
-          <div className="blog-home-links">
+        <Group
+          direction="column"
+          align="end"
+          gap="10px"
+          className="blog-home-actions"
+        >
+          <Group wrap gap="10px" align="center" className="blog-home-links">
             <Link to="/resume" className="blog-pill blog-home-resume">
               <span className="blog-pill-label">简历</span>
             </Link>
@@ -216,8 +222,8 @@ export function BlogHomePage(props: BlogHomePageProps) {
               theme={blogTheme.theme}
               onToggle={blogTheme.toggleTheme}
             />
-          </div>
-        </div>
+          </Group>
+        </Group>
       </header>
 
       <section
@@ -225,7 +231,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
         id="blog-tags"
         style={getEnterStyle(280)}
       >
-        <div className="blog-tags-grid">
+        <Group wrap gap="12px 22px" className="blog-tags-grid">
           {tags.map((tag) => {
             const isActive = tag.key === activeTag;
             return (
@@ -248,7 +254,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
               </button>
             );
           })}
-        </div>
+        </Group>
       </section>
 
       <section
@@ -257,9 +263,14 @@ export function BlogHomePage(props: BlogHomePageProps) {
         style={getEnterStyle(130)}
       >
         {filteredArticles.length === 0 ? (
-          <div className="blog-empty-state blog-enter" role="status">
+          <Stack
+            as="div"
+            gap="none"
+            className="blog-empty-state blog-enter"
+            role="status"
+          >
             <p>当前标签下还没有文章。</p>
-          </div>
+          </Stack>
         ) : (
           articlesByYear.map(([year, items], groupIndex) => (
             <section
@@ -270,11 +281,11 @@ export function BlogHomePage(props: BlogHomePageProps) {
               aria-label={`${year} 年文章`}
               style={getEnterStyle(420 + groupIndex * 112)}
             >
-              <div className="blog-index-grid">
+              <Stack as="div" gap="none" className="blog-index-grid">
                 {items.map((article, index) =>
                   renderArticleItem(article, index, groupIndex),
                 )}
-              </div>
+              </Stack>
             </section>
           ))
         )}

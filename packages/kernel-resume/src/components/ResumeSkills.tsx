@@ -49,9 +49,9 @@ export function ResumeSkills(props: { groups: Array<ResumeSkillGroup> }) {
             {g.items.map((it) => (
               <div
                 key={it.name}
-                className="flex items-baseline justify-between gap-6"
+                className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4"
               >
-                <div className="text-sm font-medium text-zinc-900">
+                <div className="min-w-0 text-sm font-medium text-zinc-900">
                   {it.name}
                 </div>
                 <div className="flex items-center gap-2">

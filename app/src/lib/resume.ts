@@ -1,10 +1,7 @@
 import { normalizeResumeModel, type ResumeModel } from '@website-kernel/resume';
+import resumeJson from 'virtual:resume-json';
 
-declare const __RESUME_JSON__: string;
-
-const RESUME_MODEL: ResumeModel = normalizeResumeModel(
-  JSON.parse(__RESUME_JSON__),
-);
+const RESUME_MODEL: ResumeModel = normalizeResumeModel(JSON.parse(resumeJson));
 
 export function loadResumeModel() {
   return RESUME_MODEL;

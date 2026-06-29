@@ -1,4 +1,4 @@
-import { Button, Progress } from 'willa';
+import { Button, Progress, Stack } from 'willa';
 
 export function ResumeExportBar(props: {
   onExportPdf?: () => void;
@@ -13,7 +13,11 @@ export function ResumeExportBar(props: {
   const progress = Math.min(100, Math.max(0, props.progress ?? 0));
 
   return (
-    <div data-export-hide="true" className="resume-toolbar-group">
+    <Stack
+      data-export-hide="true"
+      gap="0.5rem"
+      className="resume-toolbar-group"
+    >
       <div className="resume-toolbar-row">
         <Button
           type="button"
@@ -41,6 +45,6 @@ export function ResumeExportBar(props: {
       ) : disabled && props.disabledText ? (
         <div className="resume-toolbar-hint">{props.disabledText}</div>
       ) : null}
-    </div>
+    </Stack>
   );
 }

@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { WillaShell } from 'willa';
 
 type KeepTogetherRangePx = {
   topPx: number;
@@ -256,7 +257,7 @@ export const ResumeShell = forwardRef<
   };
 
   return (
-    <div className="resume-root willa-shell text-zinc-900">
+    <WillaShell theme="light" className="resume-root text-zinc-900">
       {props.topBar ? (
         <div
           data-export-hide="true"
@@ -371,6 +372,6 @@ export const ResumeShell = forwardRef<
           )}
         </div>
       </div>
-    </div>
+    </WillaShell>
   );
 });

@@ -7,7 +7,7 @@ import {
   MobileIcon,
   ReaderIcon,
 } from '@radix-ui/react-icons';
-import { Avatar, Badge, Button } from 'willa';
+import { Avatar, Badge, Button, Group, Stack } from 'willa';
 import { type ResumeBasics } from '#resume/parser';
 import type { ResumeImageAssets } from '#resume/assets';
 
@@ -64,13 +64,24 @@ const labelIcon = (label: string, assets?: ResumeImageAssets) => {
   return <Link2Icon className={iconClassName} />;
 };
 
+const formatSchoolText = (basics: ResumeBasics) => {
+  if (!basics.school) return '';
+  if (!basics.schoolPeriod) return basics.school;
+  return `${basics.school} · ${basics.schoolPeriod}`;
+};
+
+const formatLinkUrl = (url: string) => {
+  return url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+};
+
 export function ResumeHeader(props: {
   basics: ResumeBasics;
   assets?: ResumeImageAssets;
 }) {
   const { basics } = props;
+  const schoolText = formatSchoolText(basics);
   const hasContacts = Boolean(
-    basics.phone || basics.email || basics.location || basics.school,
+    basics.phone || basics.email || basics.location || schoolText,
   );
   const hasLinks = Boolean(basics.links?.length);
   const links = basics.links ?? [];
@@ -120,9 +131,14 @@ export function ResumeHeader(props: {
         </div>
 
         {hasLinks || hasContacts ? (
-          <div className="mt-5 space-y-2">
+          <Stack gap="0.5rem" className="mt-5">
             {hasLinks ? (
-              <nav className="flex flex-wrap gap-x-5 gap-y-2 text-xs font-medium">
+              <Group
+                as="nav"
+                wrap
+                gap="0.5rem 1.25rem"
+                className="text-xs font-medium"
+              >
                 {links.map((l) => (
                   <Button
                     key={`${l.label}:${l.url}`}
@@ -134,19 +150,23 @@ export function ResumeHeader(props: {
                     icon={labelIcon(l.label, props.assets)}
                     className="resume-social-link"
                   >
-                    {l.label}
+                    <span className="resume-social-label">{l.label}</span>
+                    <span className="resume-social-separator">·</span>
+                    <span className="resume-social-url">
+                      {formatLinkUrl(l.url)}
+                    </span>
                   </Button>
                 ))}
-              </nav>
+              </Group>
             ) : null}
 
             {hasContacts ? (
-              <div className="flex flex-wrap items-center gap-2">
-                {basics.school ? (
+              <Group wrap gap="0.5rem" align="center">
+                {schoolText ? (
                   <ContactItem
                     icon={<ReaderIcon className={iconClassName} />}
-                    text={basics.school}
-                    copied={copiedText === basics.school}
+                    text={schoolText}
+                    copied={copiedText === schoolText}
                     onCopied={handleCopied}
                   />
                 ) : null}
@@ -174,9 +194,9 @@ export function ResumeHeader(props: {
                     onCopied={handleCopied}
                   />
                 ) : null}
-              </div>
+              </Group>
             ) : null}
-          </div>
+          </Stack>
         ) : null}
       </div>
     </header>
