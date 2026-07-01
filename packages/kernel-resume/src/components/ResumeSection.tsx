@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react';
-import { Separator } from 'willa';
+import { SectionHeader } from 'willa';
 
 export function ResumeSection(props: {
   title: string;
@@ -15,19 +15,12 @@ export function ResumeSection(props: {
       data-export-page-break={props.pageBreakBefore ? 'before' : undefined}
       className="mb-7 md:mb-9"
     >
-      {decorated ? (
-        <div className="mb-5 flex items-center gap-3">
-          <Separator size="sm" className="resume-section-separator" />
-          <h2 className="text-xs font-medium tracking-[0.24em] text-zinc-500">
-            {props.title}
-          </h2>
-          <Separator size="sm" className="resume-section-separator" />
-        </div>
-      ) : (
-        <h2 className="mb-3 text-xs font-medium tracking-[0.24em] text-zinc-500">
-          {props.title}
-        </h2>
-      )}
+      <SectionHeader
+        size="sm"
+        variant={decorated ? 'centered-line' : 'default'}
+        className={decorated ? 'mb-5' : 'mb-3'}
+        title={<span className="resume-section-title">{props.title}</span>}
+      />
       {props.children}
     </section>
   );

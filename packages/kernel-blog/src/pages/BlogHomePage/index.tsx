@@ -1,7 +1,7 @@
 import { useMemo, type CSSProperties } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { OpenInNewWindowIcon } from '@radix-ui/react-icons';
-import { Group, Stack } from 'willa';
+import { Avatar, Button, EmptyState, Group, Stack } from 'willa';
 import {
   useBlogTheme,
   BlogThemeToggle,
@@ -182,10 +182,11 @@ export function BlogHomePage(props: BlogHomePageProps) {
               aria-label="返回首页"
             >
               <div className="blog-home-avatar" aria-hidden="true">
-                <img
+                <Avatar
                   src={avatarUrl}
-                  alt=""
+                  name="imtaotao"
                   className="blog-home-avatar-image"
+                  shape="rounded"
                 />
               </div>
             </Link>
@@ -203,20 +204,39 @@ export function BlogHomePage(props: BlogHomePageProps) {
           className="blog-home-actions"
         >
           <Group wrap gap="10px" align="center" className="blog-home-links">
-            <Link to="/resume" className="blog-pill blog-home-resume">
+            <Button
+              href="/resume"
+              variant="ghost"
+              size="sm"
+              textColor="var(--blog-text-soft)"
+              hoverTextColor="var(--blog-text-strong)"
+              backgroundColor="transparent"
+              hoverBackgroundColor="transparent"
+              className="blog-pill blog-home-resume"
+              renderLink={(linkProps) => {
+                const { href, ...props } = linkProps;
+                return <Link {...props} to={href} />;
+              }}
+            >
               <span className="blog-pill-label">简历</span>
-            </Link>
+            </Button>
             {githubUrl ? (
-              <a
-                className="blog-pill blog-home-github"
+              <Button
                 href={githubUrl}
+                variant="ghost"
+                size="sm"
                 target="_blank"
                 rel="noreferrer"
+                textColor="var(--blog-text-soft)"
+                hoverTextColor="var(--blog-text-strong)"
+                backgroundColor="transparent"
+                hoverBackgroundColor="transparent"
+                className="blog-pill blog-home-github"
                 aria-label="GitHub"
                 title="GitHub"
               >
                 <span className="blog-pill-label">GitHub</span>
-              </a>
+              </Button>
             ) : null}
             <BlogThemeToggle
               theme={blogTheme.theme}
@@ -235,9 +255,16 @@ export function BlogHomePage(props: BlogHomePageProps) {
           {tags.map((tag) => {
             const isActive = tag.key === activeTag;
             return (
-              <button
+              <Button
                 key={tag.key}
                 type="button"
+                variant="ghost"
+                size="sm"
+                pressed={isActive}
+                textColor="inherit"
+                hoverTextColor="inherit"
+                backgroundColor="transparent"
+                hoverBackgroundColor="transparent"
                 className={
                   isActive
                     ? 'blog-tags-item blog-tags-item--active'
@@ -251,7 +278,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
                 }
               >
                 <span className="blog-tags-label">{tag.label}</span>
-              </button>
+              </Button>
             );
           })}
         </Group>
@@ -263,14 +290,18 @@ export function BlogHomePage(props: BlogHomePageProps) {
         style={getEnterStyle(130)}
       >
         {filteredArticles.length === 0 ? (
-          <Stack
-            as="div"
-            gap="none"
+          <EmptyState
+            variant="plain"
+            size="sm"
+            align="start"
+            title={
+              <span className="blog-empty-state-title">
+                当前标签下还没有文章。
+              </span>
+            }
             className="blog-empty-state blog-enter"
             role="status"
-          >
-            <p>当前标签下还没有文章。</p>
-          </Stack>
+          />
         ) : (
           articlesByYear.map(([year, items], groupIndex) => (
             <section

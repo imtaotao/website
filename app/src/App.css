@@ -72,6 +72,9 @@
 :root {
   color-scheme: light dark;
 
+  --site-scrollbar-thumb: rgba(113, 113, 122, 0.34);
+  --site-scrollbar-thumb-hover: rgba(82, 82, 91, 0.5);
+
   --site-font-inter: Inter, ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
@@ -106,6 +109,39 @@
   --site-font-title: var(--site-font-inter);
 }
 
+:root[data-wk-theme='dark'] {
+  --site-scrollbar-thumb: rgba(212, 212, 216, 0.28);
+  --site-scrollbar-thumb-hover: rgba(244, 244, 245, 0.42);
+}
+
+* {
+  scrollbar-color: var(--site-scrollbar-thumb) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--site-scrollbar-thumb);
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--site-scrollbar-thumb-hover);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 ::selection {
   background-color: rgb(223, 223, 223);
   color: inherit;
@@ -124,6 +160,7 @@ body,
   margin: 0;
   padding: 0;
   min-height: 100%;
+  overflow-x: hidden;
 }
 
 html {
@@ -138,144 +175,9 @@ body {
   background: #ffffff;
 }
 
-body:has(.home-shell),
-body:has(.blog-shell--home) {
-  background-color: #ffffff;
-  background-image:
-    radial-gradient(
-      900px circle at 18% 8%,
-      rgba(191, 219, 254, 0.45) 0%,
-      rgba(255, 255, 255, 0) 62%
-    ),
-    radial-gradient(
-      860px circle at 86% 14%,
-      rgba(216, 180, 254, 0.38) 0%,
-      rgba(255, 255, 255, 0) 60%
-    ),
-    radial-gradient(
-      820px circle at 52% 108%,
-      rgba(167, 243, 208, 0.22) 0%,
-      rgba(255, 255, 255, 0) 58%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 1) 0%,
-      rgba(250, 250, 255, 1) 100%
-    );
-}
-
-:root[data-wk-theme='dark'] body:has(.home-shell),
-:root[data-wk-theme='dark'] body:has(.blog-shell--home) {
-  background-color: #0f1117;
-  background-image:
-    radial-gradient(
-      900px circle at 18% 8%,
-      rgba(37, 99, 235, 0.22) 0%,
-      rgba(15, 17, 23, 0) 62%
-    ),
-    radial-gradient(
-      860px circle at 86% 14%,
-      rgba(124, 58, 237, 0.2) 0%,
-      rgba(15, 17, 23, 0) 60%
-    ),
-    radial-gradient(
-      820px circle at 52% 108%,
-      rgba(20, 184, 166, 0.1) 0%,
-      rgba(15, 17, 23, 0) 58%
-    ),
-    linear-gradient(180deg, #0f1117 0%, #171923 100%);
-}
-
-body:has(.blog-shell):not(:has(.blog-shell--home)) {
-  background-color: #ffffff;
-  background-image: none;
-}
-
-:root[data-wk-theme='dark'] body:has(.blog-shell):not(:has(.blog-shell--home)) {
+:root[data-wk-theme='dark'],
+:root[data-wk-theme='dark'] body {
   background-color: #000000;
-  background-image: none;
-}
-
-body:has(.resume-root) {
-  background-color: #ffffff;
-  background-image:
-    radial-gradient(
-      900px circle at 18% 8%,
-      rgba(191, 219, 254, 0.45) 0%,
-      rgba(255, 255, 255, 0) 62%
-    ),
-    radial-gradient(
-      860px circle at 86% 14%,
-      rgba(216, 180, 254, 0.38) 0%,
-      rgba(255, 255, 255, 0) 60%
-    ),
-    radial-gradient(
-      820px circle at 52% 108%,
-      rgba(167, 243, 208, 0.22) 0%,
-      rgba(255, 255, 255, 0) 58%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 1) 0%,
-      rgba(250, 250, 255, 1) 100%
-    );
-}
-
-:root[data-wk-theme='dark'] body:has(.resume-root) {
-  background-color: #0f1117;
-  background-image:
-    radial-gradient(
-      900px circle at 18% 8%,
-      rgba(37, 99, 235, 0.22) 0%,
-      rgba(15, 17, 23, 0) 62%
-    ),
-    radial-gradient(
-      860px circle at 86% 14%,
-      rgba(124, 58, 237, 0.2) 0%,
-      rgba(15, 17, 23, 0) 60%
-    ),
-    radial-gradient(
-      820px circle at 52% 108%,
-      rgba(20, 184, 166, 0.1) 0%,
-      rgba(15, 17, 23, 0) 58%
-    ),
-    linear-gradient(180deg, #0f1117 0%, #171923 100%);
-}
-
-body:has(.app__notFound) {
-  background-color: #ffffff;
-  background-image:
-    radial-gradient(
-      900px circle at 18% 8%,
-      rgba(191, 219, 254, 0.45) 0%,
-      rgba(255, 255, 255, 0) 62%
-    ),
-    radial-gradient(
-      860px circle at 86% 14%,
-      rgba(216, 180, 254, 0.38) 0%,
-      rgba(255, 255, 255, 0) 60%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 1) 0%,
-      rgba(250, 250, 255, 1) 100%
-    );
-}
-
-:root[data-wk-theme='dark'] body:has(.app__notFound) {
-  background-color: #0f1117;
-  background-image:
-    radial-gradient(
-      900px circle at 18% 8%,
-      rgba(37, 99, 235, 0.22) 0%,
-      rgba(15, 17, 23, 0) 62%
-    ),
-    radial-gradient(
-      860px circle at 86% 14%,
-      rgba(124, 58, 237, 0.2) 0%,
-      rgba(15, 17, 23, 0) 60%
-    ),
-    linear-gradient(180deg, #0f1117 0%, #171923 100%);
 }
 
 @keyframes app__fadeRiseIn {
@@ -299,9 +201,89 @@ body:has(.app__notFound) {
 
 .app__theme {
   min-height: 100%;
+  position: relative;
+  isolation: isolate;
+  overflow-x: hidden;
   margin: 0 !important;
   padding: 0 !important;
   background: transparent !important;
+}
+
+.app__background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: #ffffff;
+  background-image: none;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.app__background--home,
+.app__background--blogHome,
+.app__background--resume,
+.app__background--notFound {
+  background-color: #ffffff;
+  background-image:
+    radial-gradient(
+      900px circle at 18% 8%,
+      rgba(191, 219, 254, 0.45) 0%,
+      rgba(255, 255, 255, 0) 62%
+    ),
+    radial-gradient(
+      860px circle at 86% 14%,
+      rgba(216, 180, 254, 0.38) 0%,
+      rgba(255, 255, 255, 0) 60%
+    ),
+    radial-gradient(
+      820px circle at 52% 108%,
+      rgba(167, 243, 208, 0.22) 0%,
+      rgba(255, 255, 255, 0) 58%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(250, 250, 255, 1) 100%
+    );
+}
+
+.app__background--blogArticle {
+  background-color: #ffffff;
+}
+
+:root[data-wk-theme='dark'] .app__background--home,
+:root[data-wk-theme='dark'] .app__background--blogHome,
+:root[data-wk-theme='dark'] .app__background--resume,
+:root[data-wk-theme='dark'] .app__background--notFound {
+  background-color: #0f1117;
+  background-image:
+    radial-gradient(
+      900px circle at 18% 8%,
+      rgba(37, 99, 235, 0.22) 0%,
+      rgba(15, 17, 23, 0) 62%
+    ),
+    radial-gradient(
+      860px circle at 86% 14%,
+      rgba(124, 58, 237, 0.2) 0%,
+      rgba(15, 17, 23, 0) 60%
+    ),
+    radial-gradient(
+      820px circle at 52% 108%,
+      rgba(20, 184, 166, 0.1) 0%,
+      rgba(15, 17, 23, 0) 58%
+    ),
+    linear-gradient(180deg, #0f1117 0%, #171923 100%);
+}
+
+:root[data-wk-theme='dark'] .app__background--blogArticle {
+  background-color: #000000;
+}
+
+.app__content {
+  position: relative;
+  z-index: 1;
+  min-height: 100%;
 }
 
 [data-is-root-theme="true"],
@@ -399,23 +381,6 @@ body:has(.app__notFound) {
 }
 
 .app__notFound {
-  --not-found-bg: #ffffff;
-  --not-found-bg-image:
-    radial-gradient(
-      900px circle at 18% 8%,
-      rgba(191, 219, 254, 0.45) 0%,
-      rgba(255, 255, 255, 0) 62%
-    ),
-    radial-gradient(
-      860px circle at 86% 14%,
-      rgba(216, 180, 254, 0.38) 0%,
-      rgba(255, 255, 255, 0) 60%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 1) 0%,
-      rgba(250, 250, 255, 1) 100%
-    );
   --not-found-title: #18181b;
   --not-found-text: rgba(39, 39, 42, 0.76);
   --not-found-muted: rgba(39, 39, 42, 0.5);
@@ -429,43 +394,22 @@ body:has(.app__notFound) {
 }
 
 @media (max-width: 767px) {
-  body:has(.home-shell),
-  body:has(.blog-shell--home) {
+  .app__background--home,
+  .app__background--blogHome,
+  .app__background--notFound {
     background-color: #ffffff;
     background-image: none;
   }
 
-  :root[data-wk-theme='dark'] body:has(.home-shell),
-  :root[data-wk-theme='dark'] body:has(.blog-shell--home) {
-    background-color: #000000;
-    background-image: none;
-  }
-
-  body:has(.app__notFound) {
-    background-color: #ffffff;
-    background-image: none;
-  }
-
-  :root[data-wk-theme='dark'] body:has(.app__notFound) {
+  :root[data-wk-theme='dark'] .app__background--home,
+  :root[data-wk-theme='dark'] .app__background--blogHome,
+  :root[data-wk-theme='dark'] .app__background--notFound {
     background-color: #000000;
     background-image: none;
   }
 }
 
 :root[data-wk-theme='dark'] .app__notFound {
-  --not-found-bg: #0f1117;
-  --not-found-bg-image:
-    radial-gradient(
-      900px circle at 18% 8%,
-      rgba(37, 99, 235, 0.22) 0%,
-      rgba(15, 17, 23, 0) 62%
-    ),
-    radial-gradient(
-      860px circle at 86% 14%,
-      rgba(124, 58, 237, 0.2) 0%,
-      rgba(15, 17, 23, 0) 60%
-    ),
-    linear-gradient(180deg, #0f1117 0%, #171923 100%);
   --not-found-title: #f4f4f5;
   --not-found-text: rgba(244, 244, 245, 0.76);
   --not-found-muted: rgba(244, 244, 245, 0.52);
@@ -473,48 +417,35 @@ body:has(.app__notFound) {
 }
 
 .app__notFoundInner {
+  --willa-empty-state-title: var(--not-found-title);
+  --willa-empty-state-description: var(--not-found-text);
+  --willa-empty-state-text: var(--not-found-text);
   width: min(100%, 640px);
   margin-left: clamp(0px, 6vw, 96px);
 }
 
-.app__notFoundKicker {
-  margin: 0 0 12px;
-  color: var(--not-found-muted);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-}
-
 .app__notFoundTitle {
-  margin: 0;
+  display: block;
   color: var(--not-found-title);
   font-family: var(--site-font-title);
   font-size: clamp(2.4rem, 6vw, 4.4rem);
   font-weight: 200;
   line-height: 1.15;
-  letter-spacing: 0;
 }
 
 .app__notFoundText {
+  display: block;
   max-width: 28rem;
-  margin: 22px 0 0;
   font-family: var(--site-font-body);
   font-size: 1rem;
   line-height: 1.9;
 }
 
-.app__notFoundLinks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 28px;
-}
-
 .app__notFoundLink {
-  color: var(--not-found-link);
+  min-height: auto;
+  padding: 0;
   font-size: 0.95rem;
   font-weight: 600;
-  text-decoration: none;
 }
 
 .app__notFoundLink:hover {
@@ -523,13 +454,7 @@ body:has(.app__notFound) {
 }
 
 @media (max-width: 767px) {
-  .app__notFound {
-    --not-found-bg: #ffffff;
-    --not-found-bg-image: none;
-  }
-
-  :root[data-wk-theme='dark'] .app__notFound {
-    --not-found-bg: #000000;
-    --not-found-bg-image: none;
+  .app__notFoundInner {
+    margin-left: 0;
   }
 }

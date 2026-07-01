@@ -43,9 +43,7 @@
 }
 
 .blog-shell {
-  --blog-code-font: 'SFMono-Regular', 'SF Mono', Menlo, Consolas,
-    'Liberation Mono', monospace;
-  --blog-cover-height: clamp(160px, 22vw, 280px);
+  --blog-cover-height: clamp(120px, 13vw, 180px);
   --blog-body-font: var(
     --site-font-body,
     'FZLanTingWork',
@@ -75,77 +73,6 @@
     Arial,
     sans-serif
   );
-  --willa-body-font: var(--blog-body-font);
-  --willa-title-font: var(--blog-title-font);
-  --willa-code-font: var(--blog-code-font);
-  --willa-surface: var(--blog-surface);
-  --willa-surface-soft: var(--blog-surface-soft);
-  --willa-surface-tint: var(--blog-surface-tint);
-  --willa-text-strong: var(--blog-text-strong);
-  --willa-text: var(--blog-text);
-  --willa-text-soft: var(--blog-text-soft);
-  --willa-text-faint: var(--blog-text-faint);
-  --willa-line: var(--blog-line);
-  --willa-line-strong: var(--blog-line-strong);
-  --willa-accent: var(--blog-accent);
-  --willa-accent-2: var(--blog-accent-2);
-  --willa-accent-2-soft: var(--blog-accent-2-soft);
-  --willa-focus-ring: var(--blog-focus-ring);
-  --willa-panel-bg: var(--blog-panel-bg);
-  --willa-cover-bg: var(--blog-cover-bg);
-  --willa-image-bg: var(--blog-image-bg);
-  --willa-floating-bg: var(--blog-floating-bg);
-  --willa-lightbox-bg: var(--blog-lightbox-bg);
-  --willa-card-bg: var(--blog-panel-bg);
-  --willa-card-border: var(--blog-line);
-  --willa-heading-1: var(--blog-text-strong);
-  --willa-heading-2: var(--blog-text-strong);
-  --willa-heading-3: var(--blog-text-strong);
-  --willa-heading-4: var(--blog-text-strong);
-  --willa-heading-5: var(--blog-text-soft);
-  --willa-heading-6: var(--blog-text-faint);
-  --willa-prose-marker-color: var(--blog-text-faint);
-  --willa-prose-nested-marker-color: var(--blog-text-faint);
-  --willa-prose-quote-color: var(--blog-text-soft);
-  --willa-prose-quote-border: var(--blog-line-strong);
-  --willa-prose-link-color: var(--blog-text-strong);
-  --willa-prose-link-hover-color: var(--blog-text-strong);
-  --willa-prose-link-decoration: color-mix(
-    in srgb,
-    currentColor 26%,
-    transparent
-  );
-  --willa-prose-link-hover-decoration: color-mix(
-    in srgb,
-    currentColor 42%,
-    transparent
-  );
-  --willa-color-gray: var(--blog-color-gray);
-  --willa-color-blue: var(--blog-color-blue);
-  --willa-color-green: var(--blog-color-green);
-  --willa-color-cyan: var(--blog-color-cyan);
-  --willa-color-orange: var(--blog-color-orange);
-  --willa-color-red: var(--blog-color-red);
-  --willa-color-purple: var(--blog-color-purple);
-  --willa-color-pink: var(--blog-color-pink);
-  --willa-inline-code-bg: var(--blog-code-block-bg);
-  --willa-code-block-bg: var(--blog-code-block-bg);
-  --willa-code-block-border: var(--blog-code-block-border);
-  --willa-code-line-highlight: var(--blog-code-line-highlight);
-  --willa-code-meta-border: var(--blog-code-meta-border);
-  --willa-code-lang-bg: var(--blog-code-lang-bg);
-  --willa-code-lang-color: var(--blog-code-lang-color);
-  --willa-code-text: var(--blog-code-text);
-  --willa-code-muted: var(--blog-code-muted);
-  --willa-code-keyword: var(--blog-code-keyword);
-  --willa-code-string: var(--blog-code-string);
-  --willa-code-number: var(--blog-code-number);
-  --willa-code-title: var(--blog-code-title);
-  --willa-code-comment: var(--blog-code-comment);
-  --willa-code-attr: var(--blog-code-attr);
-  --willa-code-symbol: var(--blog-code-symbol);
-  --willa-code-deletion: var(--blog-code-deletion);
-  --willa-code-addition: var(--blog-code-addition);
   min-height: 100%;
   position: relative;
   isolation: isolate;

@@ -155,13 +155,14 @@
   color: var(--resume-toolbar-hint) !important;
 }
 
-.resume-section-separator.willa-separator {
-  flex: 1 1 0;
-  border-color: rgb(212 212 216 / 0.6);
-}
-
-.resume-section-separator.willa-separator--horizontal {
-  margin: 0;
+.resume-section-title {
+  display: inline-flex;
+  align-items: center;
+  color: rgb(113 113 122);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.24em;
 }
 
 .resume-open-source-list.willa-list {

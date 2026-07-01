@@ -1,6 +1,5 @@
 import { BlogHomePage as KernelBlogHomePage } from '@website-kernel/blog/pages/BlogHomePage';
 import '@website-kernel/blog/style.css';
-
 import { getBlogArticles, getBlogTagSummaries } from '#app/lib/blog';
 import { usePageMeta } from '#app/lib/pageMeta';
 import avatarUrl from '#app/assets/image/avatar1.jpg';

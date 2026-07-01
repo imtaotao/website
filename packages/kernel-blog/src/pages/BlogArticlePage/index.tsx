@@ -1,27 +1,36 @@
 import {
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
   useCallback,
   type CSSProperties,
   type ComponentType,
+  type SVGProps,
 } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 import { ListBulletIcon } from '@radix-ui/react-icons';
 import {
+  Anchor,
+  Button,
+  EmptyState,
+  FloatButton,
+  Group,
+  Image as WillaImage,
+  ImageGallery as WillaImageGallery,
   Lightbox,
   MathExpression,
   Mdx as Renderer,
   normalizeLightboxImage,
+  type ImageGalleryProps,
+  type ImageProps,
   type LightboxImage,
   type LightboxState,
+  type MdxColors,
   type MdxTheme,
 } from 'willa';
 
 import type { BlogArticleFrontmatter } from '#blog/articleTypes';
-import { ArticleActions } from '#blog/components/ArticleActions';
 import { BlogSummaryCards } from '#blog/components/BlogSummaryCards';
 import {
   BLOG_TAG_QUERY_KEY,
@@ -56,23 +65,65 @@ export type BlogArticlePageProps = {
 };
 
 const COPY = {
-  articleMissing: '\u6587\u7ae0\u4e0d\u5b58\u5728\u3002',
-  backToBlogHome: '\u8fd4\u56de\u535a\u5ba2\u9996\u9875',
-  enlargeCoverPrefix: '\u653e\u5927\u67e5\u770b\u5c01\u9762\u56fe\uff1a',
-  articleMeta: '\u6587\u7ae0\u4fe1\u606f',
-  articleToc: '\u6587\u7ae0\u76ee\u5f55',
-  backToTop: '\u8fd4\u56de\u9876\u90e8',
+  articleMissing: '文章不存在。',
+  backToBlogHome: '返回博客首页',
+  enlargeCoverPrefix: '放大查看封面图：',
+  articleMeta: '文章信息',
+  articleToc: '文章目录',
+  backToTop: '返回顶部',
 } as const;
+
+const BlogBgmSpeakerIcon = (props: SVGProps<SVGSVGElement>) => {
+  return (
+    <svg viewBox="0 0 15 15" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M2.5 6.1H4.9L7.85 3.8V11.2L4.9 8.9H2.5V6.1Z"
+        stroke="currentColor"
+        strokeWidth="1.95"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10.15 5.4C10.77 5.95 11.1 6.65 11.1 7.5C11.1 8.35 10.77 9.05 10.15 9.6"
+        stroke="currentColor"
+        strokeWidth="1.95"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+const BlogBgmToggleIcon = (props: { isPlaying: boolean }) => {
+  return (
+    <>
+      <span
+        className={`blog-bgm-icon-wrap${
+          props.isPlaying ? ' blog-bgm-icon-wrap--hidden' : ''
+        }`}
+        aria-hidden="true"
+      >
+        <BlogBgmSpeakerIcon className="blog-article-action-icon" />
+      </span>
+      <span className="blog-bgm-bars" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </span>
+    </>
+  );
+};
 
 const ARTICLE_MDX_COMPONENTS = {
   MathExpression,
   SummaryCards: BlogSummaryCards,
 };
 
+const TRANSPARENT_IMAGE_BACKGROUND = 'transparent';
+
 const ARTICLE_MDX_THEME = {
   fontFamily: 'var(--blog-body-font)',
   titleFont: 'var(--blog-title-font)',
-  codeFont: 'var(--blog-code-font)',
   text: 'var(--blog-text)',
   textSoft: 'var(--blog-text-soft)',
   textFaint: 'var(--blog-text-faint)',
@@ -83,7 +134,6 @@ const ARTICLE_MDX_THEME = {
   heading4: 'var(--blog-text-strong)',
   heading5: 'var(--blog-text-soft)',
   heading6: 'var(--blog-text-faint)',
-  inlineCodeBg: 'var(--blog-code-block-bg)',
   selectionBg: 'var(--blog-selection-bg)',
   selectionColor: 'inherit',
   markerColor: 'var(--blog-text-faint)',
@@ -92,9 +142,22 @@ const ARTICLE_MDX_THEME = {
   quoteBorder: 'var(--blog-line-strong)',
   linkColor: 'var(--blog-text-strong)',
   linkHoverColor: 'var(--blog-text-strong)',
-  linkDecoration: 'color-mix(in srgb, currentColor 26%, transparent)',
-  linkHoverDecoration: 'color-mix(in srgb, currentColor 42%, transparent)',
+  linkDecoration: 'var(--blog-link-decoration)',
+  linkHoverDecoration: 'var(--blog-link-hover-decoration)',
 } satisfies MdxTheme;
+
+const ARTICLE_MDX_COLORS = {
+  gray: 'var(--blog-color-gray)',
+  blue: 'var(--blog-color-blue)',
+  green: 'var(--blog-color-green)',
+  cyan: 'var(--blog-color-cyan)',
+  orange: 'var(--blog-color-orange)',
+  red: 'var(--blog-color-red)',
+  purple: 'var(--blog-color-purple)',
+  pink: 'var(--blog-color-pink)',
+} satisfies MdxColors;
+
+const ARTICLE_HEADING_OFFSET = 24;
 
 export function BlogArticlePage(props: BlogArticlePageProps) {
   const { slug = '' } = useParams();
@@ -112,12 +175,8 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   const [lightboxTransitionDirection, setLightboxTransitionDirection] =
     useState<-1 | 0 | 1>(0);
   const articleRef = useRef<HTMLElement | null>(null);
-  const titleRef = useRef<HTMLHeadingElement | null>(null);
   const articleBodyRef = useRef<HTMLElement | null>(null);
   const [headings, setHeadings] = useState<Array<BlogArticleHeading>>([]);
-  const [tocTop, setTocTop] = useState<number | null>(null);
-  const [isTocOpen, setIsTocOpen] = useState(false);
-  const [showBackToTop, setShowBackToTop] = useState(false);
   const [isBgmReady, setIsBgmReady] = useState(false);
   const [isBgmPlaying, setIsBgmPlaying] = useState(false);
   const [hasBgmError, setHasBgmError] = useState(false);
@@ -128,17 +187,6 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
     return article.tags.includes(value) ? value : '';
   }, [article, searchParams]);
   const shouldEnableBgm = Boolean(article?.bgm && props.bgmUrl);
-  const scrollToTop = useCallback(() => {
-    const scrollElement =
-      document.scrollingElement ?? document.documentElement ?? document.body;
-
-    if (scrollElement && 'scrollTo' in scrollElement) {
-      scrollElement.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
 
   const collectArticleLightboxImages = useCallback((): Array<LightboxImage> => {
     const articleBody = articleBodyRef.current;
@@ -170,6 +218,18 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
       })
       .filter((item): item is NonNullable<typeof item> => Boolean(item));
   }, []);
+
+  const openCoverLightbox = useCallback(() => {
+    if (!article?.coverUrl) return;
+
+    const image = normalizeLightboxImage(article.coverUrl, article.title);
+    if (!image) return;
+
+    setLightboxImages([image]);
+    setLightboxIndex(0);
+    setLightboxTransitionDirection(0);
+    setLightboxImage(image);
+  }, [article]);
 
   const openLightbox = useCallback(
     (state: LightboxState | null) => {
@@ -224,6 +284,44 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
     [collectArticleLightboxImages],
   );
 
+  const articleMdxComponents = useMemo(() => {
+    if (!article) return ARTICLE_MDX_COMPONENTS;
+
+    const Image = (imageProps: ImageProps) => {
+      return (
+        <WillaImage
+          {...imageProps}
+          articleSourcePath={article.sourcePath}
+          resolveAssetUrl={props.resolveAssetUrl}
+          openLightbox={openLightbox}
+          backgroundColor={
+            imageProps.backgroundColor ?? TRANSPARENT_IMAGE_BACKGROUND
+          }
+        />
+      );
+    };
+
+    const ImageGallery = (imageGalleryProps: ImageGalleryProps) => {
+      return (
+        <WillaImageGallery
+          {...imageGalleryProps}
+          articleSourcePath={article.sourcePath}
+          resolveAssetUrl={props.resolveAssetUrl}
+          openLightbox={openLightbox}
+          backgroundColor={
+            imageGalleryProps.backgroundColor ?? TRANSPARENT_IMAGE_BACKGROUND
+          }
+        />
+      );
+    };
+
+    return {
+      ...ARTICLE_MDX_COMPONENTS,
+      img: Image,
+      ImageGallery,
+    };
+  }, [article, openLightbox, props.resolveAssetUrl]);
+
   const closeLightbox = useCallback(() => {
     setLightboxImage(null);
     setLightboxImages([]);
@@ -262,19 +360,9 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
     audio.volume = 0.28;
     bgmRef.current = audio;
 
-    const tryAutoPlay = async () => {
-      try {
-        await audio.play();
-        setHasBgmError(false);
-      } catch {
-        setIsBgmPlaying(false);
-      }
-    };
-
     const handleCanPlay = () => {
       setIsBgmReady(true);
       setHasBgmError(false);
-      void tryAutoPlay();
     };
     const handlePlay = () => setIsBgmPlaying(true);
     const handlePause = () => setIsBgmPlaying(false);
@@ -330,37 +418,6 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
   }, [article, slug]);
 
   useEffect(() => {
-    if (!article) return;
-
-    const scrollElement =
-      document.scrollingElement ?? document.documentElement ?? document.body;
-
-    const updateBackToTopVisibility = () => {
-      const scrollTop =
-        scrollElement?.scrollTop ??
-        window.scrollY ??
-        document.documentElement.scrollTop ??
-        document.body.scrollTop ??
-        0;
-
-      setShowBackToTop(scrollTop > 480);
-    };
-
-    updateBackToTopVisibility();
-    window.addEventListener('scroll', updateBackToTopVisibility, {
-      passive: true,
-    });
-    scrollElement?.addEventListener('scroll', updateBackToTopVisibility, {
-      passive: true,
-    });
-
-    return () => {
-      window.removeEventListener('scroll', updateBackToTopVisibility);
-      scrollElement?.removeEventListener('scroll', updateBackToTopVisibility);
-    };
-  }, [article, slug]);
-
-  useEffect(() => {
     const articleBody = articleBodyRef.current;
     if (!articleBody) {
       setHeadings([]);
@@ -380,68 +437,81 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
     setHeadings(nextHeadings);
   }, [article, slug]);
 
-  useEffect(() => {
-    setIsTocOpen(false);
-  }, [slug]);
+  const tocItems = useMemo(() => {
+    const items: Array<{
+      id: string;
+      title: string;
+      href: string;
+      children?: Array<{ id: string; title: string; href: string }>;
+    }> = [];
+    let currentGroup: {
+      id: string;
+      title: string;
+      href: string;
+      children?: Array<{ id: string; title: string; href: string }>;
+    } | null = null;
 
-  useLayoutEffect(() => {
-    if (!article) {
-      setTocTop(null);
-      return;
-    }
+    headings.forEach((heading) => {
+      const item = {
+        id: heading.id,
+        title: heading.text,
+        href: `#${heading.id}`,
+      };
 
-    const updateTocTop = () => {
-      const titleEl = titleRef.current;
-      if (!titleEl) return;
+      if (heading.level === 2) {
+        currentGroup = { ...item, children: [] };
+        items.push(currentGroup);
+        return;
+      }
 
-      const rect = titleEl.getBoundingClientRect();
-      const nextTocTop = Math.round(rect.top + rect.height / 2 + 8);
+      if (!currentGroup) {
+        currentGroup = { ...item, children: [] };
+        items.push(currentGroup);
+      }
 
-      setTocTop((currentTop) =>
-        currentTop === nextTocTop ? currentTop : nextTocTop,
-      );
-    };
+      currentGroup.children?.push(item);
+    });
 
-    let raf = 0;
-    const schedule = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(updateTocTop);
-    };
-
-    updateTocTop();
-
-    const ro = new ResizeObserver(schedule);
-    if (articleRef.current) {
-      ro.observe(articleRef.current);
-    }
-    if (titleRef.current) {
-      ro.observe(titleRef.current);
-    }
-
-    const titleAnimationTarget = titleRef.current?.closest('.blog-enter');
-
-    titleAnimationTarget?.addEventListener('animationend', schedule);
-    document.fonts?.ready.then(schedule);
-
-    window.addEventListener('resize', schedule);
-
-    return () => {
-      cancelAnimationFrame(raf);
-      ro.disconnect();
-      titleAnimationTarget?.removeEventListener('animationend', schedule);
-      window.removeEventListener('resize', schedule);
-    };
-  }, [article, headings.length, slug]);
+    return items;
+  }, [headings]);
 
   if (!article) {
     return (
       <main className="blog-shell willa-shell">
-        <div className="blog-page blog-empty-state">
-          <p>{COPY.articleMissing}</p>
-          <Link to="/blog" className="blog-subtle-link">
-            {COPY.backToBlogHome}
-          </Link>
-        </div>
+        <EmptyState
+          variant="plain"
+          size="md"
+          align="start"
+          title={
+            <span className="blog-empty-state-title">
+              {COPY.articleMissing}
+            </span>
+          }
+          className="blog-page blog-empty-state"
+          actions={
+            <Group
+              className="blog-empty-state-actions"
+              style={{ flex: 'none' }}
+            >
+              <Button
+                href="/blog"
+                variant="link"
+                size="sm"
+                textColor="var(--blog-text-faint)"
+                hoverTextColor="var(--blog-text-strong)"
+                backgroundColor="transparent"
+                hoverBackgroundColor="transparent"
+                className="blog-subtle-link"
+                renderLink={(linkProps) => {
+                  const { href, ...props } = linkProps;
+                  return <Link {...props} to={href} />;
+                }}
+              >
+                {COPY.backToBlogHome}
+              </Button>
+            </Group>
+          }
+        />
       </main>
     );
   }
@@ -461,14 +531,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
             <button
               type="button"
               className="blog-article-cover-button"
-              onClick={() =>
-                openLightbox({
-                  images: [
-                    normalizeLightboxImage(article.coverUrl, article.title),
-                  ].filter((item): item is LightboxImage => Boolean(item)),
-                  currentIndex: 0,
-                })
-              }
+              onClick={openCoverLightbox}
               aria-label={`${COPY.enlargeCoverPrefix}${article.title}`}
             >
               <img
@@ -495,7 +558,7 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
                 } as CSSProperties
               }
             >
-              <h1 ref={titleRef} className="blog-article-title">
+              <h1 className="blog-article-title">
                 <Link
                   to={createBlogTagNavigation(activeTag)}
                   className="blog-article-title-link"
@@ -529,7 +592,8 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
                 resolveAssetUrl={props.resolveAssetUrl}
                 className="blog-article-prose"
                 theme={ARTICLE_MDX_THEME}
-                components={ARTICLE_MDX_COMPONENTS}
+                colors={ARTICLE_MDX_COLORS}
+                components={articleMdxComponents}
                 openLightbox={openLightbox}
               />
             </section>
@@ -537,52 +601,105 @@ export function BlogArticlePage(props: BlogArticlePageProps) {
 
           {headings.length ? (
             <aside
-              className={`blog-article-toc--side${
-                isTocOpen ? ' blog-article-toc--open' : ''
-              }`}
+              className="blog-article-toc--side"
               aria-label={COPY.articleToc}
-              style={tocTop != null ? { top: `${tocTop}px` } : undefined}
             >
-              <button
-                type="button"
-                className="blog-article-toc-trigger"
-                aria-label={COPY.articleToc}
-                aria-expanded={isTocOpen}
-                onClick={() => setIsTocOpen((current) => !current)}
-              >
+              <span className="blog-article-toc-trigger" aria-hidden="true">
                 <ListBulletIcon className="blog-article-toc-trigger-icon" />
-              </button>
+              </span>
               <nav className="blog-article-toc blog-article-toc-panel">
-                {headings.map((heading, index) => (
-                  <a
-                    key={heading.id}
-                    href={`#${heading.id}`}
-                    className={`blog-article-toc-link blog-article-toc-link--h${heading.level}`}
-                    onClick={() => setIsTocOpen(false)}
-                    style={
-                      {
-                        '--blog-toc-link-index': index,
-                      } as CSSProperties
+                <Anchor
+                  items={tocItems}
+                  variant="toc"
+                  size="sm"
+                  showMarker={false}
+                  offsetTop={ARTICLE_HEADING_OFFSET}
+                  className="blog-article-toc-scroll"
+                  classNames={{
+                    list: 'blog-article-toc-list',
+                    item: 'blog-article-toc-item',
+                    link: 'blog-article-toc-link',
+                    title: 'blog-article-toc-title',
+                  }}
+                  onItemClick={(item, event) => {
+                    const target = document.getElementById(item.id);
+                    if (!target) return;
+                    event.preventDefault();
+
+                    const prefersReducedMotion = window.matchMedia(
+                      '(prefers-reduced-motion: reduce)',
+                    ).matches;
+
+                    target.scrollIntoView({
+                      block: 'start',
+                      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+                    });
+
+                    const href = item.href ?? `#${item.id}`;
+                    if (window.location.hash !== href) {
+                      window.history.pushState(null, '', href);
                     }
-                  >
-                    {heading.text}
-                  </a>
-                ))}
+                  }}
+                />
               </nav>
             </aside>
           ) : null}
         </div>
 
-        <ArticleActions
-          showBackToTop={showBackToTop}
-          shouldEnableBgm={shouldEnableBgm}
-          isBgmReady={isBgmReady}
-          isBgmPlaying={isBgmPlaying}
-          hasBgmError={hasBgmError}
-          backToTopLabel={COPY.backToTop}
-          onBackToTop={scrollToTop}
-          onToggleBgm={handleToggleBgm}
+        <FloatButton
+          backToTop
+          ariaLabel={COPY.backToTop}
+          tooltip={COPY.backToTop}
+          variant="ghost"
+          shape="circle"
+          size="md"
+          offset={[24, 24]}
+          backgroundColor="transparent"
+          hoverBackgroundColor="transparent"
+          textColor="var(--blog-article-action-color)"
+          hoverTextColor="var(--blog-article-action-hover-color)"
+          className="blog-article-action blog-back-to-top"
         />
+
+        {shouldEnableBgm ? (
+          <FloatButton
+            type="button"
+            ariaLabel={
+              hasBgmError
+                ? '背景音乐加载失败，点击重试'
+                : isBgmPlaying
+                ? '暂停背景音乐'
+                : isBgmReady
+                ? '播放背景音乐'
+                : '背景音乐加载中'
+            }
+            tooltip={
+              hasBgmError
+                ? '背景音乐加载失败，点击重试'
+                : isBgmPlaying
+                ? '暂停背景音乐'
+                : isBgmReady
+                ? '播放背景音乐'
+                : '背景音乐加载中'
+            }
+            variant="ghost"
+            shape="circle"
+            size="md"
+            offset={[24, 88]}
+            backgroundColor="transparent"
+            hoverBackgroundColor="transparent"
+            textColor="var(--blog-article-action-color)"
+            hoverTextColor="var(--blog-article-action-hover-color)"
+            className={`blog-article-action blog-bgm-toggle${
+              isBgmPlaying ? ' blog-bgm-toggle--playing' : ''
+            }${hasBgmError ? ' blog-bgm-toggle--error' : ''}${
+              !isBgmReady ? ' blog-bgm-toggle--loading' : ''
+            }`}
+            contentClassName="blog-bgm-toggle-content"
+            icon={<BlogBgmToggleIcon isPlaying={isBgmPlaying} />}
+            onClick={() => handleToggleBgm()}
+          />
+        ) : null}
 
         {lightboxImage ? (
           <Lightbox

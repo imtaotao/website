@@ -84,6 +84,8 @@ export function BlogThemeToggle(props: BlogThemeToggleProps) {
       variant="ghost"
       size="sm"
       icon={<Icon className="blog-theme-toggle-icon" />}
+      textColor="var(--blog-text-soft)"
+      backgroundColor="transparent"
       className="blog-theme-toggle"
       onClick={props.onToggle}
       ariaLabel={label}

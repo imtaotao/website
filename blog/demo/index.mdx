@@ -64,19 +64,34 @@ tags:
 
 ## 3. 列表和代码块
 
-```ts {2-4,7,9-11} ln
-type BlogArticleFrontmatter = {
+```tsx {4-8,14,20-24} ln
+import { Badge, Button, Stack } from 'willa';
+
+type ArticleCardProps = {
   title: string;
-  slug: string;
-  tags: Array<string>;
-  publishedAt: string;
-  summary?: string;
-  cover?: string;
+  summary: string;
+  tags: string[];
+  href: string;
 };
 
-const createBlogTagNavigation = (tag?: string) => {
-  if (!tag) return { pathname: '/blog' };
-  return { pathname: '/blog', search: `?tag=${tag}` };
+const ArticleCard = ({ title, summary, tags, href }: ArticleCardProps) => {
+  const primaryTag = tags.at(0) ?? 'note';
+
+  return (
+    <article className="blog-demo-card" data-tag={primaryTag}>
+      <Stack gap={12}>
+        <Badge>{primaryTag}</Badge>
+        <h3>{title}</h3>
+        <p>{summary}</p>
+
+        <div className="blog-demo-card__actions">
+          <Button asChild size="sm">
+            <a href={href}>阅读全文</a>
+          </Button>
+        </div>
+      </Stack>
+    </article>
+  );
 };
 ```
 
@@ -160,14 +175,14 @@ images={[
 
 `AudioEmbed` 和 `VideoEmbed` 现在也支持 `src`。传了 `src` 之后，卡片内部会直接渲染播放器；如果同时还有 `href`，右上角的外链入口也会保留。
 
-段落内的小入口也一样。比如这个 <AudioLink src="https://music.163.com/song/media/outer/url?id=493950499.mp3">没有外链 href 的音频按钮</AudioLink> 就可以直接播放，同时不会显示外链图标。
+段落内的小入口也一样。比如这个 <AudioLink src="/bgm.mp3">没有外链 href 的音频按钮</AudioLink> 就可以直接播放，同时不会显示外链图标。
 
 <AudioEmbed
   href="https://music.163.com/#/song?id=285095"
-  src="http://music.163.com/song/media/outer/url?id=285095.mp3"
+  src="/bgm.mp3"
   title="内联音频播放器示例"
   provider="NetEase Music"
-  duration="04:42"
+  duration="03:48"
   description="这个示例既保留了外链入口，也在卡片内部直接渲染了原生音频播放器。"
 />
 
