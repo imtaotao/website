@@ -46,6 +46,7 @@ This project requires Node `>=22` and pnpm `10.27.0`.
 
 ```shell
 pnpm install
+pnpm build:packages
 pnpm dev
 ```
 
@@ -62,7 +63,7 @@ pnpm build:packages
 
 Blog posts live under `blog/`. Each post keeps its content and local image assets in its own directory. Resume-related implementation follows the documents under `docs/codex/`; reusable logic should live in `packages/kernel-resume/` instead of being mixed into the app entry.
 
-## Resouce
+## Resource
 
 - https://doc.edk24.com/music163
 

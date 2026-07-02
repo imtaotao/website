@@ -74,7 +74,7 @@ const formatLinkUrl = (url: string) => {
   return url.replace(/^https?:\/\//, '').replace(/\/$/, '');
 };
 
-export function ResumeHeader(props: {
+export function Header(props: {
   basics: ResumeBasics;
   assets?: ResumeImageAssets;
 }) {

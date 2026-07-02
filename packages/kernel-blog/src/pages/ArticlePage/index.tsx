@@ -31,12 +31,12 @@ import {
 } from 'willa';
 
 import type { BlogArticleFrontmatter } from '#blog/articleTypes';
-import { BlogSummaryCards } from '#blog/components/BlogSummaryCards';
+import { SummaryCards } from '#blog/components/SummaryCards';
 import {
   BLOG_TAG_QUERY_KEY,
   createBlogTagNavigation,
   formatBlogDate,
-} from '#blog/pages/BlogHomePage';
+} from '#blog/pages/HomePage';
 
 type BlogArticleHeading = {
   id: string;
@@ -44,7 +44,7 @@ type BlogArticleHeading = {
   text: string;
 };
 
-export type BlogArticleView = BlogArticleFrontmatter & {
+export type ArticleView = BlogArticleFrontmatter & {
   Content: ComponentType<Record<string, unknown>>;
   coverUrl?: string;
   sourcePath: string;
@@ -52,11 +52,11 @@ export type BlogArticleView = BlogArticleFrontmatter & {
   tagLabels: Array<string>;
 };
 
-export type BlogArticlePageProps = {
+export type ArticlePageProps = {
   getArticleBySlug: (
     slug: string,
     options?: { includeHidden?: boolean },
-  ) => BlogArticleView | undefined;
+  ) => ArticleView | undefined;
   resolveAssetUrl: (
     articleSourcePath: string,
     assetPath: string,
@@ -116,7 +116,7 @@ const BlogBgmToggleIcon = (props: { isPlaying: boolean }) => {
 
 const ARTICLE_MDX_COMPONENTS = {
   MathExpression,
-  SummaryCards: BlogSummaryCards,
+  SummaryCards,
 };
 
 const TRANSPARENT_IMAGE_BACKGROUND = 'transparent';
@@ -159,7 +159,7 @@ const ARTICLE_MDX_COLORS = {
 
 const ARTICLE_HEADING_OFFSET = 24;
 
-export function BlogArticlePage(props: BlogArticlePageProps) {
+export function ArticlePage(props: ArticlePageProps) {
   const { slug = '' } = useParams();
   const [searchParams] = useSearchParams();
   const article = props.getArticleBySlug(slug, {

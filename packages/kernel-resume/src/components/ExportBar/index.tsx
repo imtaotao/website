@@ -1,6 +1,6 @@
 import { Button, Progress, Stack } from 'willa';
 
-export function ResumeExportBar(props: {
+export function ExportBar(props: {
   onExportPdf?: () => void;
   exporting?: boolean;
   progress?: number;

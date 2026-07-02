@@ -8,7 +8,7 @@
 
 ```ts
 import '@website-kernel/resume/external.css';
-import '@website-kernel/resume/pages/ResumeMobile.css';
+import '@website-kernel/resume/pages/Mobile.css';
 ```
 
 这些导入在 package 里指向 `dist` 产物。开发时如果只改源码 CSS 或源码模块关系，容易出现热更新不及时，或者需要依赖 `auk build-css` 重新生成产物的问题。

@@ -73,7 +73,7 @@ const saveStarCache = (map: Record<string, number>) => {
   }
 };
 
-export function ResumeOpenSourceProjects(props: {
+export function OpenSourceProjects(props: {
   intro?: Array<string>;
   items: Array<ResumeOpenSourceProject>;
   onRemoteDataLoadingChange?: (loading: boolean) => void;

@@ -6,7 +6,7 @@ const levelText = (level: number) => {
   return `${v}/100`;
 };
 
-export function ResumeSkills(props: { groups: Array<ResumeSkillGroup> }) {
+export function Skills(props: { groups: Array<ResumeSkillGroup> }) {
   if (!props.groups.length) return null;
 
   return (

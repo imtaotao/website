@@ -1,20 +1,20 @@
 import { Card, Grid } from 'willa';
 
-export type BlogSummaryCardItem = {
+export type SummaryCardItem = {
   title: string;
   content: string | Array<string>;
 };
 
-export type BlogSummaryCardsProps = {
-  items: Array<BlogSummaryCardItem>;
+export type SummaryCardsProps = {
+  items: Array<SummaryCardItem>;
   className?: string;
 };
 
-const normalizeSummaryLines = (content: BlogSummaryCardItem['content']) => {
+const normalizeSummaryLines = (content: SummaryCardItem['content']) => {
   return Array.isArray(content) ? content : [content];
 };
 
-export function BlogSummaryCards(props: BlogSummaryCardsProps) {
+export function SummaryCards(props: SummaryCardsProps) {
   const { items, className } = props;
 
   return (

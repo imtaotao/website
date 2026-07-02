@@ -1,9 +1,12 @@
+import { IconButton } from 'willa';
 import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
 import { useWebsiteTheme } from '@website-kernel/shared';
-import type { ResumeModel, ResumeImageAssets } from '@website-kernel/resume';
-import { ResumeMobile } from '@website-kernel/resume/pages/ResumeMobile';
-import { ResumeDesktop } from '@website-kernel/resume/pages/ResumeDesktop';
-import { IconButton } from 'willa';
+import {
+  Mobile as KernelMobile,
+  Desktop as KernelDesktop,
+  type ResumeModel,
+  type ResumeImageAssets,
+} from '@website-kernel/resume';
 
 import '@website-kernel/resume/style.css';
 
@@ -11,7 +14,7 @@ import { loadResumeModel } from '#app/lib/resume';
 import { useIsMobile } from '#app/lib/browser';
 import { usePageMeta } from '#app/lib/pageMeta';
 import zhihuIconUrl from '#app/assets/image/zhihu.svg';
-import defaultAvatarUrl from '#app/assets/image/avatar1.jpg';
+import defaultAvatarUrl from '#app/assets/image/avatar.jpg';
 import zhenaiIconUrl from '#app/assets/image/zhenai.svg';
 import codemonIconUrl from '#app/assets/image/codemon.svg';
 import tencentIconUrl from '#app/assets/image/tencent.svg';
@@ -43,10 +46,10 @@ export default function ResumePage() {
   });
 
   if (isMobile) {
-    return <ResumeMobile model={model} assets={resumeAssets} />;
+    return <KernelMobile model={model} assets={resumeAssets} />;
   }
   return (
-    <ResumeDesktop
+    <KernelDesktop
       model={model}
       assets={resumeAssets}
       topBarExtra={

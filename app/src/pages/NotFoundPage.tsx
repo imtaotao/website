@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { Button, EmptyState, Group } from 'willa';
+
 import { usePageMeta } from '#app/lib/pageMeta';
 
 export default function NotFoundPage() {

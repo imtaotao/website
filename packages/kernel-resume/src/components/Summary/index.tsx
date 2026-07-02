@@ -1,6 +1,6 @@
 import { Stack } from 'willa';
 
-export function ResumeSummary(props: { summary: Array<string> }) {
+export function Summary(props: { summary: Array<string> }) {
   if (!props.summary.length) return null;
   return (
     <Stack

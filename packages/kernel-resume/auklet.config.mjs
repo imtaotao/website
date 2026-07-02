@@ -1,7 +1,7 @@
 export const config = {
   modules: true,
   styles: {
-    shared: './src/pages/ResumePage.css',
+    shared: './src/pages/Page.css',
     themes: {
       dark: './src/themes/dark.css',
       light: './src/themes/light.css',

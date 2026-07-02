@@ -186,7 +186,7 @@ const getExperienceCardStyle = (options: {
   } satisfies CSSProperties;
 };
 
-export function ResumeExperienceList(props: {
+export function ExperienceList(props: {
   items: Array<ResumeExperience>;
   assets?: ResumeImageAssets;
 }) {

@@ -67,7 +67,7 @@
 
 ```ts
 import '@website-kernel/blog/external.css';
-import '@website-kernel/blog/pages/BlogHomePage.css';
+import '@website-kernel/blog/pages/HomePage.css';
 ```
 
 ## dist 根目录
@@ -98,9 +98,9 @@ import '@website-kernel/blog/pages/BlogHomePage.css';
 - `src/articleTypes.ts` -> `dist/{es,lib}/articleTypes.js` + `articleTypes.d.ts`
 - `src/tagHelpers.ts` -> `dist/{es,lib}/tagHelpers.js` + `tagHelpers.d.ts`
 - `src/tags.ts` -> `dist/{es,lib}/tags.js` + `tags.d.ts`
-- `src/components/BlogThemeToggle/BlogThemeToggle.tsx` -> `dist/{es,lib}/components/BlogThemeToggle/BlogThemeToggle.js` + `.d.ts`
-- `src/pages/BlogArticlePage/index.tsx` -> `dist/{es,lib}/pages/BlogArticlePage/index.js` + `.d.ts`
-- `src/pages/BlogHomePage/index.tsx` -> `dist/{es,lib}/pages/BlogHomePage/index.js` + `.d.ts`
+- `src/components/ThemeToggle/index.tsx` -> `dist/{es,lib}/components/ThemeToggle/index.js` + `.d.ts`
+- `src/pages/ArticlePage/index.tsx` -> `dist/{es,lib}/pages/ArticlePage/index.js` + `.d.ts`
+- `src/pages/HomePage/index.tsx` -> `dist/{es,lib}/pages/HomePage/index.js` + `.d.ts`
 
 `src/__tests__/` 不属于发布产物契约。
 
@@ -139,9 +139,9 @@ import '@website-kernel/blog/pages/BlogHomePage.css';
 
 当前 blog 包的模块级样式入口包括：
 
-- `components/BlogThemeToggle/BlogThemeToggle/style/index.css`
-- `pages/BlogArticlePage/style/index.css`
-- `pages/BlogHomePage/style/index.css`
+- `components/ThemeToggle/style/index.css`
+- `pages/ArticlePage/style/index.css`
+- `pages/HomePage/style/index.css`
 
 这些模块级入口只描述组件和页面自身的样式依赖，不自动 import 包级 `external.css`。调用方如果按需引入单组件样式，需要自己额外引入包级 `external.css`。
 
@@ -150,8 +150,8 @@ import '@website-kernel/blog/pages/BlogHomePage.css';
 ```css
 @import 'willa/Lightbox.css';
 @import 'willa/Mdx.css';
-@import '../../../components/BlogThemeToggle/BlogThemeToggle/style/index.css';
-@import '../../BlogHomePage/style/index.css';
+@import '../../../components/ThemeToggle/style/index.css';
+@import '../../HomePage/style/index.css';
 @import '../index.css';
 ```
 
@@ -229,7 +229,7 @@ dist/lib/style/theme.dark.css
 
 ```ts
 import '@website-kernel/blog/external.css';
-import '@website-kernel/blog/pages/BlogHomePage.css';
+import '@website-kernel/blog/pages/HomePage.css';
 import '@website-kernel/blog/theme.light.css';
 import '@website-kernel/blog/theme.dark.css';
 ```

@@ -4,16 +4,16 @@ import { Progress, Spinner, Toolbar, WillaShell } from 'willa';
 import { type ResumeModel } from '#resume/parser';
 import { exportElementToPdf } from '#resume/exportPdf';
 import type { ResumeImageAssets } from '#resume/assets';
-import { ResumeShell } from '#resume/components/ResumeShell';
-import { ResumeExportBar } from '#resume/components/ResumeExportBar';
-import { ResumeHeader } from '#resume/components/ResumeHeader';
-import { ResumeSection } from '#resume/components/ResumeSection';
-import { ResumeSummary } from '#resume/components/ResumeSummary';
-import { ResumeSkills } from '#resume/components/ResumeSkills';
-import { ResumeExperienceList } from '#resume/components/ResumeExperience';
-import { ResumeOpenSourceProjects } from '#resume/components/ResumeOpenSourceProjects';
+import { Shell } from '#resume/components/Shell';
+import { ExportBar } from '#resume/components/ExportBar';
+import { Header } from '#resume/components/Header';
+import { Section } from '#resume/components/Section';
+import { Summary } from '#resume/components/Summary';
+import { Skills } from '#resume/components/Skills';
+import { ExperienceList } from '#resume/components/Experience';
+import { OpenSourceProjects } from '#resume/components/OpenSourceProjects';
 
-export function ResumeDesktop(props: {
+export function Desktop(props: {
   model: ResumeModel;
   assets?: ResumeImageAssets;
   topBarExtra?: ReactNode;
@@ -111,7 +111,7 @@ export function ResumeDesktop(props: {
         </div>
       ) : null}
 
-      <ResumeShell
+      <Shell
         ref={exportRef}
         topBar={
           <Toolbar
@@ -121,7 +121,7 @@ export function ResumeDesktop(props: {
             align="start"
             className="resume-toolbar"
           >
-            <ResumeExportBar
+            <ExportBar
               onExportPdf={async () => {
                 if (!exportRef.current) return;
                 if (!canExportPdf) {
@@ -167,34 +167,31 @@ export function ResumeDesktop(props: {
           </Toolbar>
         }
       >
-        <ResumeHeader basics={model.basics} assets={props.assets} />
+        <Header basics={model.basics} assets={props.assets} />
 
-        <ResumeSection title="简介" decorated={false}>
-          <ResumeSummary summary={model.summary} />
-        </ResumeSection>
+        <Section title="简介" decorated={false}>
+          <Summary summary={model.summary} />
+        </Section>
 
-        <ResumeSection title="技能">
-          <ResumeSkills groups={model.skills} />
-        </ResumeSection>
+        <Section title="技能">
+          <Skills groups={model.skills} />
+        </Section>
 
-        <ResumeSection title="经历">
-          <ResumeExperienceList
-            items={model.experiences}
-            assets={props.assets}
-          />
-        </ResumeSection>
+        <Section title="经历">
+          <ExperienceList items={model.experiences} assets={props.assets} />
+        </Section>
 
         {model.openSourceProjects.length ||
         model.openSourceProjectsIntro.length ? (
-          <ResumeSection title="开源项目" pageBreakBefore>
-            <ResumeOpenSourceProjects
+          <Section title="开源项目" pageBreakBefore>
+            <OpenSourceProjects
               intro={model.openSourceProjectsIntro}
               items={model.openSourceProjects}
               onRemoteDataLoadingChange={setRemoteDataLoading}
             />
-          </ResumeSection>
+          </Section>
         ) : null}
-      </ResumeShell>
+      </Shell>
     </>
   );
 }

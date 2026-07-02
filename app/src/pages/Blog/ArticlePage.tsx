@@ -1,5 +1,5 @@
 import { useParams } from 'react-router';
-import { BlogArticlePage as KernelBlogArticlePage } from '@website-kernel/blog/pages/BlogArticlePage';
+import { ArticlePage as KernelArticlePage } from '@website-kernel/blog';
 import '@website-kernel/blog/style.css';
 
 import { usePageMeta } from '#app/lib/pageMeta';
@@ -7,7 +7,7 @@ import { getBlogArticleBySlug, resolveBlogAssetUrl } from '#app/lib/blog';
 
 const BLOG_BGM_URL = '/bgm.mp3';
 
-export default function BlogArticlePage() {
+export default function ArticlePage() {
   const { slug = '' } = useParams();
   const article = getBlogArticleBySlug(slug, { includeHidden: true });
   const bgmUrl =
@@ -26,7 +26,7 @@ export default function BlogArticlePage() {
   });
 
   return (
-    <KernelBlogArticlePage
+    <KernelArticlePage
       getArticleBySlug={getBlogArticleBySlug}
       resolveAssetUrl={resolveBlogAssetUrl}
       bgmUrl={bgmUrl}

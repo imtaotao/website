@@ -143,14 +143,14 @@ const chooseSliceHeightPx = (args: {
   return sliceHeight;
 };
 
-export const ResumeShell = forwardRef<
+export const Shell = forwardRef<
   HTMLDivElement,
   {
     children: ReactNode;
     topBar?: ReactNode;
     paged?: boolean;
   }
->(function ResumeShell(props, ref) {
+>(function Shell(props, ref) {
   const paged = props.paged ?? true;
   const A4_RATIO = 297 / 210;
   const PAGE_GAP_PX = 28;

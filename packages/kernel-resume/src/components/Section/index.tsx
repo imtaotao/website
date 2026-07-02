@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
 import { SectionHeader } from 'willa';
 
-export function ResumeSection(props: {
+export function Section(props: {
   title: string;
   children: ReactNode;
   decorated?: boolean;

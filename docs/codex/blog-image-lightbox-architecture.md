@@ -13,7 +13,7 @@
 
 - `Markdown.tsx` 负责把 MDX 标记映射成具体组件。
 - `MarkdownMedia.tsx` 负责图片、图库和媒体卡片的交互实现。
-- `BlogArticlePage.tsx` 负责 article 级别的 lightbox 状态、定位和切换。
+- `ArticlePage.tsx` 负责 article 级别的 lightbox 状态、定位和切换。
 - `MarkdownLightbox.tsx` 负责 lightbox 的展示和切换动画。
 
 ## 核心数据模型
@@ -95,14 +95,14 @@ lightbox 相关的数据都走 `LightboxState` / `LightboxImage`。
 
 1. 图片按钮在渲染时携带自己的稳定 id。
 2. 点击时只把这张图作为目标传给 lightbox。
-3. `BlogArticlePage` 用 `selectedId` 找回对应项。
+3. `ArticlePage` 用 `selectedId` 找回对应项。
 4. 找不到就报错，不兜底。
 
 ### gallery 点击
 
 1. 每个 gallery item 都有自己的稳定 id。
 2. 点击某个 item 时，传入当前 item 的 id 和当前图片对象。
-3. `BlogArticlePage` 仍然优先按 id 定位。
+3. `ArticlePage` 仍然优先按 id 定位。
 4. 允许在同一个 gallery 列表里左右切换，但前提是定位必须准确。
 
 ## 实现约束

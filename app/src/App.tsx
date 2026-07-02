@@ -13,8 +13,8 @@ import '#app/App.css';
 
 const HomePage = lazy(() => import('#app/pages/HomePage'));
 const ResumePage = lazy(() => import('#app/pages/ResumePage'));
-const BlogHomePage = lazy(() => import('#app/pages/Blog/BlogHomePage'));
-const BlogArticlePage = lazy(() => import('#app/pages/Blog/BlogArticlePage'));
+const BlogHomeRoute = lazy(() => import('#app/pages/Blog/HomePage'));
+const BlogArticleRoute = lazy(() => import('#app/pages/Blog/ArticlePage'));
 
 const getAppSurface = (pathname: string) => {
   const normalizedPath = pathname.replace(/\/+$/, '') || '/';
@@ -52,8 +52,8 @@ const AppShell = () => {
         <Suspense fallback={<AppSuspenseFallback />}>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/blog" element={<BlogHomePage />} />
-            <Route path="/blog/:slug" element={<BlogArticlePage />} />
+            <Route path="/blog" element={<BlogHomeRoute />} />
+            <Route path="/blog/:slug" element={<BlogArticleRoute />} />
             <Route path="/resume" element={<ResumePage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

@@ -3,14 +3,15 @@ import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
 import { isBrowser } from 'aidly';
 import { IconButton } from 'willa';
 
-export type BlogTheme = 'light' | 'dark';
+export type Theme = 'light' | 'dark';
+export type BlogTheme = Theme;
 
 const BLOG_THEME_STORAGE_KEY = 'website:blog-theme';
 const BLOG_THEME_PREFERENCE_KEY = 'website:blog-theme-preference';
 const BLOG_THEME_CHANGE_EVENT = 'website-theme-change';
-const DEFAULT_BLOG_THEME: BlogTheme = 'light';
+const DEFAULT_BLOG_THEME: Theme = 'light';
 
-const isBlogTheme = (value: string | null): value is BlogTheme => {
+const isBlogTheme = (value: string | null): value is Theme => {
   return value === 'light' || value === 'dark';
 };
 
@@ -31,11 +32,11 @@ const readStoredBlogTheme = () => {
   return isBlogTheme(storedTheme) ? storedTheme : getDefaultBlogTheme();
 };
 
-const writeStoredBlogTheme = (theme: BlogTheme) => {
+const writeStoredBlogTheme = (theme: Theme) => {
   window.localStorage.setItem(BLOG_THEME_STORAGE_KEY, theme);
   window.localStorage.setItem(BLOG_THEME_PREFERENCE_KEY, 'true');
   window.dispatchEvent(
-    new CustomEvent<BlogTheme>(BLOG_THEME_CHANGE_EVENT, {
+    new CustomEvent<Theme>(BLOG_THEME_CHANGE_EVENT, {
       detail: theme,
     }),
   );
@@ -43,7 +44,7 @@ const writeStoredBlogTheme = (theme: BlogTheme) => {
 };
 
 export function useBlogTheme() {
-  const [theme, setTheme] = useState<BlogTheme>(readStoredBlogTheme);
+  const [theme, setTheme] = useState<Theme>(readStoredBlogTheme);
 
   useEffect(() => {
     const syncTheme = () => {
@@ -68,12 +69,12 @@ export function useBlogTheme() {
   return { theme, toggleTheme };
 }
 
-type BlogThemeToggleProps = {
-  theme: BlogTheme;
+export type ThemeToggleProps = {
+  theme: Theme;
   onToggle: () => void;
 };
 
-export function BlogThemeToggle(props: BlogThemeToggleProps) {
+export function ThemeToggle(props: ThemeToggleProps) {
   const isDark = props.theme === 'dark';
   const Icon = isDark ? SunIcon : MoonIcon;
   const label = isDark ? '切换到白天模式' : '切换到黑夜模式';

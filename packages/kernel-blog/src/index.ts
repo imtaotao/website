@@ -14,19 +14,16 @@ import type {
 
 export { blogTagMap };
 export { extractFrontmatter, normalizeBlogArticleFrontmatter };
-export { Mdx as BlogMdx, extractHeadings } from 'willa';
-export {
-  BlogThemeToggle,
-  useBlogTheme,
-} from '#blog/components/BlogThemeToggle/BlogThemeToggle';
-export { BlogSummaryCards } from '#blog/components/BlogSummaryCards';
+export { Mdx, extractHeadings } from 'willa';
+export { ThemeToggle, useBlogTheme } from '#blog/components/ThemeToggle';
+export { SummaryCards } from '#blog/components/SummaryCards';
 export {
   BLOG_TAG_QUERY_KEY,
-  BlogHomePage,
+  HomePage,
   createBlogTagNavigation,
   formatBlogDate,
-} from '#blog/pages/BlogHomePage';
-export { BlogArticlePage } from '#blog/pages/BlogArticlePage';
+} from '#blog/pages/HomePage';
+export { ArticlePage } from '#blog/pages/ArticlePage';
 export type {
   BlogArticleDetail,
   BlogArticleFrontmatter,
@@ -37,19 +34,13 @@ export type {
   BlogTagMeta,
   BlogTagSummary,
 } from '#blog/articleTypes';
-export type { BlogTheme } from '#blog/components/BlogThemeToggle/BlogThemeToggle';
+export type { BlogTheme, Theme } from '#blog/components/ThemeToggle';
 export type {
-  BlogSummaryCardItem,
-  BlogSummaryCardsProps,
-} from '#blog/components/BlogSummaryCards';
-export type {
-  BlogHomeArticle,
-  BlogHomePageProps,
-} from '#blog/pages/BlogHomePage';
-export type {
-  BlogArticlePageProps,
-  BlogArticleView,
-} from '#blog/pages/BlogArticlePage';
+  SummaryCardItem,
+  SummaryCardsProps,
+} from '#blog/components/SummaryCards';
+export type { HomeArticle, HomePageProps } from '#blog/pages/HomePage';
+export type { ArticlePageProps, ArticleView } from '#blog/pages/ArticlePage';
 export type { Heading } from 'willa';
 
 const ARTICLE_ENTRY_FILENAME = 'index.mdx';

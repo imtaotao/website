@@ -2,10 +2,7 @@ import { useMemo, type CSSProperties } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { OpenInNewWindowIcon } from '@radix-ui/react-icons';
 import { Avatar, Button, EmptyState, Group, Stack } from 'willa';
-import {
-  useBlogTheme,
-  BlogThemeToggle,
-} from '#blog/components/BlogThemeToggle/BlogThemeToggle';
+import { useBlogTheme, ThemeToggle } from '#blog/components/ThemeToggle';
 import type { BlogArticleMeta, BlogTagSummary } from '#blog/articleTypes';
 
 export const BLOG_TAG_QUERY_KEY = 'tag';
@@ -27,15 +24,15 @@ export function createBlogTagNavigation(tag?: string) {
   };
 }
 
-export type BlogHomeArticle = Pick<
+export type HomeArticle = Pick<
   BlogArticleMeta,
   'externalUrl' | 'publishedAt' | 'slug' | 'summary' | 'tags' | 'title'
 > & {
   tagLabels: Array<string>;
 };
 
-export type BlogHomePageProps = {
-  articles: Array<BlogHomeArticle>;
+export type HomePageProps = {
+  articles: Array<HomeArticle>;
   avatarUrl?: string;
   githubUrl?: string;
   tags: Array<BlogTagSummary>;
@@ -63,7 +60,7 @@ export function formatBlogDate(value: string) {
   }).format(date);
 }
 
-export function BlogHomePage(props: BlogHomePageProps) {
+export function HomePage(props: HomePageProps) {
   const blogTheme = useBlogTheme();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -85,7 +82,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
   }, [activeTag, articles]);
 
   const articlesByYear = useMemo(() => {
-    const groups = new Map<string, Array<BlogHomeArticle>>();
+    const groups = new Map<string, Array<HomeArticle>>();
     for (const article of filteredArticles) {
       const candidate = article.publishedAt.slice(0, 4);
       const year = /^\d{4}$/.test(candidate) ? candidate : '未知';
@@ -106,7 +103,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
   const listRenderKey = activeTag || '__all__';
 
   const renderArticleItem = (
-    article: BlogHomeArticle,
+    article: HomeArticle,
     index: number,
     groupIndex: number,
   ) => {
@@ -238,7 +235,7 @@ export function BlogHomePage(props: BlogHomePageProps) {
                 <span className="blog-pill-label">GitHub</span>
               </Button>
             ) : null}
-            <BlogThemeToggle
+            <ThemeToggle
               theme={blogTheme.theme}
               onToggle={blogTheme.toggleTheme}
             />
