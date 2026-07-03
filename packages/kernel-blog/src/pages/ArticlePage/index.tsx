@@ -32,6 +32,7 @@ import {
 
 import type { BlogArticleFrontmatter } from '#blog/articleTypes';
 import { SummaryCards } from '#blog/components/SummaryCards';
+import { Columns, Column } from '#blog/components/Columns';
 import {
   BLOG_TAG_QUERY_KEY,
   createBlogTagNavigation,
@@ -115,6 +116,8 @@ const BlogBgmToggleIcon = (props: { isPlaying: boolean }) => {
 };
 
 const ARTICLE_MDX_COMPONENTS = {
+  Column,
+  Columns,
   MathExpression,
   SummaryCards,
 };

@@ -1,0 +1,124 @@
+.blog-columns-block {
+  margin: 1.55rem 0;
+}
+
+.blog-columns-title {
+  margin: 0 0 0.72rem;
+  color: var(--blog-text-strong);
+  font-family: var(--blog-title-font);
+  font-size: 0.94rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.blog-column {
+  position: relative;
+  min-width: 0;
+  padding: 0.9rem 0.92rem;
+  border: 1px solid var(--blog-line);
+  border-radius: 8px;
+  background: transparent;
+}
+
+.blog-column-expand {
+  position: absolute;
+  top: 0.58rem;
+  right: 0.58rem;
+  z-index: 1;
+  color: var(--blog-text-faint);
+}
+
+.blog-column-expand:hover {
+  color: var(--blog-text-strong);
+}
+
+.blog-column-title {
+  margin: 0 2rem 0.52rem 0;
+  color: var(--blog-text-strong);
+  font-family: var(--blog-title-font);
+  font-size: 0.86rem;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.blog-column-body {
+  min-width: 0;
+}
+
+.blog-column-body > :first-child {
+  margin-top: 0 !important;
+}
+
+.blog-column-body > :last-child {
+  margin-bottom: 0 !important;
+}
+
+.blog-column-body .willa-prose-pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.blog-column-dialog-overlay {
+  align-items: center;
+}
+
+.blog-column-dialog-panel {
+  --willa-dialog-width: 58rem;
+
+  height: auto;
+  max-height: calc(100dvh - 48px);
+}
+
+.blog-column-dialog-content > :first-child {
+  margin-top: 0 !important;
+}
+
+.blog-column-dialog-content > :last-child {
+  margin-bottom: 0 !important;
+}
+
+.blog-column-dialog-content {
+  width: min(100%, 46rem);
+  margin: 0 auto;
+}
+
+.blog-column-dialog-content .willa-prose-pre {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.blog-column-dialog-content .willa-prose-pre::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+@media (max-width: 767px) {
+  .blog-columns-block {
+    margin: 1.42rem 0;
+  }
+
+  .blog-columns-title {
+    margin-bottom: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .blog-columns {
+    grid-template-columns: 1fr !important;
+    gap: 1.12rem !important;
+    row-gap: 1.12rem !important;
+    column-gap: 1.12rem !important;
+  }
+
+  .blog-column-title {
+    margin-bottom: 0.44rem;
+    font-size: 0.84rem;
+  }
+
+  .blog-column {
+    padding: 0.82rem 0.84rem;
+  }
+
+  .blog-column-dialog-panel {
+    max-height: calc(100dvh - 28px);
+  }
+}

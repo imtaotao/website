@@ -40,15 +40,15 @@ import '@website-kernel/resume/pages/Mobile.css';
 
 ```css
 /* @website-kernel/pkg/style.css */
-@import "./external.css";
-@import "./module.css";
+@import './external.css';
+@import './module.css';
 ```
 
 开发环境也应该保持相同顺序，虚拟生成：
 
 ```css
-@import "virtual:auklet-css:@website-kernel/pkg/external.css";
-@import "virtual:auklet-css:@website-kernel/pkg/module.css";
+@import 'virtual:auklet-css:@website-kernel/pkg/external.css';
+@import 'virtual:auklet-css:@website-kernel/pkg/module.css';
 ```
 
 ### 外部依赖入口
@@ -67,8 +67,8 @@ import '@website-kernel/resume/pages/Mobile.css';
 开发环境不建议直接展开 CSS 内容，而是生成一组 `@import` 指向真实源码 CSS：
 
 ```css
-@import "/abs/packages/kernel-pkg/src/pages/A/index.css";
-@import "/abs/packages/kernel-pkg/src/components/B/index.css";
+@import '/abs/packages/kernel-pkg/src/pages/A/index.css';
+@import '/abs/packages/kernel-pkg/src/components/B/index.css';
 ```
 
 为了避免和生产聚合语义偏离，生成列表时应排除被其他 CSS 通过相对 `@import` 引入的文件，逻辑可复用 `StyleProcessor.collectImportedStyleFiles()`。

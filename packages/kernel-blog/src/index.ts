@@ -17,6 +17,7 @@ export { extractFrontmatter, normalizeBlogArticleFrontmatter };
 export { Mdx, extractHeadings } from 'willa';
 export { ThemeToggle, useBlogTheme } from '#blog/components/ThemeToggle';
 export { SummaryCards } from '#blog/components/SummaryCards';
+export { Columns, Column } from '#blog/components/Columns';
 export {
   BLOG_TAG_QUERY_KEY,
   HomePage,
@@ -39,6 +40,7 @@ export type {
   SummaryCardItem,
   SummaryCardsProps,
 } from '#blog/components/SummaryCards';
+export type { ColumnsProps, ColumnProps } from '#blog/components/Columns';
 export type { HomeArticle, HomePageProps } from '#blog/pages/HomePage';
 export type { ArticlePageProps, ArticleView } from '#blog/pages/ArticlePage';
 export type { Heading } from 'willa';

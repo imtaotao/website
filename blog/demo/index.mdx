@@ -64,6 +64,31 @@ tags:
 
 ## 3. 列表和代码块
 
+### 3.1 有序列表
+
+有序列表适合表达顺序明确的步骤：
+
+1. 先确认输入数据和边界条件
+2. 再实现最小可验证的逻辑
+3. 最后补充验证命令和剩余风险
+
+嵌套有序列表适合表达主流程和子步骤：
+
+1. 准备阶段
+   1. 收集真实输入
+   2. 确认边界条件
+   3. 明确完成标准
+2. 实施阶段
+   1. 做最小安全改动
+   2. 保持现有命名和目录结构
+   3. 避免顺手改无关文件
+3. 验证阶段
+   1. 跑最小相关命令
+   2. 检查页面展示效果
+   3. 记录剩余风险
+
+### 3.2 代码块
+
 ```tsx {4-8,14,20-24} ln
 import { Badge, Button, Stack } from 'willa';
 
@@ -94,6 +119,45 @@ const ArticleCard = ({ title, summary, tags, href }: ArticleCardProps) => {
   );
 };
 ```
+
+### 3.3 分栏对比
+
+`Columns` 适合放并排对比内容，移动端会自动变成单栏。
+
+<Columns title="代码写法对比" columns={2}>
+  <Column title="Before">
+
+```js
+const getName = (user) => {
+  return user && user.profile && user.profile.name;
+};
+```
+
+  </Column>
+  <Column title="After">
+
+```js
+const getName = (user) => {
+  return user?.profile?.name ?? null;
+};
+```
+
+  </Column>
+</Columns>
+
+三栏适合对比多个方案或步骤。
+
+<Columns columns={3} gap="sm">
+  <Column title="方案 A">
+    直接复用现有实现，改动最小，适合低风险修正。
+  </Column>
+  <Column title="方案 B">
+    抽出公共组件，适合多篇文章重复使用同一种表达。
+  </Column>
+  <Column title="方案 C">
+    引入更强的交互能力，但维护成本也会更高。
+  </Column>
+</Columns>
 
 ## 4. 单张图片
 
@@ -364,13 +428,15 @@ lines={[
 </Steps>
 
 <Steps
-  title="组件落地节奏"
-  direction="horizontal"
-  markerColor="#2563eb"
-  markerTextColor="#ffffff"
->
-  <Step title="整理结构">
+title="组件落地节奏"
+direction="horizontal"
+markerColor="#2563eb"
+markerTextColor="#ffffff"
+
+>   <Step title="整理结构">
+
     先确认组件职责、属性和 demo 场景。
+
   </Step>
   <Step title="补齐样式" markerColor="#16a34a" markerTextColor="#ffffff">
     再处理亮色、暗色和移动端表现。
@@ -385,29 +451,29 @@ lines={[
 `EnglishCards` 适合批量整理单词，不需要一个单词写一个组件。点击右上角按钮可以一键切换学习模式和练习模式。
 
 <EnglishCards
-  title="阅读里常见的表达"
-  items={[
-    {
-      word: 'rustling',
-      phonetic: '/ˈrʌslɪŋ/',
-      partOfSpeech: 'noun / adjective',
-      translation: '沙沙声；发出沙沙声的',
-      example: {
-        text: 'The rustling leaves made the room feel quiet.',
-        translation: '沙沙作响的树叶让房间显得安静。',
-      },
-    },
-    {
-      word: 'smart',
-      phonetic: '/smɑːrt/',
-      partOfSpeech: 'adjective',
-      translation: '聪明的；利落的；智能的',
-      example: {
-        text: 'A smart interface should make the next step obvious.',
-        translation: '聪明的界面应该让下一步操作显而易见。',
-      },
-    },
-  ]}
+title="阅读里常见的表达"
+items={[
+{
+word: 'rustling',
+phonetic: '/ˈrʌslɪŋ/',
+partOfSpeech: 'noun / adjective',
+translation: '沙沙声；发出沙沙声的',
+example: {
+text: 'The rustling leaves made the room feel quiet.',
+translation: '沙沙作响的树叶让房间显得安静。',
+},
+},
+{
+word: 'smart',
+phonetic: '/smɑːrt/',
+partOfSpeech: 'adjective',
+translation: '聪明的；利落的；智能的',
+example: {
+text: 'A smart interface should make the next step obvious.',
+translation: '聪明的界面应该让下一步操作显而易见。',
+},
+},
+]}
 />
 
 ## 17. 后续约定

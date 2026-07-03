@@ -236,6 +236,37 @@
   text-shadow: none;
 }
 
+.blog-article-prose .willa-prose-ol,
+.blog-article-prose ol {
+  padding-left: 1.5rem;
+  margin-left: 0;
+  list-style-position: outside;
+  list-style-type: decimal;
+}
+
+.blog-article-prose .willa-prose-ol > li,
+.blog-article-prose ol > li {
+  display: list-item;
+  padding-left: 0.2rem;
+}
+
+.blog-article-prose .willa-prose-ol .willa-prose-ol,
+.blog-article-prose ol ol {
+  list-style-type: lower-alpha;
+}
+
+.blog-article-prose .willa-prose-ol .willa-prose-ol .willa-prose-ol,
+.blog-article-prose ol ol ol {
+  list-style-type: lower-roman;
+}
+
+.blog-article-prose .willa-prose-ol > li::marker,
+.blog-article-prose ol > li::marker {
+  color: var(--blog-text-faint);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
 .blog-article-prose .willa-prose-pre,
 .blog-article-prose .willa-prose-code {
   font-synthesis: none;
