@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router';
 import { Theme } from '@radix-ui/themes';
 import { useWebsiteTheme } from '@website-kernel/shared';
-import { Spinner } from 'willa';
+import { Spinner, WillaShell } from 'willa';
 
 import { WebsiteThemeToggle } from '#app/components/WebsiteThemeToggle';
 import NotFoundPage from '#app/pages/NotFoundPage';
@@ -27,9 +27,13 @@ const getAppSurface = (pathname: string) => {
 
 const AppSuspenseFallback = () => {
   return (
-    <div className="app__suspenseFallback">
-      <Spinner size="lg" label="加载中" labelPosition="block" />
-    </div>
+    <WillaShell theme="light" className="app__suspenseFallback">
+      <Spinner
+        size="lg"
+        label={<span className="app__suspenseFallbackLabel">加载中</span>}
+        labelPosition="block"
+      />
+    </WillaShell>
   );
 };
 

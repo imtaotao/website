@@ -5,7 +5,7 @@ export type WebsiteTheme = 'light' | 'dark';
 
 export const WEBSITE_THEME_STORAGE_KEY = 'website:blog-theme';
 const WEBSITE_THEME_PREFERENCE_KEY = 'website:blog-theme-preference';
-const DEFAULT_WEBSITE_THEME: WebsiteTheme = 'light';
+const DEFAULT_WEBSITE_THEME: WebsiteTheme = 'dark';
 
 const WEBSITE_THEME_CHANGE_EVENT = 'website-theme-change';
 

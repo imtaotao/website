@@ -94,9 +94,8 @@
   clip-path: inset(0 0 100% 0);
   transform: translate3d(0, -6px, 0);
   transform-origin: left top;
-  transition: clip-path 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 700ms ease, transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0s linear 700ms;
+  transition: clip-path 700ms cubic-bezier(0.22, 1, 0.36, 1), opacity 700ms ease,
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 700ms;
 }
 
 .blog-article-toc-panel::-webkit-scrollbar {
@@ -236,6 +235,23 @@
 .blog-article-prose .willa-prose-ol {
   font-weight: 500;
   text-shadow: none;
+}
+
+.blog-article-prose
+  :where(.willa-prose-p, .willa-prose-li, .willa-callout-body)
+  a[href]:not(.willa-anchor__link):not(.willa-prose-heading-link) {
+  color: var(--blog-text-strong);
+  text-decoration-line: underline;
+  text-decoration-thickness: 0.06em;
+  text-decoration-color: color-mix(in srgb, currentColor 42%, transparent);
+  text-underline-offset: 0.16em;
+}
+
+.blog-article-prose
+  :where(.willa-prose-p, .willa-prose-li, .willa-callout-body)
+  a[href]:not(.willa-anchor__link):not(.willa-prose-heading-link):hover {
+  color: var(--blog-text-strong);
+  text-decoration-color: currentColor;
 }
 
 .blog-article-prose .willa-prose-ol,
@@ -517,5 +533,4 @@
     padding: 24px 0 0;
     border-radius: 0;
   }
-
 }

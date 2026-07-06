@@ -30,7 +30,9 @@ Garfish 的核心架构其实就是微内核架构。大家可以提前思考一
 
 一个新手从 0 开始学习，在很短的时间内就能入手写一个网页。他不需要有工程化思想，也不需要组件化等技术。
 
-作为一个微前端技术，你就得考虑是否要和浏览器的这些开发思想进行对齐。即使它不是那么好，有历史负担，也必须承认：处理这些历史兼容性，是降低用户入门门槛、扩展框架适用范围的较好选择。
+<Callout tone="tip" title="设计前提">
+  作为一个微前端技术，你就得考虑是否要和浏览器的这些开发思想进行对齐。即使它不是那么好，有历史负担，也必须承认：处理这些历史兼容性，是降低用户入门门槛、扩展框架适用范围的较好选择。
+</Callout>
 
 #### 2. 如何处理千奇百怪的业务需求
 
@@ -60,7 +62,10 @@ view = render(state)
 
 此时只要保证内核很纯粹地处理核心逻辑即可。为此，需要设计出一套机制，让上层应用来处理副作用。内核只做最核心的事情，并在各个关键接口进行广播，这也就是 Garfish 有那么多钩子的由来。
 
-这样做的好处是彻底解放了内核，也给了上层应用很大的自由扩展权限。坏处是需要对这种自由进行限制，因为上层对接层（Garfish 中就是插件）很难感知到对方的存在，这必然会带来性能浪费。
+<Callout tone="warning" title="微核心的代价">
+  这样做的好处是彻底解放了内核，也给了上层应用很大的自由扩展权限。坏处是需要对这种自由进行限制，因为上层对接层（Garfish
+  中就是插件）很难感知到对方的存在，这必然会带来性能浪费。
+</Callout>
 
 举个例子，现在需要一段纯数据，然后每个插件都逐一使用，每个插件彼此独立、互不知晓：
 
@@ -78,7 +83,11 @@ view = render(state)
 
 这里再举一个真实的例子。如果大家写过 webpack 插件，就会知道 webpack 内置了一份 JS 源码的 AST，它使用 acorn 来解析。原因在于 JS parse 是一个非常耗时的操作，但是在模块打包的过程中，有非常多的场景都需要分析源码的 AST。
 
-将一部分高优、费性能、与核心逻辑无关的模块抽到核心内核中用来提升性能，这就带有整体性核心的思想了。所以 Garfish loader 就内置到了 Garfish 实例上，因为对一些资源的预处理都在这里面，可以供核心插件和用户自定义插件使用。
+<Callout tone="tip" title="为什么内置 Garfish loader">
+  将一部分高优、费性能、与核心逻辑无关的模块抽到核心内核中用来提升性能，这就带有整体性核心的思想了。所以
+  Garfish loader 就内置到了 Garfish
+  实例上，因为对一些资源的预处理都在这里面，可以供核心插件和用户自定义插件使用。
+</Callout>
 
 ### 小结
 
@@ -86,7 +95,11 @@ view = render(state)
 
 growth 这边对微前端的应用可以有很多插件实验场景，从业务中总结出来会更好。
 
-由于微前端所处的 Web 环境非常复杂，DOM、BOM 相关的 API 非常多，而且受限于浏览器这个沙箱环境，做事情很受限。结合前期 Garfish 投入开发的人力也不是很多，所以微内核架构是一个不错的选择。
+<Callout title="阶段性选择">
+  由于微前端所处的 Web 环境非常复杂，DOM、BOM 相关的 API
+  非常多，而且受限于浏览器这个沙箱环境，做事情很受限。结合前期 Garfish
+  投入开发的人力也不是很多，所以微内核架构是一个不错的选择。
+</Callout>
 
 ## 调研
 
@@ -193,7 +206,9 @@ import('./x.js');
 eval(`import('./x.js')`);
 ```
 
-这会让整个依赖链都交由浏览器自己处理，导致我们没有机会对源码做更改和注入环境变量。所以得换个思路来处理：
+<Callout tone="warning" title="ESM 注入限制">
+  这会让整个依赖链都交由浏览器自己处理，导致我们没有机会对源码做更改和注入环境变量。所以得换个思路来处理：
+</Callout>
 
 1. 从入口脚本开始分析，所有的模块资源都由我们自己抓取。
 2. 所有脚本都会经过编译，包括环境变量注入和模块名更改。
@@ -203,7 +218,10 @@ eval(`import('./x.js')`);
 
 JS 标准没有规范平台需要支持的 URL scheme（protocol），这全交由平台自己的选择和实现。浏览器和 NodeJS 都支持 `data:` URL（base64 也一样）。
 
-所以我们可以依赖这个特性做虚拟文件系统，内联 ESM 脚本、内联 worker 脚本都是可以的。
+<Callout tone="tip" title="data URL 的作用">
+  所以我们可以依赖这个特性做虚拟文件系统，内联 ESM 脚本、内联 worker
+  脚本都是可以的。
+</Callout>
 
 ```js
 // 例如 inlineWorker
@@ -230,7 +248,13 @@ const worker = inlineWorker(function () {
 import m from 'data:xxx';
 ```
 
-最初的实现是通过正则表达式来实现模块编译，但是正则没法解析模板字符串，所以一些边界 case 没法解决。后来走正儿八经的 parser，主要用的是 `es-module-lexer` 这个包。虽然 star 不多，但是被很多其他重要的框架使用，例如 Vite、Umi，NodeJS 源码中也模仿它写了一个 CJS 的模块分析包。因为它够简单、够稳定、够快，3M 的文本分析仅 18ms。
+<Callout tone="tip" title="parser 选择">
+  最初的实现是通过正则表达式来实现模块编译，但是正则没法解析模板字符串，所以一些边界
+  case 没法解决。后来走正儿八经的 parser，主要用的是 `es-module-lexer`
+  这个包。虽然 star 不多，但是被很多其他重要的框架使用，例如 Vite、Umi，NodeJS
+  源码中也模仿它写了一个 CJS 的模块分析包。因为它够简单、够稳定、够快，3M
+  的文本分析仅 18ms。
+</Callout>
 
 ### 自定义环境变量
 
@@ -271,18 +295,33 @@ console.log(React); // 1
 
 ## Loader 与子应用的请求隔离
 
-对子应用网络请求的处理主要分为两块：
+<Callout title="请求处理分层">
+  对子应用网络请求的处理主要分为两块：
 
-- `Garfish.loader`：子应用的资源加载处理都是通过这个 loader。
-- 子应用内部请求：子应用内部自己发起的 `xhr`、`fetch`、`websocket` 等请求。
+  <ul>
+    <li>
+      <code>Garfish.loader</code>：子应用的资源加载处理都是通过这个 loader。
+    </li>
+    <li>
+      子应用内部请求：子应用内部自己发起的 <code>xhr</code>、<code>fetch</code>、
+      <code>websocket</code> 等请求。
+    </li>
+  </ul>
+</Callout>
 
 ### loader
 
-Loader 主要用来请求所有的子应用资源，并做一些额外的处理和缓存。例如 HTML 模板会被 parse 成一份 AST 结构，以便供内核和其他插件内部分析。
+<Callout tone="tip" title="Loader 职责">
+  Loader 主要用来请求所有的子应用资源，并做一些额外的处理和缓存。例如 HTML
+  模板会被 parse 成一份 AST 结构，以便供内核和其他插件内部分析。
+</Callout>
 
 它主要有两个钩子：`beforeLoad` 和 `loaded`。
 
-例子：Garfish 默认只支持 HTML entry 和 JS entry，但是我们可以对插件做更改以支持 img entry。
+<Callout tone="tip" title="扩展入口类型">
+  例子：Garfish 默认只支持 HTML entry 和 JS
+  entry，但是我们可以对插件做更改以支持 img entry。
+</Callout>
 
 ```js
 function ImgEntryPlugin(Garfish) {
@@ -330,13 +369,18 @@ Garfish.loadApp(name, {
 }).then((app) => app.mount());
 ```
 
-同样的，可以自由扩展多种 entry，比如 pdf、audio、video，和浏览器对齐。
+<Callout title="扩展方向">
+  同样的，可以自由扩展多种 entry，比如 pdf、audio、video，和浏览器对齐。
+</Callout>
 
 ### 子应用内部的请求
 
 VM 沙箱会重写 `xhr`、`fetch` 和 `websocket`，并修正 URL，所以可以对它们进行更改重写。
 
-假如子应用的所有请求在原来的应用中没有跨域，所以不会带上 `credentials` 配置。但是迁移到微前端后出现了跨域场景，而子应用很大，很难去修改业务代码。
+<Callout tone="warning" title="迁移场景">
+  假如子应用的所有请求在原来的应用中没有跨域，所以不会带上 `credentials`
+  配置。但是迁移到微前端后出现了跨域场景，而子应用很大，很难去修改业务代码。
+</Callout>
 
 ```js
 const networkModule = () => {
@@ -433,4 +477,7 @@ function StorageWhitelistPlugin(Garfish, list) {
 Garfish.usePlugin(StorageWhitelistPlugin, ['chentao']);
 ```
 
-上面写的这些插件，里面用到的接口都是对外开放的。也就是说，在 v6 这个大版本里面是肯定不会改动的，除非整个架构都有调整。
+<Callout tone="success" title="API 稳定性">
+  上面写的这些插件，里面用到的接口都是对外开放的。也就是说，在 v6
+  这个大版本里面是肯定不会改动的，除非整个架构都有调整。
+</Callout>

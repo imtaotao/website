@@ -67,6 +67,7 @@
     "**/*.css"
   ],
   "dependencies": {
+    "@website-kernel/shared": "workspace:*",
     "@radix-ui/react-icons": "catalog:",
     "aidly": "catalog:",
     "auklet": "catalog:",

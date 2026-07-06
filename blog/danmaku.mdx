@@ -10,13 +10,18 @@ tags:
 
 最近把五年前写的一个弹幕库重新整理了一遍。这个念头其实两年前就有，只是一直被别的事情打断。最近终于抽出一些周末和晚上的时间，把实现重构了一轮，也顺手把文档补齐了。
 
-> 这里是<Color c="green">[仓库地址](https://github.com/imtaotao/danmu)</Color>，<Color c="green">[文档链接](https://imtaotao.github.io/danmu/document/zh)</Color>。<Color c="green">[demo](https://imtaotao.github.io/danmu)</Color>。
+<Callout title="相关入口">
+  这里是
+  [仓库地址](https://github.com/imtaotao/danmu)、[文档链接](https://imtaotao.github.io/danmu/document/zh)、[demo](https://imtaotao.github.io/danmu)。
+</Callout>
 
 ## 它能做什么
 
 这个弹幕库的重点不只是“把一条文字从右往左飘过去”，而是把几个常见的业务需求一起处理掉：
 
-> 如果只看接入成本，它也可以很轻量。
+<Callout tone="tip" title="接入成本">
+  如果只看接入成本，它也可以很轻量。
+</Callout>
 
 1. 灵活控制轨道布局
 2. 自定义弹幕与容器样式
@@ -34,11 +39,12 @@ const manager = create();
 
 manager.mount('#root');
 manager.startPlaying();
-
 manager.push('弹幕内容');
 ```
 
-这套 API 的目标很明确：先把“能跑起来”做到足够直接，再把复杂能力按需打开。
+<Callout title="API 设计目标">
+  这套 API 的目标很明确：先把“能跑起来”做到足够直接，再把复杂能力按需打开。
+</Callout>
 
 ## 轨道可以怎么调
 
@@ -68,7 +74,9 @@ manager.setArea({
 });
 ```
 
-这类配置适合做“只占顶部一小块区域”的场景。尤其是视频播放器里，很多时候并不希望弹幕把整个画面都盖住。
+<Callout tone="tip" title="适用场景">
+  这类配置适合做“只占顶部一小块区域”的场景。尤其是视频播放器里，很多时候并不希望弹幕把整个画面都盖住。
+</Callout>
 
 ### 只显示中间 3 条轨道
 
@@ -100,7 +108,6 @@ manager.setArea({
 manager.use({
   willRender(ref) {
     if (ref.trackIndex === null) return ref;
-
     if (ref.trackIndex % 2 === 1) {
       ref.prevent = true;
       manager.unshift(ref.danmaku);
@@ -110,11 +117,15 @@ manager.use({
 });
 ```
 
-这里的思路很直接：把不希望出现的轨道拦掉，再把弹幕重新放回队列，等待下一次渲染机会。
+<Callout title="实现思路">
+  这里的思路很直接：把不希望出现的轨道拦掉，再把弹幕重新放回队列，等待下一次渲染机会。
+</Callout>
 
 ## 自定义渲染
 
-弹幕系统一旦进入业务场景，最终都会走到“默认样式不够用”这一步。所以这个库在一开始就把弹幕本身和容器的样式控制都留出来了。
+<Callout tone="tip" title="自定义渲染">
+  弹幕系统一旦进入业务场景，最终都会走到“默认样式不够用”这一步。所以这个库在一开始就把弹幕本身和容器的样式控制都留出来了。
+</Callout>
 
 ### 给弹幕统一设置样式
 
@@ -238,7 +249,9 @@ manager.pushFlexibleDanmaku('弹幕内容', {
 });
 ```
 
-这类能力的重点不是“多炫”，而是让定位控制真正从轨道系统里解耦出来。
+<Callout title="高级弹幕的重点">
+  这类能力的重点不是“多炫”，而是让定位控制真正从轨道系统里解耦出来。
+</Callout>
 
 ## 发送带图片的弹幕
 
@@ -275,11 +288,16 @@ const manager = create<string>({
 });
 ```
 
-走到这一步之后，弹幕节点里就不止能放图片，理论上可以塞任何你需要的内容。
+<Callout tone="tip" title="渲染边界">
+  走到这一步之后，弹幕节点里就不止能放图片，理论上可以塞任何你需要的内容。
+</Callout>
 
 ## 写一个插件
 
-这个库有一个我自己很喜欢的点，就是插件扩展足够直接。内核没有强行内置太多业务规则，但提供了 hooks 和 API，所以你可以在外层做出相当多定制。
+<Callout tone="tip" title="插件扩展">
+  这个库有一个我自己很喜欢的点，就是插件扩展足够直接。内核没有强行内置太多业务规则，但提供了
+  hooks 和 API，所以你可以在外层做出相当多定制。
+</Callout>
 
 举一个简单例子：按用户 ID 或关键词过滤弹幕。
 
@@ -357,6 +375,9 @@ manager.push({
 
 ## 总结
 
-这篇文章只是把这个弹幕库里我觉得最值得提的几块能力抽出来讲了一遍。它的目标并不是做一个只能跑 demo 的玩具，而是把轨道、渲染、定位和扩展这几件事都处理得足够顺手。
+<Callout title="小结">
+  这篇文章只是把这个弹幕库里我觉得最值得提的几块能力抽出来讲了一遍。它的目标并不是做一个只能跑
+  demo 的玩具，而是把轨道、渲染、定位和扩展这几件事都处理得足够顺手。
+</Callout>
 
 更完整的内容可以直接去看官方文档。如果它对你的业务或者学习有帮助，去仓库点个 star 呗。
