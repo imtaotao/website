@@ -246,7 +246,7 @@
 }
 
 .blog-article-prose .willa-prose-ol,
-.blog-article-prose ol {
+.blog-article-prose ol:not(.willa-steps-list) {
   padding-left: 1.5rem;
   margin-left: 0;
   list-style-position: outside;
@@ -254,26 +254,35 @@
 }
 
 .blog-article-prose .willa-prose-ol > li,
-.blog-article-prose ol > li {
+.blog-article-prose ol:not(.willa-steps-list) > li {
   display: list-item;
   padding-left: 0.2rem;
 }
 
 .blog-article-prose .willa-prose-ol .willa-prose-ol,
-.blog-article-prose ol ol {
+.blog-article-prose ol:not(.willa-steps-list) ol {
   list-style-type: lower-alpha;
 }
 
 .blog-article-prose .willa-prose-ol .willa-prose-ol .willa-prose-ol,
-.blog-article-prose ol ol ol {
+.blog-article-prose ol:not(.willa-steps-list) ol ol {
   list-style-type: lower-roman;
 }
 
 .blog-article-prose .willa-prose-ol > li::marker,
-.blog-article-prose ol > li::marker {
+.blog-article-prose ol:not(.willa-steps-list) > li::marker {
   color: var(--blog-text-faint);
   font-variant-numeric: tabular-nums;
   font-weight: 600;
+}
+
+.blog-article-prose .willa-steps-list,
+.blog-article-prose .willa-steps-list > .willa-step {
+  list-style: none;
+}
+
+.blog-article-prose .willa-steps-list > .willa-step::marker {
+  content: '';
 }
 
 .blog-article-prose .willa-prose-pre,
