@@ -8,9 +8,11 @@
   --blog-text: rgba(31, 41, 55, 0.9);
   --blog-text-soft: rgba(31, 41, 55, 0.82);
   --blog-text-faint: rgba(31, 41, 55, 0.62);
+  --blog-quote-text: rgba(31, 41, 55, 0.5);
   --blog-selection-bg: rgb(223, 223, 223);
   --blog-line: rgba(15, 23, 42, 0.11);
   --blog-line-strong: rgba(15, 23, 42, 0.18);
+  --blog-quote-line: rgba(15, 23, 42, 0.08);
   --blog-year-stroke: rgba(15, 23, 42, 0.07);
   --blog-year-opacity: 0.6;
   --blog-accent: #2563eb;
