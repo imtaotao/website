@@ -7,6 +7,8 @@ basics:
   school: 湖南工商大学
   schoolPeriod: 2012.09 - 2016.07
   links:
+    - label: 博客
+      url: https://imtaotao.me
     - label: GitHub
       url: https://github.com/imtaotao
 

@@ -44,6 +44,8 @@
   --blog-lightbox-bg: rgba(248, 250, 252, 0.94);
   --blog-article-action-color: rgba(31, 41, 55, 0.58);
   --blog-article-action-hover-color: var(--blog-text-soft);
+  --blog-article-action-solid-color: rgb(31, 41, 55);
+  --blog-article-action-solid-hover-color: rgb(31, 41, 55);
   --blog-bgm-ripple-core: color-mix(in srgb, var(--blog-bg) 52%, #16a34a 48%);
   --blog-bgm-ripple-mid: color-mix(in srgb, var(--blog-bg) 64%, #22c55e 36%);
   --blog-bgm-ripple-ring: color-mix(in srgb, var(--blog-bg) 76%, #4ade80 24%);

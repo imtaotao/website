@@ -44,6 +44,12 @@
   --blog-lightbox-bg: rgba(3, 7, 12, 0.92);
   --blog-article-action-color: var(--blog-text-faint);
   --blog-article-action-hover-color: var(--blog-text-strong);
+  --blog-article-action-solid-color: color-mix(
+    in srgb,
+    var(--blog-bg) 52%,
+    rgb(255, 255, 255) 48%
+  );
+  --blog-article-action-solid-hover-color: var(--blog-text-strong);
   --blog-bgm-ripple-core: color-mix(in srgb, var(--blog-bg) 64%, #22c55e 36%);
   --blog-bgm-ripple-mid: color-mix(in srgb, var(--blog-bg) 80%, #4ade80 20%);
   --blog-bgm-ripple-ring: color-mix(in srgb, var(--blog-bg) 88%, #86efac 12%);
