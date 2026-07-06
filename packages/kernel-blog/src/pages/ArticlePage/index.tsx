@@ -6,16 +6,9 @@ import {
   useCallback,
   type CSSProperties,
   type ComponentType,
-  type SVGProps,
 } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router';
-import { ListBulletIcon } from '@radix-ui/react-icons';
+import { useParams, useSearchParams } from 'react-router';
 import {
-  Anchor,
-  Button,
-  EmptyState,
-  FloatButton,
-  Group,
   Image as WillaImage,
   ImageGallery as WillaImageGallery,
   Lightbox,
@@ -33,6 +26,11 @@ import {
 import type { BlogArticleFrontmatter } from '#blog/articleTypes';
 import { SummaryCards } from '#blog/components/SummaryCards';
 import { Columns, Column } from '#blog/components/Columns';
+import { ArticleCover } from '#blog/components/ArticleCover';
+import { ArticleEmptyState } from '#blog/components/ArticleEmptyState';
+import { ArticleFloatingActions } from '#blog/components/ArticleFloatingActions';
+import { ArticleHeader } from '#blog/components/ArticleHeader';
+import { ArticleToc, type ArticleTocItem } from '#blog/components/ArticleToc';
 import {
   BLOG_TAG_QUERY_KEY,
   createBlogTagNavigation,
@@ -73,67 +71,6 @@ const COPY = {
   articleToc: '文章目录',
   backToTop: '返回顶部',
 } as const;
-
-const BlogBackToTopIcon = (props: SVGProps<SVGSVGElement>) => {
-  return (
-    <svg viewBox="0 0 15 15" fill="none" aria-hidden="true" {...props}>
-      <path
-        d="M7.5 11.45V3.8"
-        stroke="var(--blog-back-to-top-icon-color)"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M4.2 7.1L7.5 3.8L10.8 7.1"
-        stroke="var(--blog-back-to-top-icon-color)"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-};
-
-const BlogBgmSpeakerIcon = (props: SVGProps<SVGSVGElement>) => {
-  return (
-    <svg viewBox="0 0 15 15" fill="none" aria-hidden="true" {...props}>
-      <path
-        d="M2.5 6.1H4.9L7.85 3.8V11.2L4.9 8.9H2.5V6.1Z"
-        stroke="var(--blog-article-action-solid-color)"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M10.15 5.4C10.77 5.95 11.1 6.65 11.1 7.5C11.1 8.35 10.77 9.05 10.15 9.6"
-        stroke="var(--blog-article-action-solid-color)"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-};
-
-const BlogBgmToggleIcon = (props: { isPlaying: boolean }) => {
-  return (
-    <>
-      <span
-        className={`blog-bgm-icon-wrap${
-          props.isPlaying ? ' blog-bgm-icon-wrap--hidden' : ''
-        }`}
-        aria-hidden="true"
-      >
-        <BlogBgmSpeakerIcon className="blog-article-action-icon" />
-      </span>
-      <span className="blog-bgm-bars" aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </span>
-    </>
-  );
-};
 
 const ARTICLE_MDX_COMPONENTS = {
   Column,
@@ -197,7 +134,6 @@ export function ArticlePage(props: ArticlePageProps) {
   const [, setLightboxIndex] = useState(0);
   const [lightboxTransitionDirection, setLightboxTransitionDirection] =
     useState<-1 | 0 | 1>(0);
-  const articleRef = useRef<HTMLElement | null>(null);
   const articleBodyRef = useRef<HTMLElement | null>(null);
   const [headings, setHeadings] = useState<Array<BlogArticleHeading>>([]);
   const [isBgmReady, setIsBgmReady] = useState(false);
@@ -463,18 +399,8 @@ export function ArticlePage(props: ArticlePageProps) {
   }, [article, slug]);
 
   const tocItems = useMemo(() => {
-    const items: Array<{
-      id: string;
-      title: string;
-      href: string;
-      children?: Array<{ id: string; title: string; href: string }>;
-    }> = [];
-    let currentGroup: {
-      id: string;
-      title: string;
-      href: string;
-      children?: Array<{ id: string; title: string; href: string }>;
-    } | null = null;
+    const items: Array<ArticleTocItem> = [];
+    let currentGroup: ArticleTocItem | null = null;
 
     headings.forEach((heading) => {
       const item = {
@@ -503,104 +429,41 @@ export function ArticlePage(props: ArticlePageProps) {
   if (!article) {
     return (
       <main className="blog-shell willa-shell">
-        <EmptyState
-          variant="plain"
-          size="md"
-          align="start"
-          title={
-            <span className="blog-empty-state-title">
-              {COPY.articleMissing}
-            </span>
-          }
-          className="blog-page blog-empty-state"
-          actions={
-            <Group
-              className="blog-empty-state-actions"
-              style={{ flex: 'none' }}
-            >
-              <Button
-                href="/blog"
-                variant="link"
-                size="sm"
-                textColor="var(--blog-text-faint)"
-                hoverTextColor="var(--blog-text-strong)"
-                backgroundColor="transparent"
-                hoverBackgroundColor="transparent"
-                className="blog-subtle-link"
-                renderLink={(linkProps) => {
-                  const { href, ...props } = linkProps;
-                  return <Link {...props} to={href} />;
-                }}
-              >
-                {COPY.backToBlogHome}
-              </Button>
-            </Group>
-          }
+        <ArticleEmptyState
+          title={COPY.articleMissing}
+          actionLabel={COPY.backToBlogHome}
+          actionHref="/blog"
         />
       </main>
     );
   }
 
   return (
-    <main ref={articleRef} className="blog-shell willa-shell">
+    <main className="blog-shell willa-shell">
       <article
         className={`blog-article-page${
           article.coverUrl ? ' blog-article-page--with-cover' : ''
         }`}
       >
         {article.coverUrl ? (
-          <div
-            className="blog-article-cover-shell blog-enter"
-            style={{ '--blog-enter-delay': '120ms' } as CSSProperties}
-          >
-            <button
-              type="button"
-              className="blog-article-cover-button"
-              onClick={openCoverLightbox}
-              aria-label={`${COPY.enlargeCoverPrefix}${article.title}`}
-            >
-              <img
-                src={article.coverUrl}
-                alt={article.title}
-                className="blog-article-cover"
-                style={
-                  article.coverPosition
-                    ? { objectPosition: article.coverPosition }
-                    : undefined
-                }
-              />
-            </button>
-          </div>
+          <ArticleCover
+            title={article.title}
+            coverUrl={article.coverUrl}
+            coverPosition={article.coverPosition}
+            enlargeLabelPrefix={COPY.enlargeCoverPrefix}
+            onOpen={openCoverLightbox}
+          />
         ) : null}
 
         <div className="blog-article-frame">
           <div className="blog-article-main">
-            <header
-              className="blog-article-header blog-enter"
-              style={
-                {
-                  '--blog-enter-delay': article.coverUrl ? '360ms' : '180ms',
-                } as CSSProperties
-              }
-            >
-              <h1 className="blog-article-title">
-                <Link
-                  to={createBlogTagNavigation(activeTag)}
-                  className="blog-article-title-link"
-                >
-                  {article.title}
-                </Link>
-              </h1>
-
-              <div
-                className="blog-article-meta-row"
-                aria-label={COPY.articleMeta}
-              >
-                <span className="blog-meta-item blog-meta-date">
-                  {formatBlogDate(article.publishedAt)}
-                </span>
-              </div>
-            </header>
+            <ArticleHeader
+              title={article.title}
+              backHref={createBlogTagNavigation(activeTag)}
+              metaLabel={COPY.articleMeta}
+              publishedAtText={formatBlogDate(article.publishedAt)}
+              enterDelay={article.coverUrl ? '360ms' : '180ms'}
+            />
 
             <section
               ref={articleBodyRef}
@@ -624,108 +487,21 @@ export function ArticlePage(props: ArticlePageProps) {
             </section>
           </div>
 
-          {headings.length ? (
-            <aside
-              className="blog-article-toc--side"
-              aria-label={COPY.articleToc}
-            >
-              <span className="blog-article-toc-trigger" aria-hidden="true">
-                <ListBulletIcon className="blog-article-toc-trigger-icon" />
-              </span>
-              <nav className="blog-article-toc blog-article-toc-panel">
-                <Anchor
-                  items={tocItems}
-                  variant="toc"
-                  size="sm"
-                  showMarker={false}
-                  offsetTop={ARTICLE_HEADING_OFFSET}
-                  className="blog-article-toc-scroll"
-                  classNames={{
-                    list: 'blog-article-toc-list',
-                    item: 'blog-article-toc-item',
-                    link: 'blog-article-toc-link',
-                    title: 'blog-article-toc-title',
-                  }}
-                  onItemClick={(item, event) => {
-                    const target = document.getElementById(item.id);
-                    if (!target) return;
-                    event.preventDefault();
-
-                    const prefersReducedMotion = window.matchMedia(
-                      '(prefers-reduced-motion: reduce)',
-                    ).matches;
-
-                    target.scrollIntoView({
-                      block: 'start',
-                      behavior: prefersReducedMotion ? 'auto' : 'smooth',
-                    });
-
-                    const href = item.href ?? `#${item.id}`;
-                    if (window.location.hash !== href) {
-                      window.history.pushState(null, '', href);
-                    }
-                  }}
-                />
-              </nav>
-            </aside>
-          ) : null}
+          <ArticleToc
+            items={tocItems}
+            label={COPY.articleToc}
+            offsetTop={ARTICLE_HEADING_OFFSET}
+          />
         </div>
 
-        <FloatButton
-          backToTop
-          ariaLabel={COPY.backToTop}
-          tooltip={COPY.backToTop}
-          variant="ghost"
-          shape="circle"
-          size="md"
-          offset={[24, 24]}
-          backgroundColor="transparent"
-          hoverBackgroundColor="transparent"
-          textColor="var(--blog-article-action-color)"
-          hoverTextColor="var(--blog-article-action-hover-color)"
-          className="blog-article-action blog-back-to-top"
-          icon={<BlogBackToTopIcon className="blog-article-action-icon" />}
+        <ArticleFloatingActions
+          backToTopLabel={COPY.backToTop}
+          enableBgm={shouldEnableBgm}
+          isBgmReady={isBgmReady}
+          isBgmPlaying={isBgmPlaying}
+          hasBgmError={hasBgmError}
+          onToggleBgm={handleToggleBgm}
         />
-
-        {shouldEnableBgm ? (
-          <FloatButton
-            type="button"
-            ariaLabel={
-              hasBgmError
-                ? '背景音乐加载失败，点击重试'
-                : isBgmPlaying
-                ? '暂停背景音乐'
-                : isBgmReady
-                ? '播放背景音乐'
-                : '背景音乐加载中'
-            }
-            tooltip={
-              hasBgmError
-                ? '背景音乐加载失败，点击重试'
-                : isBgmPlaying
-                ? '暂停背景音乐'
-                : isBgmReady
-                ? '播放背景音乐'
-                : '背景音乐加载中'
-            }
-            variant="ghost"
-            shape="circle"
-            size="md"
-            offset={[24, 88]}
-            backgroundColor="transparent"
-            hoverBackgroundColor="transparent"
-            textColor="var(--blog-article-action-color)"
-            hoverTextColor="var(--blog-article-action-hover-color)"
-            className={`blog-article-action blog-bgm-toggle${
-              isBgmPlaying ? ' blog-bgm-toggle--playing' : ''
-            }${hasBgmError ? ' blog-bgm-toggle--error' : ''}${
-              !isBgmReady ? ' blog-bgm-toggle--loading' : ''
-            }`}
-            contentClassName="blog-bgm-toggle-content"
-            icon={<BlogBgmToggleIcon isPlaying={isBgmPlaying} />}
-            onClick={() => handleToggleBgm()}
-          />
-        ) : null}
 
         {lightboxImage ? (
           <Lightbox
