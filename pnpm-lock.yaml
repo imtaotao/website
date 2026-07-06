@@ -28,8 +28,8 @@ catalogs:
       specifier: 1.37.0
       version: 1.37.0
     auklet:
-      specifier: 0.2.7
-      version: 0.2.7
+      specifier: 0.3.4
+      version: 0.3.4
     react:
       specifier: 19.2.6
       version: 19.2.6
@@ -55,8 +55,8 @@ catalogs:
       specifier: 1.6.0
       version: 1.6.0
     willa:
-      specifier: 0.0.4-alpha.733062a
-      version: 0.0.4-alpha.733062a
+      specifier: 0.0.4-alpha.26e6c70
+      version: 0.0.4-alpha.26e6c70
     yaml:
       specifier: 2.8.3
       version: 2.8.3
@@ -73,7 +73,7 @@ importers:
         version: 1.37.0
       auklet:
         specifier: 'catalog:'
-        version: 0.2.7(@tsdown/css@0.22.0)(tsx@4.11.2)(unrun@0.3.0)
+        version: 0.3.4(@tsdown/css@0.22.0)(tsx@4.11.2)(unrun@0.3.0)
       husky:
         specifier: ^9.0.11
         version: 9.0.11
@@ -133,7 +133,7 @@ importers:
         version: 4.2.4
       willa:
         specifier: 'catalog:'
-        version: 0.0.4-alpha.733062a(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.0.4-alpha.26e6c70(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
     devDependencies:
       '@mdx-js/rollup':
         specifier: ^3.1.1
@@ -149,7 +149,7 @@ importers:
         version: 6.0.1(vite@8.0.13(@types/node@22.17.0)(jiti@2.6.1)(tsx@4.11.2)(yaml@2.8.3))
       auklet:
         specifier: 'catalog:'
-        version: 0.2.7(@tsdown/css@0.22.0)(tsx@4.11.2)(unrun@0.3.0)
+        version: 0.3.4(@tsdown/css@0.22.0)(tsx@4.11.2)(unrun@0.3.0)
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -194,7 +194,7 @@ importers:
         version: 1.37.0
       auklet:
         specifier: 'catalog:'
-        version: 0.2.7(@tsdown/css@0.22.0)(tsx@4.11.2)(unrun@0.3.0)
+        version: 0.3.4(@tsdown/css@0.22.0)(tsx@4.11.2)(unrun@0.3.0)
       react:
         specifier: 'catalog:'
         version: 19.2.6
@@ -206,7 +206,7 @@ importers:
         version: 4.2.4
       willa:
         specifier: 'catalog:'
-        version: 0.0.4-alpha.733062a(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.0.4-alpha.26e6c70(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       yaml:
         specifier: 'catalog:'
         version: 2.8.3
@@ -249,7 +249,7 @@ importers:
         version: 4.2.4
       willa:
         specifier: 'catalog:'
-        version: 0.0.4-alpha.733062a(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.0.4-alpha.26e6c70(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -259,7 +259,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@22.17.0)(lightningcss@1.32.0))
       auklet:
         specifier: 'catalog:'
-        version: 0.2.7(@tsdown/css@0.22.0)(tsx@4.11.2)(unrun@0.3.0)
+        version: 0.3.4(@tsdown/css@0.22.0)(tsx@4.11.2)(unrun@0.3.0)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -284,7 +284,7 @@ importers:
         version: 19.2.14
       auklet:
         specifier: 'catalog:'
-        version: 0.2.7(@tsdown/css@0.22.0)(tsx@4.11.2)(unrun@0.3.0)
+        version: 0.3.4(@tsdown/css@0.22.0)(tsx@4.11.2)(unrun@0.3.0)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -1799,36 +1799,36 @@ packages:
   '@vitest/utils@1.6.0':
     resolution: {integrity: sha512-21cPiuGMoMZwiOHa2i4LXkMkMkCGzA+MVFV70jRwHo95dL4x/ts5GZhML1QWuy7yfp3WzK3lRvZi3JnXTYqrBw==}
 
-  '@willa-ui/ai@0.0.4-alpha.733062a':
-    resolution: {integrity: sha512-YCoGO/0iuGaRxmHqf4Xxgl0U9X1I3I8KpJIceo7dNSkmv67J7UAJ2eLFkMf8LPLp5NxrPjLeGPhYzHJSCHEFbw==}
+  '@willa-ui/ai@0.0.4-alpha.26e6c70':
+    resolution: {integrity: sha512-pNOix7D0JGNixxi6TfB71xzDyy6TQFHn/cafUxX1w5X6WyOWLfOY0rHRUjrk2oEZOt4HWvWyNUCVXtJe+kskuA==}
     peerDependencies:
       react: 19.2.6
 
-  '@willa-ui/content@0.0.4-alpha.733062a':
-    resolution: {integrity: sha512-EJIpYJZjB7o2UeQrOxx65oH5zB0TcWjdQjoaiBTH8QYnnxbIVafCfdsFBzaEdR0E84H01Eu+CLWhJppvYgb9sA==}
-    peerDependencies:
-      react: 19.2.6
-      react-dom: 19.2.6
-
-  '@willa-ui/form@0.0.4-alpha.733062a':
-    resolution: {integrity: sha512-Zm1B5EU0qZq6X8mOoiIvKxfl53r58bG9cfGbuu5ff9aH1LWGtviZi4XMlQB+FJ3raapEKd067k6PMuBzAtJzQg==}
+  '@willa-ui/content@0.0.4-alpha.26e6c70':
+    resolution: {integrity: sha512-5PJAu6xQFY+MSfSHPvA2U8bgBmbDzIda+GSeyjFn3zMcnwZTh/fOv2u5sWzx/79dVKFz2uRS7uRMJ+69X007Mg==}
     peerDependencies:
       react: 19.2.6
       react-dom: 19.2.6
 
-  '@willa-ui/layout@0.0.4-alpha.733062a':
-    resolution: {integrity: sha512-I34cmjLj0HvPosYiSp8riA0H4ievajRggS+TLu5VNlXkd2xDx6q5Busm7Ub46Pqx/Hs2MaTLv9Q6RT6jq77eTw==}
+  '@willa-ui/form@0.0.4-alpha.26e6c70':
+    resolution: {integrity: sha512-3Wc48zAaeTdYdPZLbVxq3AIA+R0dBefjEMRv64YmQ/eT9t3bL0ucMcL4LffMyLojD4X07GSFYfsK1xaoM8LvBg==}
     peerDependencies:
       react: 19.2.6
       react-dom: 19.2.6
 
-  '@willa-ui/shared@0.0.4-alpha.733062a':
-    resolution: {integrity: sha512-9mTuHaMUuTFIWfsFtfp16iPyJ8JAemoJsXQi0IPYmcruf1tVdgyl+L7KBba7Py4ZI/itvRnZ3GtHcHoOUncLlg==}
+  '@willa-ui/layout@0.0.4-alpha.26e6c70':
+    resolution: {integrity: sha512-mC0hqH+qK1Kd+yK7J1KQw1VaBr4kVUvGqZKfst73lI9vaE8q6BpdRY2/R/QiEomi42/ni1qiKsp8JN3NdeRmcw==}
+    peerDependencies:
+      react: 19.2.6
+      react-dom: 19.2.6
+
+  '@willa-ui/shared@0.0.4-alpha.26e6c70':
+    resolution: {integrity: sha512-tBL1AV5XcPIC21m9jkiKix9eMLP8awyMzM//Nvx8H34vTxNEGGAJhzG60JSkd/dPqq8RP8QaiHAG/W4BpsrEzQ==}
     peerDependencies:
       react: 19.2.6
 
-  '@willa-ui/widgets@0.0.4-alpha.733062a':
-    resolution: {integrity: sha512-6tB3bQjRvRcBaYchZCdDr0DZUGMuZPy4SYD4U5YR8WNHECcfYzxIBBFmtc7jmWGWjZB+Ur0FLM6eKrX5kbX7TQ==}
+  '@willa-ui/widgets@0.0.4-alpha.26e6c70':
+    resolution: {integrity: sha512-LD/Sg5G9gNdMv8VA97FVn0A/sO5eds007+o+tE0NjfsOGUQgFmeJDL10wEJr+dmqlGSYDd3S56S0ENP7vFNkcg==}
     peerDependencies:
       react: 19.2.6
       react-dom: 19.2.6
@@ -1946,8 +1946,8 @@ packages:
     resolution: {integrity: sha512-LElXdjswlqjWrPpJFg1Fx4wpkOCxj1TDHlSV4PlaRxHGWko024xICaa97ZkMfs6DRKlCguiAI+rbXv5GWwXIkg==}
     hasBin: true
 
-  auklet@0.2.7:
-    resolution: {integrity: sha512-w09mPRutqXRsjPumJYe5mWysAYDU343bRIyAZOgZAnvAYRQ+NdE3DXlFrPTB0PnyUNs3iUfrv59KM6ZzcVPtqg==}
+  auklet@0.3.4:
+    resolution: {integrity: sha512-HEUxdGblnJuy1m1lSfL5yt1qDXlq/mjz7f6EXcWAeXGDctxmCR2E72DEtjmnnNOBpQoJc4eE5iovXVaFO14Oyw==}
     engines: {node: '>=22', pnpm: '=10.27.0'}
     hasBin: true
 
@@ -4157,8 +4157,8 @@ packages:
     engines: {node: '>=8'}
     hasBin: true
 
-  willa@0.0.4-alpha.733062a:
-    resolution: {integrity: sha512-XkkgdMgA2v0CoPX1jYpwwGGMeNPqhLSZADDX8PIOIPzM9e/A3mBghx+Frn6tcvaeIHz0ytc8zh13MEGDxEgBTw==}
+  willa@0.0.4-alpha.26e6c70:
+    resolution: {integrity: sha512-dCa0kLTV3Gn27QYAVzJ9O2idX3ivQGGNHkXrsEdTDRW4LEYU/SF71uM/hIPSHHXzqZysdKkT9EG4iDvmQpp4zw==}
     peerDependencies:
       react: 19.2.6
       react-dom: 19.2.6
@@ -5643,24 +5643,24 @@ snapshots:
       loupe: 2.3.7
       pretty-format: 29.7.0
 
-  '@willa-ui/ai@0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@willa-ui/ai@0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@radix-ui/react-icons': 1.3.2(react@19.2.6)
-      '@willa-ui/content': 0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@willa-ui/form': 0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@willa-ui/layout': 0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@willa-ui/shared': 0.0.4-alpha.733062a(react@19.2.6)
+      '@willa-ui/content': 0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@willa-ui/form': 0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@willa-ui/layout': 0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@willa-ui/shared': 0.0.4-alpha.26e6c70(react@19.2.6)
       aidly: 1.37.0
       classnames: 2.5.1
       react: 19.2.6
     transitivePeerDependencies:
       - react-dom
 
-  '@willa-ui/content@0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@willa-ui/content@0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@radix-ui/react-icons': 1.3.2(react@19.2.6)
-      '@willa-ui/layout': 0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@willa-ui/shared': 0.0.4-alpha.733062a(react@19.2.6)
+      '@willa-ui/layout': 0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@willa-ui/shared': 0.0.4-alpha.26e6c70(react@19.2.6)
       aidly: 1.37.0
       classnames: 2.5.1
       diff: 9.0.0
@@ -5668,40 +5668,40 @@ snapshots:
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
 
-  '@willa-ui/form@0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@willa-ui/form@0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@radix-ui/react-icons': 1.3.2(react@19.2.6)
-      '@willa-ui/content': 0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@willa-ui/layout': 0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@willa-ui/shared': 0.0.4-alpha.733062a(react@19.2.6)
+      '@willa-ui/content': 0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@willa-ui/layout': 0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@willa-ui/shared': 0.0.4-alpha.26e6c70(react@19.2.6)
       aidly: 1.37.0
       classnames: 2.5.1
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
 
-  '@willa-ui/layout@0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@willa-ui/layout@0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@radix-ui/react-icons': 1.3.2(react@19.2.6)
-      '@willa-ui/shared': 0.0.4-alpha.733062a(react@19.2.6)
+      '@willa-ui/shared': 0.0.4-alpha.26e6c70(react@19.2.6)
       aidly: 1.37.0
       classnames: 2.5.1
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
 
-  '@willa-ui/shared@0.0.4-alpha.733062a(react@19.2.6)':
+  '@willa-ui/shared@0.0.4-alpha.26e6c70(react@19.2.6)':
     dependencies:
       aidly: 1.37.0
       highlight.js: 11.11.1
       react: 19.2.6
 
-  '@willa-ui/widgets@0.0.4-alpha.733062a(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@willa-ui/widgets@0.0.4-alpha.26e6c70(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@mdx-js/react': 3.1.1(@types/react@19.2.14)(react@19.2.6)
       '@radix-ui/react-icons': 1.3.2(react@19.2.6)
-      '@willa-ui/content': 0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@willa-ui/form': 0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@willa-ui/layout': 0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@willa-ui/shared': 0.0.4-alpha.733062a(react@19.2.6)
+      '@willa-ui/content': 0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@willa-ui/form': 0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@willa-ui/layout': 0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@willa-ui/shared': 0.0.4-alpha.26e6c70(react@19.2.6)
       aidly: 1.37.0
       classnames: 2.5.1
       qrcode.react: 4.2.0(react@19.2.6)
@@ -5841,7 +5841,7 @@ snapshots:
 
   astring@1.9.0: {}
 
-  auklet@0.2.7(@tsdown/css@0.22.0)(tsx@4.11.2)(unrun@0.3.0):
+  auklet@0.3.4(@tsdown/css@0.22.0)(tsx@4.11.2)(unrun@0.3.0):
     dependencies:
       aidly: 1.37.0
       briefing: 0.0.5
@@ -8676,13 +8676,13 @@ snapshots:
       siginfo: 2.0.0
       stackback: 0.0.2
 
-  willa@0.0.4-alpha.733062a(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
+  willa@0.0.4-alpha.26e6c70(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
     dependencies:
-      '@willa-ui/ai': 0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@willa-ui/content': 0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@willa-ui/form': 0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@willa-ui/layout': 0.0.4-alpha.733062a(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@willa-ui/widgets': 0.0.4-alpha.733062a(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@willa-ui/ai': 0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@willa-ui/content': 0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@willa-ui/form': 0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@willa-ui/layout': 0.0.4-alpha.26e6c70(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@willa-ui/widgets': 0.0.4-alpha.26e6c70(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
     transitivePeerDependencies:

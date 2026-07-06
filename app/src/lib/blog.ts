@@ -53,9 +53,29 @@ const articleCoverAssetModules = import.meta.glob(
   },
 ) as RawAssetModule;
 
+// @ts-ignore
+const articleRootMediaAssetModules = import.meta.glob(
+  '../../../blog/*/*.{mp4,webm,mp3,m4a,wav,ogg}',
+  {
+    eager: true,
+    import: 'default',
+  },
+) as RawAssetModule;
+
+// @ts-ignore
+const articleNestedMediaAssetModules = import.meta.glob(
+  '../../../blog/*/{audio,video,media}/*.{mp4,webm,mp3,m4a,wav,ogg}',
+  {
+    eager: true,
+    import: 'default',
+  },
+) as RawAssetModule;
+
 const articleAssetModules = {
   ...articleImageAssetModules,
   ...articleCoverAssetModules,
+  ...articleRootMediaAssetModules,
+  ...articleNestedMediaAssetModules,
 };
 
 const DEFAULT_COVER_FILENAMES = [
