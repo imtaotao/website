@@ -1,1 +1,0 @@
-import{Ht as e,Mt as t,b as n,jt as r,s as i}from"./main-DYp_QDI1.js";var a=e(r()),o=t();function s(e){let{as:t=`div`,theme:r,className:s,children:c,...l}=e,u=n(r??null),d=(0,o.jsx)(t,{...l,...u,className:(0,a.default)(`willa-shell`,s),children:c});return r?(0,o.jsx)(i,{theme:r,children:d}):d}s.displayName=`WillaShell`;export{s as t};
