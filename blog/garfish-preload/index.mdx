@@ -1,5 +1,5 @@
 ---
-title: Garfish 预加载方案设计
+title: Garfish 预加载设计
 slug: preload
 publishedAt: 2023-03-23
 summary: Garfish 预加载方案设计
@@ -26,7 +26,7 @@ tags:
 
 #### Service Worker
 
-实际上，浏览器并没有一个叫 `networkIdleCallback` 的 API 可供我们使用。在最开始的时候，我们找到一个类似的库：[network-idle-callback](https://github.com/pastelsky/network-idle-callback)。
+实际上，浏览器并没有一个叫 `networkIdleCallback` 的 API 可供我们使用。在最开始的时候，我们找到一个类似的库：<GitHubRepo repo="pastelsky/network-idle-callback" />。
 
 但是它强依赖 Service Worker。Service Worker 确实能够监听所有网络请求，这样就能计算出什么时候是空闲的，但是这也会对业务造成强侵入。如果把它内置到内核之中，会是一种很脏的实现。
 
@@ -69,7 +69,10 @@ observer.observe({ entryTypes: ['resource'] });
 
 而且由于 loader 的缓存机制，我们并不需要额外缓存这些文件。
 
-> TODO：是否可以针对一种特殊的 `meta` 标签，允许其标记一些资源需要预加载，而且这种特殊的 `meta` 标签并不会影响子应用独立运行。
+<Callout tone="warning" title="待确认">
+  是否可以针对一种特殊的 `meta` 标签，允许其标记一些资源需要预加载，而且这种特殊的 `meta`
+  标签并不会影响子应用独立运行。
+</Callout>
 
 于是，自动预加载机制会慢慢进行。即使不可避免地对业务有影响，也只会阻塞一个 HTTP 请求。
 

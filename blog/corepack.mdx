@@ -6,9 +6,23 @@ tags:
   - frontend
 ---
 
-1. 设置全局的 pnpm 版本 `corepack prepare pnpm@version --activate`
-2. 项目中固定 pnpm 版本，在 `package.json` 声明 `packageManager` 字段
-3. 禁止自动添加 `packageManager`，设置环境变量 `COREPACK_ENABLE_AUTO_PIN="0"`
-4. `corepack` 版本保持一致
-5. 不要使用 pnpm 管理自身，不要使用 `volta` 之类的工具，不要使用 `npx` 执行 pnpm 命令。
-6. 垫片原理需要学习一下
+<Steps title="Corepack 使用原则">
+  <Step title="设置全局 pnpm 版本">
+    执行 `corepack prepare pnpm@version --activate`，让全局命令指向明确版本。
+  </Step>
+  <Step title="在项目中固定版本">
+    在 `package.json` 声明 `packageManager` 字段，把项目使用的 pnpm 版本写进仓库。
+  </Step>
+  <Step title="禁止自动添加 packageManager">
+    设置环境变量 `COREPACK_ENABLE_AUTO_PIN="0"`，避免工具自动改写项目元信息。
+  </Step>
+  <Step title="保持 corepack 版本一致">
+    团队成员和环境里的 `corepack` 版本尽量保持一致，减少垫片行为差异。
+  </Step>
+  <Step title="避免混用包管理入口">
+    不要使用 pnpm 管理自身，不要混用 `volta` 之类的工具，也不要通过 `npx` 执行 pnpm 命令。
+  </Step>
+  <Step title="理解垫片原理">
+    理解 `corepack` 如何通过垫片代理包管理器命令，排查版本问题时会更直接。
+  </Step>
+</Steps>

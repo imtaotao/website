@@ -15,7 +15,7 @@ tags:
 2. 为什么要引入它
 3. 一个典型的 `Virtual DOM` 实现大致会怎么组织
 
-如果你对具体实现感兴趣，也可以顺手看一下我之前写的这个实验仓库：[virtualDom](https://github.com/imtaotao/virtualDom)。
+如果你对具体实现感兴趣，也可以顺手看一下我之前写的这个实验仓库：<GitHubRepo repo="imtaotao/virtualDom" />。
 
 ## 什么是 Virtual DOM
 
@@ -68,9 +68,17 @@ function createElement(vnode) {
 
 如果把流程抽象一下，大多数 Virtual DOM 实现都绕不开下面三步：
 
-1. `createVNode`
-2. `diff`
-3. `patch`
+<Steps title="Virtual DOM 的核心流程">
+  <Step title="createVNode">
+    先把视图描述成轻量的 `JavaScript` 对象，形成可比较的结构树。
+  </Step>
+  <Step title="diff">
+    再比较新旧结构树，找出节点、属性、文本和顺序上的变化。
+  </Step>
+  <Step title="patch">
+    最后把差异映射回真实 DOM，只执行必要的增删改和移动。
+  </Step>
+</Steps>
 
 先生成结构，再比对差异，最后把差异映射回真实 DOM。
 
