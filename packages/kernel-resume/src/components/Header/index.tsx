@@ -111,12 +111,14 @@ export function Header(props: {
       <div className="pr-28 md:pr-32">
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
           <h1 className="relative z-10 py-0.5 text-4xl font-semibold leading-[1.08] tracking-tight md:text-5xl">
-            <span
-              data-export-resume-name="true"
-              className="inline-block select-text"
-            >
-              {basics.name}
-            </span>
+            <a href="/" aria-label="返回站点首页" className="resume-name-link">
+              <span
+                data-export-resume-name="true"
+                className="inline-block select-text"
+              >
+                {basics.name}
+              </span>
+            </a>
           </h1>
           {basics.title ? (
             <Badge

@@ -135,7 +135,7 @@ const renderHighlightText = (text: string) => {
           onClick={(e) => {
             e.stopPropagation();
           }}
-          className="font-semibold text-blue-700 underline decoration-blue-200 underline-offset-2 hover:text-blue-600"
+          className="break-all font-semibold text-blue-700 underline decoration-blue-200 underline-offset-2 hover:text-blue-600"
         >
           {href}
         </a>
