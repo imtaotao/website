@@ -1,6 +1,13 @@
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import { existsSync, readFileSync } from 'node:fs';
+import {
+  statSync,
+  mkdirSync,
+  existsSync,
+  readdirSync,
+  readFileSync,
+  copyFileSync,
+} from 'node:fs';
 
 import { defineConfig } from 'vite';
 import { parse as parseYaml } from 'yaml';
@@ -17,6 +24,7 @@ import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const resumeYamlPath = resolve(__dirname, '../resume.yaml');
+const blogDir = resolve(__dirname, '../blog');
 
 const resolveResumeJson = () => {
   if (!existsSync(resumeYamlPath)) {
@@ -68,6 +76,62 @@ const remarkCodeMetaClassName = () => {
   };
 };
 
+const readMdxFrontmatter = (filePath) => {
+  const source = readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
+  const lines = source.split(/\r?\n/);
+  if (lines[0]?.trim() !== '---') return null;
+
+  const endIndex = lines.findIndex(
+    (line, index) => index > 0 && line.trim() === '---',
+  );
+  if (endIndex < 0) return null;
+  return parseYaml(lines.slice(1, endIndex).join('\n'));
+};
+
+const getBlogRoutePaths = () => {
+  if (!existsSync(blogDir)) return [];
+
+  const articleFiles = readdirSync(blogDir)
+    .flatMap((entry) => {
+      const entryPath = resolve(blogDir, entry);
+      const stat = statSync(entryPath);
+      if (stat.isDirectory()) return [resolve(entryPath, 'index.mdx')];
+      if (stat.isFile() && entry.endsWith('.mdx')) return [entryPath];
+      return [];
+    })
+    .filter((filePath) => existsSync(filePath));
+
+  return articleFiles
+    .map((filePath) => readMdxFrontmatter(filePath)?.slug)
+    .filter((slug) => typeof slug === 'string' && slug.trim())
+    .map((slug) => `blog/${slug.trim()}`);
+};
+
+const spaRouteFallbackPlugin = () => {
+  let outDir = resolve(__dirname, 'dist');
+
+  return {
+    name: 'website-spa-route-fallback',
+    configResolved(config) {
+      outDir = resolve(config.root, config.build.outDir);
+    },
+    closeBundle() {
+      const indexHtmlPath = resolve(outDir, 'index.html');
+      if (!existsSync(indexHtmlPath)) return;
+
+      const routePaths = Array.from(
+        new Set(['blog', 'resume', ...getBlogRoutePaths()]),
+      );
+
+      for (const routePath of routePaths) {
+        const routeDir = resolve(outDir, routePath);
+        mkdirSync(routeDir, { recursive: true });
+        copyFileSync(indexHtmlPath, resolve(routeDir, 'index.html'));
+      }
+    },
+  };
+};
+
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
@@ -116,5 +180,6 @@ export default defineConfig({
     tailwindcss(),
     tsconfigPaths(),
     aukletStylePlugin({ mode: 'monorepo' }),
+    spaRouteFallbackPlugin(),
   ],
 });

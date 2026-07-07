@@ -389,6 +389,75 @@ body {
   color: var(--not-found-text);
 }
 
+.app__routeError {
+  --route-error-title: #18181b;
+  --route-error-text: rgba(39, 39, 42, 0.76);
+  --route-error-link: #1d4ed8;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 48px 24px;
+  box-sizing: border-box;
+  color: var(--route-error-text);
+}
+
+.app__routeErrorInner {
+  width: min(100%, 640px);
+  margin-left: clamp(0px, 6vw, 96px);
+}
+
+.app__routeErrorTitle {
+  margin: 0;
+  color: var(--route-error-title);
+  font-family: var(--site-font-title);
+  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  font-weight: 200;
+  line-height: 1.15;
+}
+
+.app__routeErrorText {
+  max-width: 28rem;
+  margin: 18px 0 0;
+  font-family: var(--site-font-body);
+  font-size: 1rem;
+  line-height: 1.9;
+}
+
+.app__routeErrorActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 28px;
+  margin-top: 26px;
+}
+
+.app__routeErrorButton,
+.app__routeErrorLink {
+  min-height: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--route-error-link);
+  font-family: var(--site-font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.app__routeErrorButton:hover,
+.app__routeErrorLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.app__routeErrorButton:focus-visible,
+.app__routeErrorLink:focus-visible {
+  outline: 2px solid rgba(147, 197, 253, 0.72);
+  outline-offset: 4px;
+}
+
 @media (max-width: 767px) {
   .app__background--home,
   .app__background--blogHome,
@@ -410,6 +479,12 @@ body {
   --not-found-text: rgba(244, 244, 245, 0.76);
   --not-found-muted: rgba(244, 244, 245, 0.52);
   --not-found-link: #93c5fd;
+}
+
+:root[data-wk-theme='dark'] .app__routeError {
+  --route-error-title: #f4f4f5;
+  --route-error-text: rgba(244, 244, 245, 0.76);
+  --route-error-link: #93c5fd;
 }
 
 .app__notFoundInner {
@@ -450,6 +525,7 @@ body {
 }
 
 @media (max-width: 767px) {
+  .app__routeErrorInner,
   .app__notFoundInner {
     margin-left: 0;
   }
