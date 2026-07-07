@@ -1,1 +1,0 @@
-import{n as e,o as t,r as n}from"./blog-D3r9d1tF.js";import{jt as r,t as i}from"./main-BRSDWEeJ.js";import{t as a}from"./avatar-B7Zi-txS.js";var o=r();function s(){return i({title:`博客`,description:`陈涛的博客，记录前端工程、技术实践、工具使用和日常想法。`,canonicalPath:`/blog`}),(0,o.jsx)(t,{articles:e(),avatarUrl:a,githubUrl:`https://github.com/imtaotao`,tags:n()})}export{s as default};
